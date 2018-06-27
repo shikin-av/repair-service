@@ -1,8 +1,11 @@
 import express from 'express'
 import mongoose from 'mongoose'
+import bodyParser from 'body-parser'
+import Promise from 'bluebird'
 
 import layouts from '../layouts'
 import getApi from './api'
+import errorHandlers from './errorHandlers'
 
 export default class App {
     constructor(params = {}){
@@ -12,13 +15,36 @@ export default class App {
 
     init(){
         this.app = express()
+
+        this.app.use([
+            bodyParser.urlencoded({ extended: true }),
+            bodyParser.json()
+        ])
+
         this.setStatic()
         this.setRoutes()
     }
 
-    async connectDB(){
+    async getConnectionDB(){
         const urlDB = `mongodb://${ this.config.db.user }:${ this.config.db.password }${ this.config.db.url }`
-        return await mongoose.connect(urlDB)
+        //return await mongoose.connect(urlDB)
+        /*return {
+            connect: () => {
+                new Promise(resolve => {
+                    let db = mongoose.connect(urlDB)
+                    console.log('db ', db)
+                    return resolve()
+                })
+            }
+        }*/
+        /*return {
+            connect: async function(){
+                return await mongoose.connect(urlDB)
+            }
+        }*/
+        await mongoose.connect(urlDB)
+        return await mongoose.connection
+
     }
 
     setStatic(){
@@ -29,7 +55,7 @@ export default class App {
     setRoutes(){
         this.app.get('/', (req, res) => {
             res.send(layouts.base({
-                title: 'Ремонт бытовой техники',
+                title: this.config.indexTitle,
                 script: this.config.bundle.index
             }))
         })
@@ -44,17 +70,29 @@ export default class App {
         const api = getApi()
         this.app.use('/api', api)
 
-        this.app.use(function(req, res) {
-            res.status(404).end('error');
+        this.app.use((err, req, res, next) => {
+            errorHandlers.errors(err, req, res, next)
+        })
+
+        this.app.use((req, res, next) => {
+            errorHandlers.error404(req, res, next)
         })
     }
 
-    run(){
+    async run(){
         try {
-            this.connectDB()
+            this.db = await this.getConnectionDB()
         } catch(err){
             console.log(err)
         }
+
+        this.db.on('error', (err) => {
+            console.log('connection error:', err.message)
+        })
+        this.db.on('open', () => {
+            console.log('Connected to DB')
+        })
+
         return this.app.listen(this.config.port, () => {
             console.log(`App run on ${ this.config.port } port`)
         })
