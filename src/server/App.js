@@ -1,11 +1,13 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import bodyParser from 'body-parser'
-import Promise from 'bluebird'
+import cookieParser from 'cookie-parser'
 
-import layouts from '../layouts'
+import layouts from '../client/layouts'
 import getApi from './api'
 import errorHandlers from './errorHandlers'
+import resources from './resources'
+import auth from './resources/auth'
 
 export default class App {
     constructor(params = {}){
@@ -18,30 +20,26 @@ export default class App {
 
         this.app.use([
             bodyParser.urlencoded({ extended: true }),
+            cookieParser(),
             bodyParser.json()
         ])
 
+        //resources.auth(this)
+
+
         this.setStatic()
         this.setRoutes()
+
+        this.app.use((err, req, res, next) => {
+            errorHandlers.errors(err, req, res, next)
+        })
+        this.app.use((req, res, next) => {
+            errorHandlers.error404(req, res, next)
+        })
     }
 
     async getConnectionDB(){
         const urlDB = `mongodb://${ this.config.db.user }:${ this.config.db.password }${ this.config.db.url }`
-        //return await mongoose.connect(urlDB)
-        /*return {
-            connect: () => {
-                new Promise(resolve => {
-                    let db = mongoose.connect(urlDB)
-                    console.log('db ', db)
-                    return resolve()
-                })
-            }
-        }*/
-        /*return {
-            connect: async function(){
-                return await mongoose.connect(urlDB)
-            }
-        }*/
         await mongoose.connect(urlDB)
         return await mongoose.connection
 
@@ -69,14 +67,6 @@ export default class App {
 
         const api = getApi()
         this.app.use('/api', api)
-
-        this.app.use((err, req, res, next) => {
-            errorHandlers.errors(err, req, res, next)
-        })
-
-        this.app.use((req, res, next) => {
-            errorHandlers.error404(req, res, next)
-        })
     }
 
     async run(){

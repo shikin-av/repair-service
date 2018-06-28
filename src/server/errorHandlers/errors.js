@@ -5,6 +5,7 @@ export default (err, req, res, next) => {
     const isCastErr = ~err.message.indexOf('Cast to ObjectId fail')
     const isValidationErr = err.message.indexOf('validation')
     const isUniqueErr = err.message.indexOf('unique')
+    //const isAccessDenied = err.message.indexOf('access denied')
 
     if(err.message){
         if(isNotFound || isCastErr){

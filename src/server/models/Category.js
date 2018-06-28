@@ -14,6 +14,7 @@ const  CategorySchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
+        trim: true,
     },
     image: {
         type: String,
@@ -35,6 +36,11 @@ CategorySchema.pre('save', function(next){
     category.nameUrl = category.nameUrl.replace(regExp, '')
     next()
 })
+
+CategorySchema.path('name').validate(function(v){
+    return v.length > 0 && v.length < 30
+})
+
 
 CategorySchema.methods.toJSON = function(){
     return _.pick(this, ['name', 'nameUrl', 'image', 'problems'])
