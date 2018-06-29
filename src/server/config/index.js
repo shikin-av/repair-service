@@ -6,9 +6,11 @@ export default {
     bundle: {
         index: './dist/index.bundle.js',
         admin: './dist/admin.bundle.js',
+        login: '/dist/login.bundle.js',
     },
     indexTitle: 'Ремонт бытовой техники',
     jwt: {
-        secret: 'MY_SECRET'
+        secret: 'MY_SECRET',
+        expiresSec: 2000,
     }
 }

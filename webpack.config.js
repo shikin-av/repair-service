@@ -5,6 +5,7 @@ module.exports = {
     entry: {
         index: path.resolve(__dirname, './src/client/index.js'),
         admin: path.resolve(__dirname, './src/client/admin.js'),
+        login: path.resolve(__dirname, './src/client/login.js'),
     },
     output: {
         path: path.resolve(__dirname, './dist'),

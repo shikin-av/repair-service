@@ -10,7 +10,7 @@ const bcryptCompare = Promise.promisify(bcrypt.compare)
 
 
 const UserSchema = new mongoose.Schema({
-    username: {
+    login: {
         type: String,
         required: true,
         unique: true,

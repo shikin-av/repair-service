@@ -2,12 +2,12 @@ import express from 'express'
 import mongoose from 'mongoose'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+//import multiparty from 'multiparty'
 
 import layouts from '../client/layouts'
 import getApi from './api'
 import errorHandlers from './errorHandlers'
 import resources from './resources'
-import auth from './resources/auth'
 
 export default class App {
     constructor(params = {}){
@@ -24,11 +24,13 @@ export default class App {
             bodyParser.json()
         ])
 
-        //resources.auth(this)
+        this.app.set('config', this.config)
 
+        this.auth = resources.auth()
+        this.app.use('/admin/', this.auth.verifyCookieToken)
 
-        this.setStatic()
         this.setRoutes()
+        this.setStatic()
 
         this.app.use((err, req, res, next) => {
             errorHandlers.errors(err, req, res, next)
@@ -58,6 +60,32 @@ export default class App {
             }))
         })
 
+        this.app.get('/login', (req, res) => {
+            res.send(layouts.base({
+                title: 'Авторизация',
+                script: this.config.bundle.login
+            }))
+        })
+
+        this.app.post('/login', (req, res) => {
+            if(req.body.login && req.body.password){
+                const login = req.body.login
+                const password = req.body.password
+                const userResult = this.auth.validate(login, password)
+                if(userResult.isAuthenticated){
+                    const token = this.auth.getToken(
+                        userResult.user,
+                        this.config.jwt.secret,
+                        this.config.jwt.expiresSec
+                    )
+                    res.cookie('auth_token', token)
+                    res.json({ redirect: '/admin' })
+                }else{
+                    res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })
+                }
+            }
+        })
+
         this.app.get('/admin', (req, res) => {
             res.send(layouts.base({
                 title: 'Административная панель',
@@ -66,7 +94,7 @@ export default class App {
         })
 
         const api = getApi()
-        this.app.use('/api', api)
+        this.app.use('/admin/api', api)
     }
 
     async run(){
