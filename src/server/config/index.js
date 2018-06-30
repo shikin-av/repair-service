@@ -11,6 +11,6 @@ export default {
     indexTitle: 'Ремонт бытовой техники',
     jwt: {
         secret: 'MY_SECRET',
-        expiresSec: 2000,
+        expiresSec: 60 * 60 * 12,
     }
 }

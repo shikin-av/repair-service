@@ -3,55 +3,66 @@ import jwt from 'jsonwebtoken'
 
 import User from '../models/User'
 
-//TODO Fake Users
-const users_db = [
-    {
-        login: 'admin',
-        password: '123',
-        fio: 'I Admin',
-        role: 'admin'
-    },
-    {
-        login: 'worker',
-        password: '123',
-        fio: 'I worker',
-        role: 'worker'
-    }
-]
+//TODO jwt expired error
 
 export default () => {
     const auth = {}
-    auth.verifyCookieToken = express.Router()
-    auth.verifyCookieToken.all('*', function(req, res, next){
-        const token = req.cookies['auth_token']
-        const config = req.app.get('config')
-        if(token){
-            const user = auth.getUser(token, config.jwt.secret)
-            if(user){
-                next()
-            }else{
-                res.redirect('/login')
-            }
-        } else {
-            res.redirect('/login')
 
+    auth.notAuthorized = (res) => {
+        res.redirect('/login')
+    }
+
+    auth.verifyAdmin = express.Router()
+    auth.verifyAdmin.all('*', function(req, res, next){
+        if(auth.verifyCookieToken(req, 'admin')){
+            next()
+        } else {
+            auth.notAuthorized(res)
         }
     })
 
-    auth.validate = (login, password) => {
-        const user = users_db.find(function(item){
-            if(item.login == login && item.password == password){
-                return true
-            } else {
-                return false
+    auth.verifyUser = express.Router()
+    auth.verifyUser.all('*', function(req, res, next){
+        if(auth.verifyCookieToken(req, false)){
+            next()
+        } else {
+            auth.notAuthorized(res)
+        }
+    })
+
+    auth.verifyCookieToken = (req, needRole = false) => {
+        const config = req.app.get('config')
+        const token = req.cookies['auth_token']
+        if(token){
+            const user = auth.getUser(token, config.jwt.secret)
+            if(user){
+                if(needRole){
+                    if(user.role == needRole){
+                        return true
+                    } else {
+                        return false
+                    }
+                } else {
+                    return true
+                }
             }
+        } else {
+            return false
+        }
+
+    }
+
+    auth.validateDB = async (login, password) => {
+        const user = await User.findOne({
+            login
         })
-        if(user){
+        if(user && await user.verifyPassword(password)){
             return {
                 isAuthenticated: true,
                 user: {
                     login: user.login,
-                    role: user.role
+                    role: user.role,
+                    fio: user.fio
                 }
             }
         } else {

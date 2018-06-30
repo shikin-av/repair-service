@@ -27,7 +27,7 @@ export default class App {
         this.app.set('config', this.config)
 
         this.auth = resources.auth()
-        this.app.use('/admin/', this.auth.verifyCookieToken)
+        this.app.use('/admin/', this.auth.verifyAdmin)
 
         this.setRoutes()
         this.setStatic()
@@ -67,11 +67,11 @@ export default class App {
             }))
         })
 
-        this.app.post('/login', (req, res) => {
+        this.app.post('/login', async (req, res) => {
             if(req.body.login && req.body.password){
                 const login = req.body.login
                 const password = req.body.password
-                const userResult = this.auth.validate(login, password)
+                const userResult = await this.auth.validateDB(login, password)
                 if(userResult.isAuthenticated){
                     const token = this.auth.getToken(
                         userResult.user,
@@ -79,7 +79,7 @@ export default class App {
                         this.config.jwt.expiresSec
                     )
                     res.cookie('auth_token', token)
-                    res.json({ redirect: '/admin' })
+                    res.json({ redirectTo: '/admin#/' })
                 }else{
                     res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })
                 }

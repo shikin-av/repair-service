@@ -8,8 +8,8 @@ export default () => {
     api.get('/', async (req, res, next) => {
         return await Category.find((err, categories) => {
             if(!err){
-                return res.send(categories)
-            }else{
+                return res.json(categories)
+            } else {
                 return next(err)
             }
         })
@@ -21,11 +21,11 @@ export default () => {
         }, (err, category) => {
             if(!err){
                 if(category){
-                    return res.send(category)
-                }else{
-                    next()
+                    return res.json(category)
+                } else {
+                    return next()
                 }
-            }else{
+            } else {
                 return next(err)
             }
         })
@@ -64,23 +64,27 @@ export default () => {
         return await Category.findOne({
             nameUrl: req.params.nameUrl
         }, (err, category) => {
-            if(!category){
-                console.log(`category "${ req.params.nameUrl }" not found`)
+            if(!err){
+                if(!category){
+                    console.log(`category "${ req.params.nameUrl }" not found`)
+                    return next()
+                }
+                category.name     = name || category.name
+                category.nameUrl  = nameUrl || category.nameUrl
+                category.image    = image || category.image
+                category.problems = problems || category.problems
+
+                return category.save((err) => {
+                    if(!err) {
+                        console.log(`category "${ nameUrl }" updated`)
+                        return res.status(202).json(category)
+                    } else {
+                        return next(err)
+                    }
+                })
+            } else {
                 return next(err)
             }
-            category.name = name || category.name
-            category.nameUrl = nameUrl || category.nameUrl
-            category.image = image || category.image
-            category.problems = problems || category.problems
-
-            return category.save((err) => {
-                if(!err) {
-                    console.log(`category "${ nameUrl }" updated`)
-                    return res.status(202).json(category)
-                } else {
-                    return next(err)
-                }
-            })
         })
     })
 
@@ -88,18 +92,22 @@ export default () => {
         return await Category.findOne({
             nameUrl: req.params.nameUrl
         }, (err, category) => {
-            if(!category){
-                console.log(`category "${ req.params.nameUrl }" not found`)
+            if(!err){
+                if(!category){
+                    console.log(`category "${ req.params.nameUrl }" not found`)
+                    return next()
+                }
+                return category.remove(err => {
+                    if(!err){
+                        console.log(`category "${ req.params.nameUrl }" deleted`)
+                        return res.json({ status: 'OK' })
+                    } else {
+                        return next(err)
+                    }
+                })
+            } else {
                 return next(err)
             }
-            return category.remove(err => {
-                if(!err){
-                    console.log(`category "${ req.params.nameUrl }" deleted`)
-                    return res.send({ status: 'OK' })
-                } else {
-                    next(err)
-                }
-            })
         })
     })
 

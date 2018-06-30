@@ -34,23 +34,25 @@ const UserSchema = new mongoose.Schema({
 
 const SALT_WORK_FACTOR = 10
 
-
-
 UserSchema.pre('save', function(next){
-    if(!this.isModified('password')){
-        return next()
-    }else{
-        return bcryptGenSalt(SALT_WORK_FACTOR)
-        .then(salt => {
-            bcryptHash(this.password, salt)
-            .then(hash => {
-                this.password = hash
-                next()
-            })
+    const user = this
+    if(!user.isModified('password')) return next()
+        
+    
+    bcryptGenSalt(SALT_WORK_FACTOR)
+    .then(salt => {
+        bcryptHash(user.password, salt)
+        .then(hash => {
+            user.password = hash
+            return next()
         })
-        .catch(next)
-    }
+    })
+    .catch(next)
 })
+
+UserSchema.methods.verifyPassword = async function(password){
+    return await bcryptCompare(password, this.password)
+}
 
 UserSchema.methods.toJSON = function(){
     // get without "password", "role"

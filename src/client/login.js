@@ -43,8 +43,8 @@ class Login extends React.Component {
                 .then(data => {
                     if(data.error){
                         this.setState({ message: 'Ошибка сервера. Попробуйте позже, или обратитесь к администратору сайта' })
-                    } else if(data.redirect){
-                        window.location.href = data.redirect
+                    } else if(data.redirectTo){
+                        window.location.replace(data.redirectTo)
                     } else if(data.message){
                         this.setState({ message: data.message })
                     }
