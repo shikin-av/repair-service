@@ -2,12 +2,13 @@ import express from 'express'
 import mongoose from 'mongoose'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
-//import multiparty from 'multiparty'
+import http from 'http'
+import socket from 'socket.io'
 
-import layouts from '../client/layouts'
-import getApi from './api'
 import errorHandlers from './errorHandlers'
 import resources from './resources'
+import router from './router'
+import socketsHandler from './socketsHandler'
 
 export default class App {
     constructor(params = {}){
@@ -26,10 +27,8 @@ export default class App {
 
         this.app.set('config', this.config)
 
-        this.auth = resources.auth()
-        this.app.use('/admin/', this.auth.verifyAdmin)
-
         this.setRoutes()
+        this.setSockets()
         this.setStatic()
 
         this.app.use((err, req, res, next) => {
@@ -53,48 +52,13 @@ export default class App {
     }
 
     setRoutes(){
-        this.app.get('/', (req, res) => {
-            res.send(layouts.base({
-                title: this.config.indexTitle,
-                script: this.config.bundle.index
-            }))
-        })
+        router(this.app)
+    }
 
-        this.app.get('/login', (req, res) => {
-            res.send(layouts.base({
-                title: 'Авторизация',
-                script: this.config.bundle.login
-            }))
-        })
-
-        this.app.post('/login', async (req, res) => {
-            if(req.body.login && req.body.password){
-                const login = req.body.login
-                const password = req.body.password
-                const userResult = await this.auth.validateDB(login, password)
-                if(userResult.isAuthenticated){
-                    const token = this.auth.getToken(
-                        userResult.user,
-                        this.config.jwt.secret,
-                        this.config.jwt.expiresSec
-                    )
-                    res.cookie('auth_token', token)
-                    res.json({ redirectTo: '/admin#/' })
-                }else{
-                    res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })
-                }
-            }
-        })
-
-        this.app.get('/admin', (req, res) => {
-            res.send(layouts.base({
-                title: 'Административная панель',
-                script: this.config.bundle.admin
-            }))
-        })
-
-        const api = getApi()
-        this.app.use('/admin/api', api)
+    setSockets(){
+        this.server = http.Server(this.app)
+        this.io = socket(this.server, {serveClient: true})
+        socketsHandler(this.io)
     }
 
     async run(){
@@ -111,7 +75,7 @@ export default class App {
             console.log('Connected to DB')
         })
 
-        return this.app.listen(this.config.port, () => {
+        return this.server.listen(this.config.port, () => {
             console.log(`App run on ${ this.config.port } port`)
         })
     }

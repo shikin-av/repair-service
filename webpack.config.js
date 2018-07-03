@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        index: path.resolve(__dirname, './src/client/index.js'),
+        site: path.resolve(__dirname, './src/client/site.js'),
         admin: path.resolve(__dirname, './src/client/admin.js'),
         login: path.resolve(__dirname, './src/client/login.js'),
     },

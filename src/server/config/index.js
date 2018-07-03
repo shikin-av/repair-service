@@ -4,7 +4,7 @@ export default {
     port: 80,
     db,
     bundle: {
-        index: './dist/index.bundle.js',
+        site: './dist/site.bundle.js',
         admin: './dist/admin.bundle.js',
         login: '/dist/login.bundle.js',
     },
