@@ -10,14 +10,33 @@ import 'babel-polyfill'
 
 import reducers from './admin/reducers'
 import Main from './admin/components/Main/Main.jsx'
+import socketsHandler from './admin/resources/socketsHandler'
+import getCookie from './admin/resources/getCookie'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyMiddleware, thunk)))
 
-const App = () => (
-    <Main />
-)
+class App extends React.Component {
+    constructor(props){
+        super(props)
+    }
+
+    componentDidMount(){
+        const authToken = getCookie('auth_token')
+        if(authToken){
+            socketsHandler(authToken)
+        }
+    }
+
+    render(){
+        return (
+            <div>
+                <Main />
+            </div>
+        )
+    }
+}
 
 ReactDOM.render(
     <Provider store={store}>

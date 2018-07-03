@@ -8,7 +8,7 @@ import socket from 'socket.io'
 import errorHandlers from './errorHandlers'
 import resources from './resources'
 import router from './router'
-import socketsHandler from './socketsHandler'
+import socketsHandler from './resources/socketsHandler'
 
 export default class App {
     constructor(params = {}){
@@ -57,7 +57,7 @@ export default class App {
 
     setSockets(){
         this.server = http.Server(this.app)
-        this.io = socket(this.server, {serveClient: true})
+        this.io = socket(this.server)
         socketsHandler(this.io)
     }
 

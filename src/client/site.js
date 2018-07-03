@@ -7,16 +7,14 @@ import { ConnectedRouter as Router, routerMiddleware } from 'react-router-redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
-import openSocket from 'socket.io-client'
 
 import reducers from './site/reducers'
 import Main from './site/components/Main/Main.jsx'
+import socketsHandler from './site/resources/socketsHandler'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyMiddleware, thunk)))
-
-const socket = openSocket('http://localhost:80')
 
 class App extends React.Component {
     constructor(props){
@@ -24,10 +22,7 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        socket.on('connected', data => {
-            console.log(data)
-            socket.emit('test', 'test msg')
-        })
+        socketsHandler()
     }
 
     render(){
