@@ -3,8 +3,6 @@ import jwt from 'jsonwebtoken'
 
 import User from '../models/User'
 
-//TODO jwt expired error
-
 export default () => {
     const auth = {}
 
@@ -62,7 +60,8 @@ export default () => {
                 user: {
                     login: user.login,
                     role: user.role,
-                    fio: user.fio
+                    fio: user.fio,
+                    city: user.city
                 }
             }
         } else {

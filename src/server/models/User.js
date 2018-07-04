@@ -21,14 +21,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    fio: {
-        type: String,
-        required: true,
-    },
     role: {
         type: String,
         required: true,
         enum: ['admin', 'worker'],
+    },
+    fio: {
+        type: String,
+        required: true,
+    },
+    city: {
+        type: String,
+        required: true
     }
 })
 

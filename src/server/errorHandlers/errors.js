@@ -1,20 +1,21 @@
-export default (err, req, res, next) => {
-    console.log({ error: err, stack: err.stack })
+export default (err, req, res, next) => {   //TODO check this req: Api or Page (api-send err, page-send error page)
+    console.log({ error: err })
     let status = 500
-    const isNotFound = ~err.message.indexOf('not found')
-    const isCastErr = ~err.message.indexOf('Cast to ObjectId fail')
+    const isNotFound      = ~err.message.indexOf('not found')
+    const isCastErr       = ~err.message.indexOf('Cast to ObjectId fail')
     const isValidationErr = err.message.indexOf('validation')
-    const isUniqueErr = err.message.indexOf('unique')
-    const isAccessDenied = err.message.indexOf('access denied')
+    const isUniqueErr     = err.message.indexOf('unique')
+    const isAccessDenied  = err.message.indexOf('access denied')
+    const isJwtExpired      = err.message.indexOf('jwt expired')
 
     if(err.message){
         if(isNotFound || isCastErr){
             next()  // go to 404 error handler
-        }else if(isValidationErr || isUniqueErr || isAccessDenied){
+        }else if(isValidationErr || isUniqueErr || isAccessDenied || isJwtExpired){
             status = 400
         }
         res.status(status).json(err.message)
     }else{
-        res.status(status).json(err)
+        res.status(status).json(err)    //TODO to handler of 'undefined errors'
     }
 }

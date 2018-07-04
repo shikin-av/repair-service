@@ -8,5 +8,17 @@ export default (authToken) => {
 
     socket.on('connected', data => {
         socket.emit('adminAuthToken', authToken)
+
+        socket.on('authorize', data => {  //TODO
+            console.log(data)
+        })
+
+        socket.on('errorMsg', data => {
+            console.log(data)
+        })
+
+        socket.on('clientTask', data => {   //TODO
+            console.log('clientTask: ', data)
+        })
     })
 }
