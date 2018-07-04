@@ -1,6 +1,7 @@
 import layouts from '../client/layouts'
 import resources from './resources'
 import getApi from './api'
+import getPublicApi from './api/publicApi'
 
 export default (app) => {
     const auth = resources.auth()
@@ -49,4 +50,7 @@ export default (app) => {
 
     const api = getApi()
     app.use('/admin/api', api)
+
+    const publicApi = getPublicApi()
+    app.use('/publicapi', publicApi)
 }

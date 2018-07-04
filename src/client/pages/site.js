@@ -8,9 +8,10 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
 
-import reducers from './site/reducers'
-import Main from './site/components/Main/Main.jsx'
-import socketsHandler from './site/resources/socketsHandler'
+import reducers from '../site/reducers'
+import Main from '../site/components/Main/Main.jsx'
+import socketsHandler from '../site/resources/socketsHandler'
+import Header from '../site/components/Header/Header.jsx'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
@@ -28,6 +29,7 @@ class App extends React.Component {
     render(){
         return (
             <div>
+                <Header />
                 <Main />
             </div>
         )

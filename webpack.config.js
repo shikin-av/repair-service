@@ -3,9 +3,9 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        site: path.resolve(__dirname, './src/client/site.js'),
-        admin: path.resolve(__dirname, './src/client/admin.js'),
-        login: path.resolve(__dirname, './src/client/login.js'),
+        site: path.resolve(__dirname, './src/client/pages/site.js'),
+        admin: path.resolve(__dirname, './src/client/pages/admin.js'),
+        login: path.resolve(__dirname, './src/client/pages/login.js'),
     },
     output: {
         path: path.resolve(__dirname, './dist'),
