@@ -1,10 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-//import { getCities as getCitiesAction } from '../../../admin/actions/cities'
-//import { getCities as getCitiesSelector } from '../../../admin/selectors/cities'
-import { getCities as getCitiesAction } from '../../actions/cities'
-import { getCities as getCitiesSelector } from '../../selectors/cities'
+import { getCities as getCitiesAction } from 'client/site/actions/cities'
+import { getCities as getCitiesSelector } from 'client/site/selectors/cities'
 
 class ChoiceCity extends React.Component {
     constructor(props){

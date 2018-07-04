@@ -1,4 +1,4 @@
-import * as types from '../actions/actionTypes'
+import * as types from 'client/site/actions/actionTypes'
 
 const initialState = []
 

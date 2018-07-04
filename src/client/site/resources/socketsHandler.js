@@ -1,6 +1,6 @@
 import openSocket from 'socket.io-client'
 
-import config from '../../config'
+import config from 'client/config'
 
 export default () => {
     const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)

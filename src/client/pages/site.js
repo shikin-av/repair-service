@@ -8,10 +8,10 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
 
-import reducers from '../site/reducers'
-import Main from '../site/components/Main/Main.jsx'
-import socketsHandler from '../site/resources/socketsHandler'
-import Header from '../site/components/Header/Header.jsx'
+import reducers from 'client/site/reducers'
+import Main from 'client/site/components/Main/Main.jsx'
+import socketsHandler from 'client/site/resources/socketsHandler'
+import Header from 'client/site/components/Header/Header.jsx'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)

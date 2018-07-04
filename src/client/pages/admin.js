@@ -8,10 +8,10 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
 
-import reducers from '../admin/reducers'
-import Main from '../admin/components/Main/Main.jsx'
-import socketsHandler from '../admin/resources/socketsHandler'
-import getCookie from '../admin/resources/getCookie'
+import reducers from 'client/admin/reducers'
+import Main from 'client/admin/components/Main/Main.jsx'
+import socketsHandler from 'client/admin/resources/socketsHandler'
+import getCookie from 'client/admin/resources/getCookie'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)

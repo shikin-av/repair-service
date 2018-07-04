@@ -12,12 +12,16 @@ module.exports = {
         filename: '[name].bundle.js',
     },
     devtool: 'source-map',
+    resolve: {
+        modules: ['node_modules', 'src'],
+        extensions: ['.js', '.jsx'],
+    },
     module: {
         loaders: [
             {
                 test: /\.js$/,
                 loader: "babel-loader",
-                exclude: [/node_modules/, /public/],
+                exclude: [/node_modules/],
                 options: {
                     presets: ['stage-0', 'es2015', 'es2017', 'react']
                 }
@@ -25,12 +29,12 @@ module.exports = {
             {
                 test: /\.css$/,
                 loader: "style-loader!css-loader",
-                exclude: [/node_modules/, /public/]
+                exclude: [/node_modules/]
             },
             {
                 test: /\.less$/,
                 loader: "style-loader!css-loader!autoprefixer-loader!less",
-                exclude: [/node_modules/, /public/]
+                exclude: [/node_modules/]
             },
             {
                 test: /\.gif$/,
@@ -51,7 +55,7 @@ module.exports = {
             {
                 test: /\.jsx$/,
                 loader: "babel-loader",
-                exclude: [/node_modules/, /public/],
+                exclude: [/node_modules/],
                 options: {
                     presets: ['stage-0', 'es2015', 'react']
                 }
