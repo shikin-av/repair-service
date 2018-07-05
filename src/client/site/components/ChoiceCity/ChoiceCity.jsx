@@ -13,11 +13,11 @@ class ChoiceCity extends React.Component {
     }
 
     componentDidMount(){
-        ymaps.ready(() => {
+        window.ymaps.ready(() => {
             const city = window.ymaps.geolocation.city
             this.setState({ currentCity: city })
         })
-        this.props.getCitiesAction()
+        if(!this.props.cities) this.props.getCitiesAction()
     }
 
     render(){

@@ -1,3 +1,5 @@
 export default (req, res, next) => {
-    res.status(404).send({ error: '404 - Not found' })
+    const isApiRequest = ~req.originalUrl.indexOf('/api')
+    isApiRequest ? res.status(404).send({ error: '404 - Not found' }) : res.redirect('/#/404')
+    
 }
