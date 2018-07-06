@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const ExtractTextPlugin = require ('extract-text-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -17,7 +18,7 @@ module.exports = {
         extensions: ['.js', '.jsx'],
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 loader: "babel-loader",
@@ -27,9 +28,22 @@ module.exports = {
                 }
             },
             {
-                test: /\.css$/,
-                loader: "style-loader!css-loader",
-                exclude: [/node_modules/]
+                test: /\.s?css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true,
+                                importLoaders: 1,
+                                localIdentName: '[name]__[local]___[hash:base64:5]'
+                            }
+                        },
+                        'postcss-loader',
+                        'sass-loader'
+                    ]
+                })
             },
             {
                 test: /\.less$/,
@@ -57,7 +71,7 @@ module.exports = {
                 loader: "babel-loader",
                 exclude: [/node_modules/],
                 options: {
-                    presets: ['stage-0', 'es2015', 'react']
+                    presets: ['stage-0', 'es2015', 'es2017', 'react']
                 }
             },
             {
@@ -65,5 +79,8 @@ module.exports = {
                 loader: "json-loader"
             }
         ]
-    }
+    },
+    plugins: [
+        new ExtractTextPlugin({ filename: '[name].bundle.css' })
+    ]
 };

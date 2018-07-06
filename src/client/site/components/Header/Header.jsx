@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ChoiceCity from '../ChoiceCity/ChoiceCity.jsx'
+import SelectCity from 'client/site/components/Header/SelectCity/SelectCity.jsx'
 
 export default class Header extends React.Component {
     constructor(props){
@@ -10,7 +10,7 @@ export default class Header extends React.Component {
     render(){
         return(
             <div>
-                <ChoiceCity />
+                <SelectCity />
             </div>
         )
     }

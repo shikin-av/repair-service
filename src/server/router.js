@@ -10,15 +10,25 @@ export default (app) => {
 
     app.get('/', (req, res) => {
         res.send(layouts.base({
-            title: config.indexTitle,
-            script: config.bundle.site
+            title:  config.indexTitle,
+            script: config.bundle.js.site,
+            css:    config.bundle.css.site
+        }))
+    })
+
+    app.get('/admin', (req, res) => {
+        res.send(layouts.base({
+            title: 'Административная панель',
+            script: config.bundle.js.admin,
+            css:    config.bundle.css.admin
         }))
     })
 
     app.get('/login', (req, res) => {
         res.send(layouts.base({
             title: 'Авторизация',
-            script: config.bundle.login
+            script: config.bundle.js.login,
+            css:    config.bundle.css.login
         }))
     })
 
@@ -39,13 +49,6 @@ export default (app) => {
                 res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })
             }
         }
-    })
-
-    app.get('/admin', (req, res) => {
-        res.send(layouts.base({
-            title: 'Административная панель',
-            script: config.bundle.admin
-        }))
     })
 
     const api = getApi()

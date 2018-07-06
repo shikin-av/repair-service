@@ -4,9 +4,16 @@ export default {
     port: 80,
     db,
     bundle: {
-        site: './dist/site.bundle.js',
-        admin: './dist/admin.bundle.js',
-        login: '/dist/login.bundle.js',
+        js: {
+            site: './dist/site.bundle.js',
+            admin: './dist/admin.bundle.js',
+            login: '/dist/login.bundle.js',
+        },
+        css: {
+            site: './dist/site.bundle.css',
+            admin: './dist/admin.bundle.css',
+            login: './dist/login.bundle.css',
+        }
     },
     indexTitle: 'Ремонт бытовой техники',
     jwt: {

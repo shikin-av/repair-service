@@ -1,36 +1,43 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import _ from 'lodash'
 
 import { getCities as getCitiesAction } from 'client/site/actions/cities'
 import { getCities as getCitiesSelector } from 'client/site/selectors/cities'
+import s from './SelectCity.scss'
+console.log('Styles: ', s)
 
-class ChoiceCity extends React.Component {
+class SelectCity extends React.Component {
     constructor(props){
         super(props)
         this.state = {
+            ymapsCity: null,
             currentCity: null
         }
     }
 
     componentDidMount(){
         window.ymaps.ready(() => {
-            const city = window.ymaps.geolocation.city
-            this.setState({ currentCity: city })
+            this.setState({ ymapsCity: window.ymaps.geolocation.city })            
+            this.props.getCitiesAction()
+            .then(() => {
+                const currentCity = _.find(this.props.cities, { name: this.state.ymapsCity })
+                this.setState({ currentCity: currentCity.name })
+            })
         })
-        if(!this.props.cities) this.props.getCitiesAction()
+        
+        
     }
 
     render(){
         const { cities } = this.props
+        const { currentCity } = this.state
         if(cities){
             return (
-                <div>
-                    <div>
-                        <script src='https://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU'></script>
-                        <div id='map' style={{ width: '0px', height: '0px' }}></div>
-                    </div>
+                <div className={ s.root }>
+                    <h3>{ currentCity }</h3>
                     {
-                        cities.map((city, index) => {
+                        cities.map(city => {
                             return <p key={ Math.random() }>{ city.name }</p>
                         })
                     }
@@ -48,4 +55,4 @@ const mapDispatchToProps = {
     getCitiesAction
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChoiceCity)
+export default connect(mapStateToProps, mapDispatchToProps)(SelectCity)
