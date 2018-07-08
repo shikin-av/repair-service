@@ -1,5 +1,5 @@
 import React from 'react'
-import s from './Page404.scss'
+//import l from './Page404.less'
 
 const Page404 = (props) => (
     <h1>404</h1>

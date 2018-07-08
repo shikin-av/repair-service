@@ -13,6 +13,8 @@ import Main from 'client/site/components/Main/Main.jsx'
 import socketsHandler from 'client/site/resources/socketsHandler'
 import Header from 'client/site/components/Header/Header.jsx'
 
+require('antd/lib/icon/style/css')
+
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyMiddleware, thunk)))

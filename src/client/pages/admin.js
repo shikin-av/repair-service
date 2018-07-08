@@ -13,6 +13,7 @@ import Main from 'client/admin/components/Main/Main.jsx'
 import socketsHandler from 'client/admin/resources/socketsHandler'
 import getCookie from 'client/admin/resources/getCookie'
 
+
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyMiddleware, thunk)))

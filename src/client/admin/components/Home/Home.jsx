@@ -1,5 +1,5 @@
 import React from 'react'
-import s from './Home.scss'
+import l from './Home.less'
 
 export default class Home extends React.Component {
     constructor(props){

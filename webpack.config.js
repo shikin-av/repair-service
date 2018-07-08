@@ -28,7 +28,24 @@ module.exports = {
                 }
             },
             {
-                test: /\.s?css$/,
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true,
+                                importLoaders: 1,
+                                localIdentName: '[local]'
+                            }
+                        },
+                        'postcss-loader'
+                    ]
+                })
+            },
+            {
+                test: /\.scss$/,
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [
@@ -47,9 +64,27 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                loader: "style-loader!css-loader!autoprefixer-loader!less",
-                exclude: [/node_modules/]
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true,
+                                importLoaders: 1,
+                                localIdentName: '[name]__[local]___[hash:base64:5]'
+                            }
+                        },
+                        'autoprefixer-loader',
+                        'less-loader'
+                    ]
+                })
             },
+            /*{
+                test: /\.less$/,
+                loader: "style-loader!css-loader!autoprefixer-loader!less-loader",
+                exclude: [/node_modules/, /public/]
+            },*/
             {
                 test: /\.gif$/,
                 loader: "url-loader?limit=10000&mimetype=image/gif"
