@@ -3,8 +3,14 @@ import { connect } from 'react-redux'
 import _ from 'lodash'
 import { array } from 'prop-types'
 
-import { getCities as getCitiesAction } from 'client/site/actions/cities'
-import { getCities as getCitiesSelector } from 'client/site/selectors/cities'
+import { 
+    getCities        as getCitiesAction,
+    setCurrentCity   as setCurrentCityAction
+} from 'client/site/actions/cities'
+import { 
+    getCities      as getCitiesSelector,
+    getCurrentCity as getCurrentCitySelector
+} from 'client/site/selectors/cities'
 
 //const Button = require('antd/lib/button/button')
 //require('antd/lib/button/style/index.css')
@@ -26,14 +32,26 @@ class SelectCity extends React.Component {
 
     componentDidMount(){
         window.ymaps.ready(() => {
+            const currentCityLS = JSON.parse(localStorage.getItem('currentCity'))
+            if(currentCityLS) this.props.setCurrentCityAction(currentCityLS)
+            
             this.props.getCitiesAction()
             .then(() => {
-                const currentCity = _.find(this.props.cities, { name: window.ymaps.geolocation.city })
-                if(currentCity){
+                if(currentCityLS){
                     this.setState({ 
-                        currentCity: currentCity,
-                        currentCityName: currentCity.name
+                        currentCity: currentCityLS,
+                        currentCityName: currentCityLS.name
                     })
+                } else {
+                    const currentCity = _.find(this.props.cities, { name: window.ymaps.geolocation.city })
+                    if(currentCity){
+                        this.setState({ 
+                            currentCity: currentCity,
+                            currentCityName: currentCity.name
+                        })
+                        this.props.setCurrentCityAction(currentCity)
+                        localStorage.setItem('currentCity', JSON.stringify(currentCity))
+                    }
                 }
             })
         })
@@ -46,6 +64,8 @@ class SelectCity extends React.Component {
                 currentCity: currentCity,
                 currentCityName: currentCity.name
             })
+            this.props.setCurrentCityAction(currentCity)
+            localStorage.setItem('currentCity', JSON.stringify(currentCity))
         }
     }
 
@@ -77,11 +97,13 @@ class SelectCity extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    cities: getCitiesSelector(state)
+    cities: getCitiesSelector(state),
+    currentCity: getCurrentCitySelector(state)
 })
 
 const mapDispatchToProps = {
-    getCitiesAction
+    getCitiesAction,
+    setCurrentCityAction
 }
 
 SelectCity.propTypes = {

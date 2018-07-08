@@ -18,3 +18,11 @@ export const getCities = () => async dispatch => {
         })
     }
 }
+
+
+export const setCurrentCity = city => async dispatch => {
+    dispatch({ 
+        type: types.SET_CURRENT_CITY,
+        payload: city
+    })
+}
