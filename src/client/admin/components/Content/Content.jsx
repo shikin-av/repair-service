@@ -1,10 +1,10 @@
 import React from 'react'
 import {Switch, Route} from 'react-router-dom'
 
-import Home from 'client/site/components/pages/Home/Home.jsx'
-import Page404 from 'client/site/components/pages/Page404/Page404.jsx'
+import Home from '../Home/Home.jsx'
+import User from '../User/User.jsx'
 
-export default class Main extends React.Component {
+export default class Content extends React.Component {
     constructor(props){
         super(props)
     }
@@ -15,7 +15,9 @@ export default class Main extends React.Component {
                 <Route
                     exact path='/'
                     component={Home} />
-                <Route component={Page404} />
+                <Route
+                    exact path='/user'
+                    component={User} />
             </Switch>
         )
     }

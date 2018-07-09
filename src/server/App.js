@@ -47,7 +47,7 @@ export default class App {
     }
 
     setStatic(){
-        //this.app.use('/assets', express.static('./assets'))
+        this.app.use('/assets', express.static('./assets'))
         this.app.use('/dist', express.static('./dist'))
     }
 

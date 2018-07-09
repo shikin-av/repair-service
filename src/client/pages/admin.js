@@ -9,7 +9,7 @@ import thunk from 'redux-thunk'
 import 'babel-polyfill'
 
 import reducers from 'client/admin/reducers'
-import Main from 'client/admin/components/Main/Main.jsx'
+import Content from 'client/admin/components/Content/Content.jsx'
 import socketsHandler from 'client/admin/resources/socketsHandler'
 import getCookie from 'client/admin/resources/getCookie'
 
@@ -33,7 +33,7 @@ class App extends React.Component {
     render(){
         return (
             <div>
-                <Main />
+                <Content />
             </div>
         )
     }
