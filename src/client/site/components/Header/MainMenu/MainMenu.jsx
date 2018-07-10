@@ -43,7 +43,7 @@ export default class MainMenu extends React.Component {
         const { collapsed } = this.state
         if(isMobile){
             return (
-                <div>
+                <div id='main-menu'>
                     <Button 
                         icon='bars'
                         size='large'
@@ -53,7 +53,6 @@ export default class MainMenu extends React.Component {
                     <Menu
                         mode='inline'
                         inlineCollapsed={ this.state.collapsed }
-                        id='main-menu'
                         className={ l.root }
                         style={ collapsed ? {display: 'none'} : {display: 'block'} }
                     >

@@ -15,12 +15,23 @@ import l from './Header.less'
 export default class Header extends React.Component {
     constructor(props){
         super(props)
+        this.state ={
+            position: 'relative'
+        }
     }
 
-    componentDidMount(){
-        // for content margin-top
-        const height = this.element.clientHeight
-        this.props.onHeaderHeight(height)
+    componentWillMount(){
+        const { isMobile } = this.props
+        if(!isMobile){
+            window.onscroll = () => {
+                const scrolled = window.pageYOffset || document.documentElement.scrollTop
+                if(scrolled > 0){
+                    this.setState({ position: 'fixed' })
+                } else {
+                    this.setState({ position: 'relative' })
+                }
+            }
+        }        
     }
 
     render(){
@@ -30,12 +41,12 @@ export default class Header extends React.Component {
                 id='header'
                 className={ l.root }
                 ref={ (el) => this.element = el }
-                style={ isMobile ? null : {position: 'fixed'} }
+                style={{ position: this.state.position }}
             >
                 <Row>
                     <div className={ l.wrapper }>
                         <Col sm={24} md={8}>
-                            <Logo isMobile={ isMobile } />
+                            <Logo />
                         </Col>
                         <Col sm={24} md={8}>
                             <SelectCity />

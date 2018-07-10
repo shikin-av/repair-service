@@ -1,0 +1,36 @@
+@import '../../common/common.less';
+
+.root {
+    border: 1px solid lightgray;
+    margin-top: 16px;
+    transition-property: border-color;
+    transition-duration: @anim-time;
+
+    &:hover {
+        border-color: @blue;
+        box-shadow: 0 0 10px #cecece;
+    }
+
+    @media @desktop {
+        min-height: 310px;
+    }
+    @media @tablet {
+        min-height: 310px;
+    }
+    @media (width: 768px) {
+        min-height: 269px;
+    }
+
+    img {
+        width: 100%;
+        padding: 10%;
+        padding-bottom: 0px;
+    }
+
+    .name {
+        text-align: center;
+        font-size: 1.1em;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+}

@@ -38,7 +38,7 @@ CategorySchema.pre('save', function(next){
 })
 
 CategorySchema.path('name').validate(function(v){
-    return v.length > 0 && v.length < 30
+    return v.length > 0 && v.length < 50
 })
 
 

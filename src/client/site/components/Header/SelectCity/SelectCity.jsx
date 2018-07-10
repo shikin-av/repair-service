@@ -121,7 +121,7 @@ class SelectCity extends React.Component {
                     { selectShow && this.selectRender(cities, this.selectDefaultText) }
                 </div>
             )
-        } else { return null }
+        } else return null
     }
 }
 

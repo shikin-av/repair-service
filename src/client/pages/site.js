@@ -26,9 +26,6 @@ const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyM
 class App extends React.Component {
     constructor(props){
         super(props)
-        this.state = {
-            headerHeight: 0
-        }
     }
 
     componentWillMount(){
@@ -37,23 +34,13 @@ class App extends React.Component {
 
     componentDidMount(){
         socketsHandler()
-    }
-
-    headerHeightHadler(val){
-        this.setState({ headerHeight: val })
-    }
+    }    
 
     render(){
         return (
             <div>
-                <Header 
-                    onHeaderHeight={ val => this.headerHeightHadler(val) } 
-                    isMobile={ this.isMobile }
-                />
-                <Content 
-                    marginTop={ this.state.headerHeight } 
-                    isMobile={ this.isMobile }
-                />
+                <Header isMobile={ this.isMobile } />
+                <Content isMobile={ this.isMobile } />
             </div>
         )
     }
