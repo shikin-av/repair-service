@@ -12,8 +12,6 @@ import {
     getCurrentCity as getCurrentCitySelector
 } from 'client/site/selectors/cities'
 
-//const Button = require('antd/lib/button/button')
-//require('antd/lib/button/style/index.css')
 const Select = require('antd/lib/select')
 require('antd/lib/select/style/css')
 const Option = Select.Option
@@ -26,31 +24,37 @@ class SelectCity extends React.Component {
         super(props)
         this.state = {
             currentCity: null,
-            currentCityName: 'Выберите Ваш город'
+            selectShow: false,
         }
+    }
+
+    componentWillMount(){
+        this.selectDefaultText = 'Выберите Ваш город'
     }
 
     componentDidMount(){
         window.ymaps.ready(() => {
             const currentCityLS = JSON.parse(localStorage.getItem('currentCity'))
-            if(currentCityLS) this.props.setCurrentCityAction(currentCityLS)
+            if(currentCityLS){
+                this.props.setCurrentCityAction(currentCityLS)
+            }
             
             this.props.getCitiesAction()
             .then(() => {
                 if(currentCityLS){
                     this.setState({ 
                         currentCity: currentCityLS,
-                        currentCityName: currentCityLS.name
                     })
                 } else {
                     const currentCity = _.find(this.props.cities, { name: window.ymaps.geolocation.city })
                     if(currentCity){
                         this.setState({ 
                             currentCity: currentCity,
-                            currentCityName: currentCity.name
                         })
                         this.props.setCurrentCityAction(currentCity)
                         localStorage.setItem('currentCity', JSON.stringify(currentCity))
+                    } else {
+                        this.setState({ selectShow: true })
                     }
                 }
             })
@@ -62,34 +66,58 @@ class SelectCity extends React.Component {
         if(currentCity){
             this.setState({ 
                 currentCity: currentCity,
-                currentCityName: currentCity.name
             })
+            this.selectShowToggle()
             this.props.setCurrentCityAction(currentCity)
             localStorage.setItem('currentCity', JSON.stringify(currentCity))
         }
     }
 
+    selectShowToggle(){
+        this.setState({ selectShow: !this.state.selectShow })
+    }
+
+    selectRender(cities=[], defaultValue=this.selectDefaultText){
+        return (
+            <Select 
+                defaultValue={ defaultValue }
+                onChange={val => this.selectHandle(val) }
+            >
+                {
+                    cities.map(city => {
+                    return ( 
+                        <Option 
+                            value={ city.name }
+                            key={ Math.random() }
+                        >{ city.name }</Option> )
+                    })
+                }
+            </Select>
+        )
+    }
+
+    cityInfoRender(currentCity){
+        return (
+            <div className={ l.cityInfo }>
+                <a className={ l.cityName }
+                   onClick={ e => this.selectShowToggle() }
+                >
+                    { 'г.' + currentCity.name }
+                </a>
+                <br/>
+                <span>{ currentCity.officeAddress }</span>
+            </div>
+        )
+    }
+
     render(){
         const { cities } = this.props
-        const { currentCity, currentCityName } = this.state
-        if(cities){
+        const { currentCity, selectShow } = this.state
+        if(cities && currentCity && currentCity.name){
             return (
                 <div className={ l.root }>
-                    <h3>{ currentCityName }</h3>
-                    <Select 
-                        defaultValue={ currentCityName }
-                        onChange={val => this.selectHandle(val) }
-                    >
-                        {
-                            cities.map(city => {
-                            return ( 
-                                <Option 
-                                    value={ city.name }
-                                    key={ Math.random() }
-                                >{ city.name }</Option> )
-                            })
-                        }
-                    </Select>
+                    { !selectShow && this.cityInfoRender(currentCity) }   
+                    { selectShow && this.selectRender(cities, this.selectDefaultText) }
                 </div>
             )
         } else { return null }

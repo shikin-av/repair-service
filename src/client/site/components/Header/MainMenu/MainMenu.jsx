@@ -6,6 +6,8 @@ require('antd/lib/menu/style/css')
 const SubMenu = Menu.SubMenu
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
+const Button = require('antd/lib/button')
+require('antd/lib/button/style/css')
 
 import config from 'client/config'
 import l from './MainMenu.less'
@@ -42,13 +44,12 @@ export default class MainMenu extends React.Component {
         if(isMobile){
             return (
                 <div>
-                    <button 
+                    <Button 
+                        icon='bars'
+                        size='large'
                         onClick={ e => this.toggleCollapsed(e) }
                         className={ l.collapseButton }
-                    >
-                        <Icon type="bars" />
-                        МЕНЮ
-                    </button>
+                    >МЕНЮ</Button>
                     <Menu
                         mode='inline'
                         inlineCollapsed={ this.state.collapsed }
