@@ -3,26 +3,81 @@ import {Link} from 'react-router-dom'
 
 const Menu = require('antd/lib/menu')
 require('antd/lib/menu/style/css')
+const SubMenu = Menu.SubMenu
+const Icon = require('antd/lib/icon')
+require('antd/lib/icon/style/css')
 
+import config from 'client/config'
 import l from './MainMenu.less'
 
-const MainMenu = (props) => (
-    <Menu
-        mode="horizontal"
-        id='main-menu'
-        className={ l.root }
-    >
-        <Menu.Item>
-            <Link to='/'>
-                Главная
-            </Link>
-        </Menu.Item>
-        <Menu.Item>
-            <Link to='/404'>
-                404
-            </Link>
-        </Menu.Item>
-    </Menu>
-)
+export default class MainMenu extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            collapsed: true
+        }
+    }
 
-export default MainMenu
+    renderMenuItem(item){
+        return (
+            <Menu.Item 
+                key={ Math.random() }
+                onClick={ e => this.toggleCollapsed(e) }
+            >
+                <Link to={ item.url }>
+                    { item.text }
+                </Link>
+            </Menu.Item>
+        )
+    }
+
+    toggleCollapsed(e){
+        this.setState({ collapsed: !this.state.collapsed })
+    }
+
+    render(){
+        const items = config.menu
+        const { isMobile } = this.props
+        const { collapsed } = this.state
+        if(isMobile){
+            return (
+                <div>
+                    <button 
+                        onClick={ e => this.toggleCollapsed(e) }
+                        className={ l.collapseButton }
+                    >
+                        <Icon type="bars" />
+                        МЕНЮ
+                    </button>
+                    <Menu
+                        mode='inline'
+                        inlineCollapsed={ this.state.collapsed }
+                        id='main-menu'
+                        className={ l.root }
+                        style={ collapsed ? {display: 'none'} : {display: 'block'} }
+                    >
+                        {
+                            items.map(item => {
+                                return this.renderMenuItem(item)
+                            })
+                        }
+                    </Menu>
+                </div>
+            )
+        } else {
+            return (
+                <Menu
+                    mode='horizontal'
+                    id='main-menu'
+                    className={ l.root }
+                >
+                    {
+                        items.map(item => {
+                            return this.renderMenuItem(item)
+                        })
+                    }
+                </Menu>
+            )
+        }
+    }
+}

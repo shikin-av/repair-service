@@ -31,17 +31,19 @@ export default class Header extends React.Component {
                 ref={ (el) => this.element = el }
                 style={ isMobile ? null : {position: 'fixed'} }
             >
-                <Row className={ l.wrapper }>
-                    <Col sm={24} md={8}>
-                        <Logo isMobile={ isMobile } />
-                    </Col>
-                    <Col sm={24} md={8}>
-                        <SelectCity />
-                    </Col>
-                    <Col sm={24} md={8}></Col>
+                <Row>
+                    <div className={ l.wrapper }>
+                        <Col sm={24} md={8}>
+                            <Logo isMobile={ isMobile } />
+                        </Col>
+                        <Col sm={24} md={8}>
+                            <SelectCity />
+                        </Col>
+                        <Col sm={24} md={8}></Col>
+                    </div>
                 </Row>
-                <Row className={ l.wrapper }>
-                    <MainMenu />    
+                <Row>
+                    <MainMenu isMobile={ isMobile }  />    
                 </Row>
             </div>
         )
