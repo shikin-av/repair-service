@@ -1,6 +1,19 @@
+@import '../../common/common.less';
+
 .root {
     margin: 0 auto;
     text-align: center;
+
+    @media @phone {
+        min-height: 57px;
+    }
+
+    .select {
+        margin-top: 10px;
+        @media @phone {
+            margin-top: 20px;
+        }
+    }
 
     .cityInfo {
 

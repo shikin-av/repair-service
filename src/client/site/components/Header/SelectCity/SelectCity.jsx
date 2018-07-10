@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import { array } from 'prop-types'
+import { array, object } from 'prop-types'
 
 import { 
     getCities        as getCitiesAction,
@@ -81,7 +81,8 @@ class SelectCity extends React.Component {
         return (
             <Select 
                 defaultValue={ defaultValue }
-                onChange={val => this.selectHandle(val) }
+                onChange={ val => this.selectHandle(val) }
+                className={ l.select }
             >
                 {
                     cities.map(city => {
@@ -136,6 +137,7 @@ const mapDispatchToProps = {
 
 SelectCity.propTypes = {
     cities: array,
+    currentCity: object,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectCity)

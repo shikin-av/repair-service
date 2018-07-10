@@ -3,6 +3,7 @@ import React from 'react'
 import SelectCity from 'client/site/components/Header/SelectCity/SelectCity.jsx'
 import MainMenu from 'client/site/components/Header/MainMenu/MainMenu.jsx'
 import Logo from 'client/site/components/Header/Logo/Logo.jsx'
+import Phone from 'client/site/components/Header/Phone/Phone.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -39,7 +40,9 @@ export default class Header extends React.Component {
                         <Col sm={24} md={8}>
                             <SelectCity />
                         </Col>
-                        <Col sm={24} md={8}></Col>
+                        <Col sm={24} md={8}>
+                            <Phone />
+                        </Col>
                     </div>
                 </Row>
                 <Row>

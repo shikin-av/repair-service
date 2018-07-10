@@ -1,0 +1,23 @@
+@import '../../common/common.less';
+
+.root {
+    float: right;
+    @media @phone {
+        float: none;
+        padding: 10px;
+    }
+    .button {
+        line-height: 65px;
+        height: 70px;
+        display: block;
+        font-size: 1.4em;
+        @media @tablet {
+            margin-top: @margin-top-head + 2;
+            margin-bottom: @margin-bottom-head;
+        }
+        @media @desktop {
+            margin-top: @margin-top-head + 2;
+            margin-bottom: @margin-bottom-head;
+        }
+    }
+}
