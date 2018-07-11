@@ -44,9 +44,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     getCurrentCategoryAction
 }
-
+/*
 CategoryPage.propTypes = {
     category: object,
 }
-
+*/
 export default connect(mapStateToProps, mapDispatchToProps)(CategoryPage)

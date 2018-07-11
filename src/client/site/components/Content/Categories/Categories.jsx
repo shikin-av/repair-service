@@ -31,7 +31,8 @@ class Categories extends React.Component {
                 {
                     categories.map(category => (
                         <Col
-                            sm={24}
+                            xs={24}
+                            sm={12}
                             md={6}
                             key={ Math.random() }
                         >

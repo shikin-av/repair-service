@@ -7,7 +7,7 @@ export default () => {
     const auth = {}
 
     auth.notAuthorized = (res) => {
-        res.redirect('/login')
+        res.redirect('/#/login')
     }
 
     auth.verifyAdmin = express.Router()

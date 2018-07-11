@@ -1,10 +1,11 @@
 import React from 'react'
 import {Switch, Route} from 'react-router-dom'
 
-import Home from 'client/site/components/pages/Home/Home.jsx'
+import Home from 'client/site/components/pages/HomePage/HomePage.jsx'
 import Page404 from 'client/site/components/pages/Page404/Page404.jsx'
-import CategoriesPage from 'client/site/components/pages/CategoriesPage/CategoriesPage.jsx'
-import CategoryPage from 'client/site/components/pages/CategoryPage/CategoryPage.jsx'
+import Login from 'client/site/components/pages/LoginPage/LoginPage.jsx'
+import Categories from 'client/site/components/pages/CategoriesPage/CategoriesPage.jsx'
+import Category from 'client/site/components/pages/CategoryPage/CategoryPage.jsx'
 
 import l from './Content.less'
 
@@ -32,12 +33,16 @@ export default class Content extends React.Component {
                         exact path='/'
                         component={ Home } />
                     <Route 
+                        exact path='/login'
+                        component={ Login }
+                    />
+                    <Route 
                         exact path='/categories'
-                        component={ CategoriesPage }
+                        component={ Categories }
                     />
                     <Route 
                         exact path='/categories/:nameurl'
-                        component={ CategoryPage }
+                        component={ Category }
                     />
                     <Route component={ Page404 } />
                 </Switch>

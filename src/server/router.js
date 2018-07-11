@@ -24,14 +24,6 @@ export default (app) => {
         }))
     })
 
-    app.get('/login', (req, res) => {
-        res.send(layouts.base({
-            title: 'Авторизация',
-            script: config.bundle.js.login,
-            css:    config.bundle.css.login
-        }))
-    })
-
     app.post('/login', async (req, res) => {
         if(req.body.login && req.body.password){
             const login = req.body.login

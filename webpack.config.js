@@ -4,9 +4,8 @@ const ExtractTextPlugin = require ('extract-text-webpack-plugin');
 
 module.exports = {
     entry: {
-        site: path.resolve(__dirname, './src/client/pages/site.js'),
-        admin: path.resolve(__dirname, './src/client/pages/admin.js'),
-        login: path.resolve(__dirname, './src/client/pages/login.js'),
+        site: path.resolve(__dirname, './src/client/site/site.js'),
+        admin: path.resolve(__dirname, './src/client/admin/admin.js'),
     },
     output: {
         path: path.resolve(__dirname, './dist'),

@@ -1,6 +1,7 @@
 @import '../../common/common.less';
 
 .root {
+    background-color: white;
     border: 1px solid lightgray;
     margin-top: 16px;
     transition-property: border-color;
@@ -25,6 +26,10 @@
         width: 100%;
         padding: 10%;
         padding-bottom: 0px;
+
+        @media @phone {
+            display: none;
+        }
     }
 
     .name {
