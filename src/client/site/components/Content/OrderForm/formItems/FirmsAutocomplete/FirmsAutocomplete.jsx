@@ -1,4 +1,5 @@
 import React from 'react'
+import { func } from 'prop-types'
 
 const AutoComplete = require('antd/lib/auto-complete')
 require('antd/lib/auto-complete/style/css')
@@ -35,6 +36,10 @@ class FirmsAutocomplete extends React.Component {
             />
         )
     }
+}
+
+FirmsAutocomplete.propTypes = {
+    onDataToForm: func.isRequired,
 }
 
 export default FirmsAutocomplete

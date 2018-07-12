@@ -2,6 +2,10 @@ import React from 'react'
 //import _ from 'lodash'
 import { object } from 'prop-types'
 
+const Row = require('antd/lib/row')
+require('antd/lib/row/style/css')
+const Col = require('antd/lib/col')
+require('antd/lib/col/style/css')
 const Form = require('antd/lib/form')
 require('antd/lib/form/style/css')
 const Icon = require('antd/lib/icon')
@@ -14,6 +18,7 @@ const FormItem = Form.Item
 
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
 import DateInput from './formItems/DateInput/DateInput.jsx'
+import TimeInput from './formItems/TimeInput/TimeInput.jsx'
 
 import l from './OrderForm.less'
 
@@ -34,15 +39,15 @@ class Order extends React.Component {
     }
     
     onFirmSelect(val) {
-        this.props.form.setFieldsValue({ 
-            firm: val
-        })
+        this.props.form.setFieldsValue({ firm: val})
     }
 
     onDateChange(val){
-        this.props.form.setFieldsValue({ 
-            date: val
-        })
+        this.props.form.setFieldsValue({ date: val })
+    }
+
+    onTimeChange(val){
+        this.props.form.setFieldsValue({ time: val })
     }
 
     render(){
@@ -55,18 +60,36 @@ class Order extends React.Component {
                     <img src={ `/assets/imgs/categories/${ category.image }` }/>
 
                     <Form onSubmit = { e => this.handleSubmit(e) }>
+                        <Row>
+                            <Col
+                                sm={24}
+                                md={16}
+                            >
+                                <FormItem label='Когда нужен мастер?'>
+                                    {getFieldDecorator('date', { rules: [] })(
+                                        <DateInput onDataToForm={ val => this.onDateChange(val) } />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col
+                                sm={24}
+                                md={8}
+                            >
+                                <FormItem label='В какое время?'>
+                                    {getFieldDecorator('time', { rules: [] })(
+                                        <TimeInput onDataToForm={ val => this.onTimeChange(val) } />
+                                    )}
+                                </FormItem>
+                            </Col>
+                        </Row>
                         
-                        <FormItem label='Когда нужен мастер?'>
-                            {getFieldDecorator('date', { rules: [] })(
-                                <DateInput onDataToForm={ val => this.onDateChange(val) } />
-                            )}
-                        </FormItem>
+
                         <FormItem label='Фирма производитель:'>
                             {getFieldDecorator('firm', { rules: [] })(
                                 <FirmsAutocomplete onDataToForm={ val => this.onFirmSelect(val) } />
                             )}
-                        </FormItem>                       
-
+                        </FormItem>
+                        
                         <FormItem>
                             <Button 
                                 type='primary'

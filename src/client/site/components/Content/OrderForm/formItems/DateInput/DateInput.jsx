@@ -1,4 +1,5 @@
 import React from 'react'
+import { func } from 'prop-types'
 
 const DatePicker = require('antd/lib/date-picker')
 require('antd/lib/date-picker/style/css')
@@ -70,11 +71,17 @@ class DateInput extends React.Component {
                         disabledDate={ date => this.disabledDate(date) }
                         onChange={ date => this.onDateChange(date) }
                         className={ (activeEl == 'other') ? l.activaDatePicker : null }
+                        showToday={false}
+                        allowClear={false}
                     />
                 </LocaleProvider>
             </div>
         )
     }
+}
+
+DateInput.propTypes = {
+    onDataToForm: func.isRequired,
 }
 
 export default DateInput
