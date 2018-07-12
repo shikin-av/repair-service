@@ -44,7 +44,7 @@ export default class Header extends React.Component {
                 style={{ position: this.state.position }}
             >
                 <Row>
-                    <div className={ l.wrapper }>
+                    <div className='wrapper' style={{ paddingBottom: '0px' }}>
                         <Col sm={24} md={8}>
                             <Logo />
                         </Col>

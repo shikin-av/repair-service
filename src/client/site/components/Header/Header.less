@@ -5,10 +5,9 @@
     z-index: 1; 
     width: 100%;
     border-bottom: @border;
-    background: white;
+    background: @content-color;
     box-shadow: @shadow;
 
-    //TODO проверить
     @media @phone {
         min-height: 120px;
     }
@@ -18,12 +17,4 @@
     @media @desktop {
         min-height: 120px;
     }
-    
-    .wrapper {
-        max-width: @max-width;
-        margin: 0 auto;
-        padding: @small-padding;
-        padding-bottom: 0px;
-    }
-
 }

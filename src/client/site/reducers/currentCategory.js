@@ -1,6 +1,6 @@
 import * as types from 'client/site/actions/actionTypes'
 
-const initialState = []
+const initialState = {}
 
 export default (state = initialState, { type, payload }) => {
     switch(type){

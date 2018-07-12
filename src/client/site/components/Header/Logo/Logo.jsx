@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 
-import config from 'client/config'
+import config from 'client/config/config'
 import l from './Logo.less'
 
 const Logo = (props) => (

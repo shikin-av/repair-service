@@ -15,6 +15,7 @@ import Header from 'client/site/components/Header/Header.jsx'
 import Content from 'client/site/components/Content/Content.jsx'
 
 require('antd/lib/icon/style/css')
+import 'client/site/components/common/app.css'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)

@@ -1,6 +1,6 @@
 import openSocket from 'socket.io-client'
 
-import config from 'client/config'
+import config from 'client/config/config'
 
 export default (authToken) => {
     if(!authToken) return null

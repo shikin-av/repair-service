@@ -82,9 +82,7 @@ class LoginForm extends React.Component {
         return (
             <div className={ l.root }>
                 <h4>Введите данные Вашего аккаунта</h4>
-                <Form
-                    onSubmit = { e => this.handleSubmit(e) }
-                >
+                <Form onSubmit = { e => this.handleSubmit(e) }>
                     <FormItem
                         validateStatus={ loginError ? 'error' : '' }
                         help={ loginError || '' }
@@ -116,8 +114,8 @@ class LoginForm extends React.Component {
                     </FormItem>
                     <FormItem>
                         <Button 
-                            type="primary"
-                            htmlType="submit"
+                            type='primary'
+                            htmlType='submit'
                             disabled={ this.hasErrors(getFieldsError()) }
                         >Вход</Button>
                     </FormItem>

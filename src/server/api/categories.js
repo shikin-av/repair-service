@@ -34,12 +34,14 @@ export default () => {
     api.post('/', async (req, res, next) => {
         const {
             name,
+            singularName,
             nameUrl,
             image,
             problems
         } = req.body
         const category = new Category({
             name,
+            singularName,
             nameUrl,
             image,
             problems : problems || []
@@ -56,7 +58,7 @@ export default () => {
 
     api.put('/:nameUrl', async (req, res, next) => {
         const {
-            name,
+            name,singularName,
             nameUrl,
             image,
             problems
@@ -69,10 +71,11 @@ export default () => {
                     console.log(`category "${ req.params.nameUrl }" not found`)
                     return next()
                 }
-                category.name     = name || category.name
-                category.nameUrl  = nameUrl || category.nameUrl
-                category.image    = image || category.image
-                category.problems = problems || category.problems
+                category.name             = name || category.name
+                category.singularName     = singularName || category.singularName
+                category.nameUrl          = nameUrl || category.nameUrl
+                category.image            = image || category.image
+                category.problems         = problems || category.problems
 
                 return category.save((err) => {
                     if(!err) {

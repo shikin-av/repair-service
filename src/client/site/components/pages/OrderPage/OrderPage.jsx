@@ -6,12 +6,14 @@ import { object } from 'prop-types'
 import { getCurrentCategory as getCurrentCategoryAction } from 'client/site/actions/categories'
 import { getCurrentCategory as getCurrentCategorySelector } from 'client/site/selectors/categories'
 
+import Order from 'client/site/components/Content/Order/Order.jsx'
+
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
 const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
 
-import l from './CategoryPage.less'
+import l from './OrderPage.less'
 
 class CategoryPage extends React.Component {
     constructor(props){
@@ -24,14 +26,17 @@ class CategoryPage extends React.Component {
     }
 
     render(){
-        const { nameurl } = this.props.match.params
         const { category } = this.props
-        if(category && category.name){
+        if(category){
             return (
-                <div>
-                    <h1>{ category.name }</h1>
-                    <img src={ `/assets/imgs/categories/${ category.image }` }/>
-                </div>
+                <Row>
+                    <Col sm={24} md={12}>
+                        <Order category={ category } />
+                    </Col>
+                    <Col sm={24} md={12}>
+                    
+                    </Col>
+                </Row>
             )
         } else return null
     }
@@ -44,9 +49,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     getCurrentCategoryAction
 }
-/*
+
 CategoryPage.propTypes = {
     category: object,
 }
-*/
+
 export default connect(mapStateToProps, mapDispatchToProps)(CategoryPage)

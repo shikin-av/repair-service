@@ -5,7 +5,7 @@ import Home from 'client/site/components/pages/HomePage/HomePage.jsx'
 import Page404 from 'client/site/components/pages/Page404/Page404.jsx'
 import Login from 'client/site/components/pages/LoginPage/LoginPage.jsx'
 import Categories from 'client/site/components/pages/CategoriesPage/CategoriesPage.jsx'
-import Category from 'client/site/components/pages/CategoryPage/CategoryPage.jsx'
+import Order from 'client/site/components/pages/OrderPage/OrderPage.jsx'
 
 import l from './Content.less'
 
@@ -26,7 +26,7 @@ export default class Content extends React.Component {
     render(){
         return (
             <div
-                className={ l.root }
+                className={ `${l.root} wrapper` }
             >
                 <Switch>
                     <Route
@@ -42,7 +42,7 @@ export default class Content extends React.Component {
                     />
                     <Route 
                         exact path='/categories/:nameurl'
-                        component={ Category }
+                        component={ Order }
                     />
                     <Route component={ Page404 } />
                 </Switch>
