@@ -6,7 +6,7 @@ import { object } from 'prop-types'
 import { getCurrentCategory as getCurrentCategoryAction } from 'client/site/actions/categories'
 import { getCurrentCategory as getCurrentCategorySelector } from 'client/site/selectors/categories'
 
-import Order from 'client/site/components/Content/Order/Order.jsx'
+import OrderForm from 'client/site/components/Content/OrderForm/OrderForm.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -31,7 +31,7 @@ class CategoryPage extends React.Component {
             return (
                 <Row>
                     <Col sm={24} md={12}>
-                        <Order category={ category } />
+                        <OrderForm category={ category } />
                     </Col>
                     <Col sm={24} md={12}>
                     

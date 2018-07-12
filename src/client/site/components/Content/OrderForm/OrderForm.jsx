@@ -13,8 +13,9 @@ require('antd/lib/input/style/css')
 const FormItem = Form.Item
 
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
+import DateInput from './formItems/DateInput/DateInput.jsx'
 
-import l from './Order.less'
+import l from './OrderForm.less'
 
 class Order extends React.Component {
     constructor(props){
@@ -38,6 +39,12 @@ class Order extends React.Component {
         })
     }
 
+    onDateChange(val){
+        this.props.form.setFieldsValue({ 
+            date: val
+        })
+    }
+
     render(){
         const { category } = this.props
         const { getFieldDecorator }  = this.props.form
@@ -48,10 +55,14 @@ class Order extends React.Component {
                     <img src={ `/assets/imgs/categories/${ category.image }` }/>
 
                     <Form onSubmit = { e => this.handleSubmit(e) }>
+                        
+                        <FormItem label='Когда нужен мастер?'>
+                            {getFieldDecorator('date', { rules: [] })(
+                                <DateInput onDataToForm={ val => this.onDateChange(val) } />
+                            )}
+                        </FormItem>
                         <FormItem label='Фирма производитель:'>
-                            {getFieldDecorator('firm', {
-                                rules: [],
-                            })(
+                            {getFieldDecorator('firm', { rules: [] })(
                                 <FirmsAutocomplete onDataToForm={ val => this.onFirmSelect(val) } />
                             )}
                         </FormItem>                       

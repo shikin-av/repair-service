@@ -1,8 +1,5 @@
 import React from 'react'
-import { object } from 'prop-types'
 
-const Form = require('antd/lib/form')
-const FormItem = Form.Item
 const AutoComplete = require('antd/lib/auto-complete')
 require('antd/lib/auto-complete/style/css')
 
@@ -18,7 +15,6 @@ class FirmsAutocomplete extends React.Component {
 
     handleFirmSearch(val){
         this.props.onDataToForm(val)
-
         if(val.length == 1){
             this.setState({ currentBrands: brands[val] })            
         }

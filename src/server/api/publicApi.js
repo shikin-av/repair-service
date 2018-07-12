@@ -23,7 +23,6 @@ export default () => {
                 const result = categories.map(category => {
                     return _.pick(category, ['name', 'nameUrl', 'image'])
                 })
-                console.log(result)
                 return res.json(result)
             } else {
                 return next(err)
