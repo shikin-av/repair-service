@@ -46,14 +46,26 @@ class SelectCity extends React.Component {
                         currentCity: currentCityLS,
                     })
                 } else {
-                    const currentCity = _.find(this.props.cities, { name: window.ymaps.geolocation.city })
-                    if(currentCity){
-                        this.setState({ 
-                            currentCity: currentCity,
+                    //let ymCity = window.ymaps.geolocation.city    // ymaps api 2.0
+                    let ymCity = null
+                    
+                    if(ymaps.geolocation){
+                        ymaps.geolocation.get({ autoGeocode: true })
+                        .then( res => {
+                            ymCity = res.geoObjects.get(0).properties.getAll().name
+                            const currentCity = _.find(this.props.cities, { name: ymCity })
+                            if(currentCity){
+                                this.setState({ 
+                                    currentCity: currentCity,
+                                })
+                                this.props.setCurrentCityAction(currentCity)
+                                localStorage.setItem('currentCity', JSON.stringify(currentCity))
+                            } else {
+                                this.setState({ selectShow: true })
+                            }
                         })
-                        this.props.setCurrentCityAction(currentCity)
-                        localStorage.setItem('currentCity', JSON.stringify(currentCity))
-                    } else {
+                    } else {    // if blocked on browser
+                        console.log('no')
                         this.setState({ selectShow: true })
                     }
                 }
@@ -114,10 +126,10 @@ class SelectCity extends React.Component {
     render(){
         const { cities } = this.props
         const { currentCity, selectShow } = this.state
-        if(cities && currentCity && currentCity.name){
+        if(cities){
             return (
                 <div className={ l.root }>
-                    { !selectShow && this.cityInfoRender(currentCity) }   
+                    { !selectShow && currentCity && currentCity.name && this.cityInfoRender(currentCity) }   
                     { selectShow && this.selectRender(cities, this.selectDefaultText) }
                 </div>
             )

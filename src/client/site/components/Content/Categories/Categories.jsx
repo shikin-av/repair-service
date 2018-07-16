@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import _ from 'lodash'
 import { array } from 'prop-types'
 
 import { getCategories as getCategoriesAction } from 'client/site/actions/categories'

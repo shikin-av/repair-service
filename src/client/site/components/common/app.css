@@ -6,3 +6,9 @@ body {
     margin: 0 auto;
     padding: 10px;
 }
+.ant-form-item-label label {
+    color: #2f2f2f;
+    display: block;
+    font-size: 1.58em;
+    font-weight: bold;
+}

@@ -42,7 +42,7 @@ class DateInput extends React.Component {
                     break
                 default: this.setState({ activeEl: 'other' })
             }
-            this.props.onDataToForm(dateString)            
+            this.props.onDataToForm(dateString)
         })
     }
 

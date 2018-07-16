@@ -17,8 +17,12 @@ require('antd/lib/input/style/css')
 const FormItem = Form.Item
 
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
-import DateInput from './formItems/DateInput/DateInput.jsx'
-import TimeInput from './formItems/TimeInput/TimeInput.jsx'
+import DateInput from         './formItems/DateInput/DateInput.jsx'
+import TimeInput from         './formItems/TimeInput/TimeInput.jsx'
+import HowOld from            './formItems/HowOld/HowOld.jsx'
+import Description from       './formItems/Description/Description.jsx'
+import AddressInput from      './formItems/AddressInput/AddressInput.jsx'
+import SimpleInput from        './formItems/SimpleInput/SimpleInput.jsx'
 
 import l from './OrderForm.less'
 
@@ -50,6 +54,26 @@ class Order extends React.Component {
         this.props.form.setFieldsValue({ time: val })
     }
 
+    onHowOldChange(val){
+        this.props.form.setFieldsValue({ howOld: val })
+    }
+
+    onDescriptionChange(val){
+        this.props.form.setFieldsValue({ description: val })
+    }
+
+    onAddressChange(val){
+        this.props.form.setFieldsValue({ address: val })
+    }
+
+    onPhoneChange(val){
+        this.props.form.setFieldsValue({ phone: val })
+    }
+
+    onNameChange(val){
+        this.props.form.setFieldsValue({ name: val })
+    }
+
     render(){
         const { category } = this.props
         const { getFieldDecorator }  = this.props.form
@@ -65,7 +89,7 @@ class Order extends React.Component {
                                 sm={24}
                                 md={16}
                             >
-                                <FormItem label='Когда нужен мастер?'>
+                                <FormItem label='Когда нужен мастер'>
                                     {getFieldDecorator('date', { rules: [] })(
                                         <DateInput onDataToForm={ val => this.onDateChange(val) } />
                                     )}
@@ -75,7 +99,7 @@ class Order extends React.Component {
                                 sm={24}
                                 md={8}
                             >
-                                <FormItem label='В какое время?'>
+                                <FormItem label='В какое время'>
                                     {getFieldDecorator('time', { rules: [] })(
                                         <TimeInput onDataToForm={ val => this.onTimeChange(val) } />
                                     )}
@@ -89,7 +113,37 @@ class Order extends React.Component {
                                 <FirmsAutocomplete onDataToForm={ val => this.onFirmSelect(val) } />
                             )}
                         </FormItem>
+
+                        <FormItem label='Сколько лет технике:'>
+                            {getFieldDecorator('howOld', { rules: [] })(
+                                <HowOld onDataToForm={ val => this.onHowOldChange(val) } />
+                            )}
+                        </FormItem>
+                         
+                        <FormItem label='Описание проблемы (кратко):'>
+                            {getFieldDecorator('description', { rules: [] })(
+                                <Description onDataToForm={ val => this.onDescriptionChange(val) } />
+                            )}
+                        </FormItem>
                         
+                        <FormItem label='Ваш адрес:'>
+                            {getFieldDecorator('address', { rules: [] })(
+                                <AddressInput onDataToForm={ val => this.onAddressChange(val) } />
+                            )}
+                        </FormItem>
+
+                        <FormItem label='Ваш телефон:'>
+                            {getFieldDecorator('phone', { rules: [] })(
+                                <SimpleInput onDataToForm={ val => this.onPhoneChange(val) } />
+                            )}
+                        </FormItem>
+
+                        <FormItem label='Ваше имя:'>
+                            {getFieldDecorator('name', { rules: [] })(
+                                <SimpleInput onDataToForm={ val => this.onNameChange(val) } />
+                            )}
+                        </FormItem>
+
                         <FormItem>
                             <Button 
                                 type='primary'
