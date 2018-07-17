@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import _ from 'lodash'
 
 import Category from '../models/Category'
 
@@ -8,7 +9,11 @@ export default () => {
     api.get('/', async (req, res, next) => {
         return await Category.find((err, categories) => {
             if(!err){
-                return res.json(categories)
+                //return res.json(categories)
+                const result = categories.map(category => {
+                    return _.pick(category, ['name', 'nameUrl', 'image'])
+                })
+                return res.json(result)
             } else {
                 return next(err)
             }

@@ -1,14 +1,13 @@
 import React from 'react'
-import l from './Home.less'
 
-export default class Home extends React.Component {
+export default class UsersPage extends React.Component {
     constructor(props){
         super(props)
     }
 
     render(){
         return (
-            <h1>Admin Home</h1>
+            <h1>User</h1>
         )
     }
 }

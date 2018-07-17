@@ -31,6 +31,7 @@ class AddressInput extends React.Component {
             <Input
                 id='addressInput'
                 onChange={ e => this.onChange(e) }
+                placeholder='Начните печатать...'
             />
         )
     }

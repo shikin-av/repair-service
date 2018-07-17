@@ -5,8 +5,6 @@ const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
 const { TextArea } = Input
 
-import l from './Description.less'
-
 class Description extends React.Component {
     constructor(props){
         super(props)
@@ -21,6 +19,7 @@ class Description extends React.Component {
             <TextArea 
                 rows={4}
                 onChange={ e => this.onChange(e) }
+                placeholder='Своими словами: что происходит или что нужно сделать?'
             />
         )
     }

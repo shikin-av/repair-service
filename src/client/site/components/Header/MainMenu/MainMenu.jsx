@@ -9,7 +9,7 @@ require('antd/lib/icon/style/css')
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 
-import config from 'client/config/config'
+import menu from 'client/config/menu'
 import l from './MainMenu.less'
 
 export default class MainMenu extends React.Component {
@@ -38,7 +38,6 @@ export default class MainMenu extends React.Component {
     }
 
     render(){
-        const items = config.menu
         const { isMobile } = this.props
         const { collapsed } = this.state
         if(isMobile){
@@ -57,7 +56,7 @@ export default class MainMenu extends React.Component {
                         style={ collapsed ? {display: 'none'} : {display: 'block'} }
                     >
                         {
-                            items.map(item => {
+                            menu.map(item => {
                                 return this.renderMenuItem(item)
                             })
                         }
@@ -72,7 +71,7 @@ export default class MainMenu extends React.Component {
                     className={ l.root }
                 >
                     {
-                        items.map(item => {
+                        menu.map(item => {
                             return this.renderMenuItem(item)
                         })
                     }

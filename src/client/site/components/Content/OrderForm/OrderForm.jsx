@@ -1,6 +1,6 @@
 import React from 'react'
-//import _ from 'lodash'
 import { object } from 'prop-types'
+import { Link } from 'react-router-dom'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -77,11 +77,36 @@ class Order extends React.Component {
     render(){
         const { category } = this.props
         const { getFieldDecorator }  = this.props.form
+        const categoriesLink = '/categories'
         if(category && category.name){
             return (
                 <div className={ l.root }>
                     <h1>{ `Заявка на ${ category.singularName }` }</h1>
-                    <img src={ `/assets/imgs/categories/${ category.image }` }/>
+                    <Row>
+                        <Col
+                            xs={8}
+                            md={6}
+                        >
+                            <Link to={ categoriesLink }>
+                                <img src={ `/assets/imgs/categories/${ category.image }` }/>
+                            </Link>
+                        </Col>
+                        <Col
+                            xs={16}
+                            md={18}
+                        >
+                            <p className={ l.otherText }>
+                                <Link to={ categoriesLink }>
+                                    Кликните, чтобы выбрать <u>другую</u> услугу
+                                </Link>
+                            </p>
+                            <p className={ l.arrow }>
+                                <Link to={ categoriesLink }>
+                                    <Icon type="enter" />
+                                </Link>
+                            </p>
+                        </Col>
+                    </Row>
 
                     <Form onSubmit = { e => this.handleSubmit(e) }>
                         <Row>
@@ -114,7 +139,7 @@ class Order extends React.Component {
                             )}
                         </FormItem>
 
-                        <FormItem label='Сколько лет технике:'>
+                        <FormItem label='Сколько лет технике (примерно):'>
                             {getFieldDecorator('howOld', { rules: [] })(
                                 <HowOld onDataToForm={ val => this.onHowOldChange(val) } />
                             )}
@@ -134,13 +159,19 @@ class Order extends React.Component {
 
                         <FormItem label='Ваш телефон:'>
                             {getFieldDecorator('phone', { rules: [] })(
-                                <SimpleInput onDataToForm={ val => this.onPhoneChange(val) } />
+                                <SimpleInput 
+                                    onDataToForm={ val => this.onPhoneChange(val) } 
+                                    placeholder='Контактный номер телефона'
+                                />
                             )}
                         </FormItem>
 
                         <FormItem label='Ваше имя:'>
                             {getFieldDecorator('name', { rules: [] })(
-                                <SimpleInput onDataToForm={ val => this.onNameChange(val) } />
+                                <SimpleInput 
+                                    onDataToForm={ val => this.onNameChange(val) } 
+                                    placeholder='Контактное лицо'
+                                />
                             )}
                         </FormItem>
 
