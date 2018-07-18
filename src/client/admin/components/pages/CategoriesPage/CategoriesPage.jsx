@@ -3,19 +3,21 @@ import { connect } from 'react-redux'
 import { array } from 'prop-types'
 
 import { 
-    getCategories as getCategoriesSelector,
-    getCategory   as getCategorySelector
+    getCategories as getCategoriesSelector
 } from 'client/admin/selectors/categories'
 
 import {
-    getCategories  as getCategoriesAction,
-    getCategory    as getCategoryAction,
-    createCategory as createCategoryAction
+    getCategories  as getCategoriesAction
 } from 'client/admin/actions/categories'
 
+const Spin = require('antd/lib/spin')
+require('antd/lib/spin/style/css')
 const Collapse = require('antd/lib/collapse')
 require('antd/lib/collapse/style/css')
 const Panel = Collapse.Panel
+
+//import List from 'client/admin/components/Content/List/List.jsx'
+import Edit from 'client/admin/components/Content/edits/CategoryEdit/CategoryEdit.jsx'
 
 class CategoriesPage extends React.Component {
     constructor(props){
@@ -24,50 +26,29 @@ class CategoriesPage extends React.Component {
 
     componentWillMount(){
         this.props.getCategoriesAction()
-
-        fetch(`http://localhost/admin/api/categories`, {
-            method: 'GET'
-        })
-        .then(res => {
-            console.log(res)
-            //return res.json()
-        })
-    }
-
-    componentDidMount(){
-        //console.log(this.re)
-    }
+    }    
 
     render(){
         const { categories } = this.props
-        console.log(categories)
         if(categories){
             return (
-                <div>
-                    <Collapse accordion>
-                    {
-                        categories.map( category => {
-                            return (
-                                <Panel
-                                    key={ Math.random() }
-                                    header={ category.name }
-                                >
-                                    <p>
-                                        { category.name }
-                                    </p>
-                                </Panel>
-                            )
-                        })
-                    }
-                    </Collapse>
-                </div>
+                <Collapse accordion>
+                    { categories.map( category => (
+                        <Panel
+                            key={ Math.random() }
+                            header={ category.shortName }
+                        >
+                            <Edit category={ category } />
+                        </Panel> 
+                    )) }
+                </Collapse>
             )
-        } else return null        
+        } else return ( <Spin/> )        
     }
 }
 
 const mapStateToProps = state => ({
-    categories: getCategoriesSelector(state),
+    categories: getCategoriesSelector(state)
 })
 
 const mapDispatchToProps = {

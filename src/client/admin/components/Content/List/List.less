@@ -1,0 +1,41 @@
+@import '../../common/common.less';
+
+.root {
+    padding-top: 20px;
+    max-width: 900px;
+
+    li {
+        list-style-type: none;
+        display: inline-block;
+        background: white;
+        width: 100%;
+        border: @border;
+        padding: 1%;
+
+        &:hover {
+            border-color: @blue;
+            box-shadow: @shadow;
+            color: @blue;
+        }
+
+        img {
+            width: 50px;
+        }
+        span {
+            padding: 3%;
+        }
+        a {
+            color: @font-color;
+        }
+    }
+
+    .right{
+        float: right;
+        font-size: 1.5em;
+        padding: 4%;
+        
+        i {
+            padding-left: 20px;
+        }
+    }
+}

@@ -9,10 +9,10 @@ export default () => {
     api.get('/', async (req, res, next) => {
         return await Category.find((err, categories) => {
             if(!err){
-                //return res.json(categories)
-                const result = categories.map(category => {
-                    return _.pick(category, ['name', 'nameUrl', 'image'])
-                })
+                return res.json(categories)
+                /*const result = categories.map(category => {
+                    return _.pick(category, ['name', 'nameUrl', 'shortName', 'image'])
+                })*/
                 return res.json(result)
             } else {
                 return next(err)
@@ -41,6 +41,7 @@ export default () => {
             name,
             singularName,
             nameUrl,
+            shortName,
             image,
             problems
         } = req.body
@@ -48,6 +49,7 @@ export default () => {
             name,
             singularName,
             nameUrl,
+            shortName,
             image,
             problems : problems || []
         })
@@ -65,6 +67,7 @@ export default () => {
         const {
             name,singularName,
             nameUrl,
+            shortName,
             image,
             problems
         } = req.body
@@ -79,6 +82,7 @@ export default () => {
                 category.name             = name || category.name
                 category.singularName     = singularName || category.singularName
                 category.nameUrl          = nameUrl || category.nameUrl
+                category.shortName        = shortName || category.shortName
                 category.image            = image || category.image
                 category.problems         = problems || category.problems
 

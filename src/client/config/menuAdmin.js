@@ -9,7 +9,7 @@ export default [     //TODO from api
     },
     {
         url: '/categories',
-        text: 'Услуги'
+        text: 'Виды техники'
     },
     {
         url: '/cities',

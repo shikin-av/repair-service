@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import _ from 'lodash'
 import uniqueValidator from 'mongoose-unique-validator'
 
+import clearSpecialSymbols from '../resources/clearSpecialSymbols'
 
 const  CategorySchema = new mongoose.Schema({
     name: {
@@ -13,6 +14,7 @@ const  CategorySchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        lowercase: true,
     },
     nameUrl: {
         type: String,
@@ -20,6 +22,10 @@ const  CategorySchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
+    },
+    shortName: {
+        type: String,
+        required: true,
     },
     image: {
         type: String,
@@ -37,10 +43,7 @@ CategorySchema.plugin(uniqueValidator)
 
 CategorySchema.pre('save', function(next){
     const category = this
-    const regExp = /[^\w-]/g
-    category.nameUrl = category.nameUrl.replace(regExp, '')
-
-    category.singularName = category.singularName.toLowerCase()
+    category.nameUrl = clearSpecialSymbols(category.nameUrl)
     next()
 })
 /*
@@ -50,7 +53,7 @@ CategorySchema.path('name').validate(function(v){
 */
 
 CategorySchema.methods.toJSON = function(){
-    return _.pick(this, ['name', 'singularName', 'nameUrl', 'image', 'problems'])
+    return _.pick(this, ['name', 'singularName', 'nameUrl', 'shortName', 'image', 'problems'])
 }
 
 export default mongoose.model('Category', CategorySchema)
