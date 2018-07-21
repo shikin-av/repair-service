@@ -20,7 +20,7 @@ class List extends React.Component {
         const { viewProperties, apiName, nameUrl } = this.props
         return(
             <li key={ Math.random() } >
-                <Link to={ `/categories/${item[nameUrl]}` }>
+                <Link to={ `/${apiName}/${item[nameUrl]}` }>
                     <Row>
                         <Col sm={24} md={18}>
                             
@@ -39,7 +39,7 @@ class List extends React.Component {
                         </Col>
                         <Col sm={24} md={6}>
                             <span className={ l.right }>
-                                <Link to={ `/categories/${item[nameUrl]}` }>
+                                <Link to={ `/${apiName}/${item[nameUrl]}` }>
                                     <Icon type='edit' />
                                 </Link>
                                 <Link to={'/'}>

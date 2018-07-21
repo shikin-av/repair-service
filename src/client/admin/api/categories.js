@@ -8,8 +8,8 @@ export const getCategories = async () => {
     .then(res => res.json())
 }
 
-export const getCategory = async category => {
-    return fetch(`${ apiPath }/categories/${ category }`, {
+export const getCategory = async nameUrl => {
+    return fetch(`${ apiPath }/categories/${ nameUrl }`, {
         method: 'GET',
         credentials: 'include',
     })

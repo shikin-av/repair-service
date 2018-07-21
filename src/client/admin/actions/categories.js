@@ -18,7 +18,7 @@ export const getCategories = () => async dispatch => {
     }
 }
 
-export const getCategory = nameUrl => async dispatch => {
+/*export const getCategory = nameUrl => async dispatch => {
     dispatch({ type: types.GET_CATEGORY_START })
     try {
         const category = await api.getCategory(nameUrl)
@@ -33,9 +33,9 @@ export const getCategory = nameUrl => async dispatch => {
             error: true
         })
     }
-}
+}*/
 
-export const createCategory = params => async dispatch => {
+/*export const createCategory = params => async dispatch => {
     dispatch({ type: types.CREATE_CATEGORY_START })
     try {
         const category = await api.createCategory(params)
@@ -50,4 +50,4 @@ export const createCategory = params => async dispatch => {
             error: true
         })
     }
-}
+}*/

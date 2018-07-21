@@ -8,3 +8,6 @@ body, .ant-layout {
 .ant-layout-header{
     background: white !important;
 }
+button {
+    border-radius: 0px !important;
+}

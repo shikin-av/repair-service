@@ -1,5 +1,7 @@
 import React from 'react'
-import { string, object } from 'prop-types'
+import { string } from 'prop-types'
+
+import { getCategory as getCategoryApi } from 'client/admin/api/categories'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -17,15 +19,45 @@ require('antd/lib/icon/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 
-import l from './CategoryEdit.less'
+import l from './CategoryEditPage.less'
 
-class CategoryEdit extends React.Component {
+class CategoryEditPage extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            categoryInitial: {},
-            categoryEdited: {}
+            categoryInitial: null,
+            category: null
         }
+    }
+    
+    componentWillMount(){        
+        if(this.props.type == 'create'){
+            const empty = {
+                name: '',
+                singularName: '',
+                nameUrl: '',
+                shortName: ''
+            }
+            this.setState({ 
+                categoryInitial: empty,
+                category: empty 
+            })
+        } else {
+            const { nameUrl } = this.props.match.params
+            try {
+                return getCategoryApi(nameUrl)
+                .then(category => {
+                    this.setState({ 
+                        categoryInitial: category,
+                        category: category 
+                    }, () => {
+                        this.setAllInputs(this.state.category)
+                    })
+                })
+            } catch(err) {
+                console.log(`ERROR ${err.stack}`)
+            }
+        }        
     }
 
     async handleSave(e){
@@ -39,16 +71,23 @@ class CategoryEdit extends React.Component {
         })
     }
 
-    componentDidMount(){
-        const { category } = this.props
-        if(category.name) 
+    cancelChanges(){
+        this.setAllInputs(this.state.categoryInitial)
+    }
+
+    setAllInputs(category){
+        if(category.name){
             this.onNameChange(category.name)
-        if(category.singularName) 
+        }            
+        if(category.singularName){
             this.onSingularNameChange(category.singularName)
-        if(category.nameUrl) 
+        }            
+        if(category.nameUrl){
             this.onNameUrlChange(category.nameUrl)
-        if(category.shortName)
+        }
+        if(category.shortName){
             this.onShortNameChange(category.shortName)
+        }
     }
 
     onNameChange(val){
@@ -65,8 +104,9 @@ class CategoryEdit extends React.Component {
     }
 
     render(){
-        const { category } = this.props
+        const { category } = this.state
         const { getFieldDecorator }  = this.props.form
+        const isCreate = this.props.type == 'create'
         if(category){
             return (
                 <Row className={ l.root }>
@@ -78,11 +118,15 @@ class CategoryEdit extends React.Component {
                                     type='primary'
                                     htmlType='submit'
                                 >Сохранить</Button>
-                                <Button>Отменить</Button>
+                                { !isCreate &&
+                                    <Button
+                                        onClick={ e => this.cancelChanges() }
+                                    >Отменить</Button>
+                                }
                             </FormItem>
                         </Col>
                         <Col sm={24} md={10}>
-                            { category.name && 
+                            { (category.name || isCreate) && 
                                 <FormItem label='Название' className={ l.formItem }>
                                     {getFieldDecorator('name', { rules: [
                                         { required: true, message: 'Обязательное поле' }
@@ -93,7 +137,7 @@ class CategoryEdit extends React.Component {
                                     )}
                                 </FormItem> 
                             }
-                            { category.singularName && 
+                            { (category.singularName || isCreate) && 
                                 <FormItem label='Название в одиночном числе'  className={ l.formItem }>
                                     {getFieldDecorator('singularName', { rules: [
                                         { required: true, message: 'Обязательное поле' }
@@ -104,7 +148,7 @@ class CategoryEdit extends React.Component {
                                     )}
                                 </FormItem> 
                             }
-                            { category.nameUrl && 
+                            { (category.nameUrl || isCreate) && 
                                 <FormItem label='URL'  className={ l.formItem }>
                                     {getFieldDecorator('nameUrl', { rules: [
                                         { required: true, message: 'Обязательное поле' }
@@ -115,7 +159,7 @@ class CategoryEdit extends React.Component {
                                     )}
                                 </FormItem> 
                             }
-                            { category.shortName && 
+                            { (category.shortName || isCreate) && 
                                 <FormItem label='Вид техники'  className={ l.formItem }>
                                     {getFieldDecorator('shortName', { rules: [
                                         { required: true, message: 'Обязательное поле' }
@@ -137,10 +181,9 @@ class CategoryEdit extends React.Component {
     }
 }
 
-CategoryEdit.propTypes = {
-    category: object.isRequired
+CategoryEditPage.propTypes = {
+    type: string
 }
 
-const CategoryEditForm = Form.create()(CategoryEdit)
-export default CategoryEditForm
-
+const CategoryEditPageForm = Form.create()(CategoryEditPage)
+export default CategoryEditPageForm

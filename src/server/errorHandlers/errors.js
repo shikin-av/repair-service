@@ -15,6 +15,7 @@ export default (err, req, res, next) => {   //TODO check this req: Api or Page (
         }else if(isValidationErr || isUniqueErr){
             isApiRequest ? res.status(status).json(err.message) : res.redirect('/#/404')
         }else if(isAccessDenied || isJwtExpired){
+            console.log('isAccessDenied || isJwtExpired; isJwtExpired=', isJwtExpired, '   isApiRequest=', isApiRequest)
             isApiRequest ? res.status(status).json(err.message) : res.redirect('/#/login')
         }
     }else{

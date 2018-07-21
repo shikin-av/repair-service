@@ -10,10 +10,6 @@ export default () => {
         return await Category.find((err, categories) => {
             if(!err){
                 return res.json(categories)
-                /*const result = categories.map(category => {
-                    return _.pick(category, ['name', 'nameUrl', 'shortName', 'image'])
-                })*/
-                return res.json(result)
             } else {
                 return next(err)
             }
@@ -65,7 +61,8 @@ export default () => {
 
     api.put('/:nameUrl', async (req, res, next) => {
         const {
-            name,singularName,
+            name,
+            singularName,
             nameUrl,
             shortName,
             image,
