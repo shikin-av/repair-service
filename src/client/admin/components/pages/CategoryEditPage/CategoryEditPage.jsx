@@ -26,8 +26,6 @@ const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
-const Upload = require('antd/lib/upload')
-require('antd/lib/upload/style/css')
 
 import l from './CategoryEditPage.less'
 
@@ -143,13 +141,13 @@ class CategoryEditPage extends React.Component {
     }
     
     onChangeImage(e){
-        if(e.file.status == 'done') {
+        /*if(e.file.status == 'done') {
             console.log(e.file)
             this.props.form.setFieldsValue({ image: e.file })
 
         } else if (e.file.status == 'error') {
             console.log(`ERROR ${err.stack}`)
-        }
+        }*/
     }
 
     render(){
@@ -176,14 +174,11 @@ class CategoryEditPage extends React.Component {
                                         //valuePropName: 'fileList',
                                         //getValueFromEvent: this.onUploadImage
                                     })(
-                                    <Upload
-                                        name='image'
+                                    <Button
                                         onChange = { e => this.onChangeImage(e) }
                                     >
-                                        <Button>
-                                            <Icon type="upload" /> Выберите изображение
-                                        </Button>
-                                    </Upload>
+                                        <Icon type="upload" /> Выберите изображение
+                                    </Button>
                                 )}
                             </FormItem>
 

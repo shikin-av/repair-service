@@ -1,5 +1,6 @@
 body, .ant-layout {
-    background-color: #f8f8f8 !important;
+    /*background-color: #f8f8f8 !important;*/
+    background-color: white !important;
 }
 #sider {
     width: 200px;

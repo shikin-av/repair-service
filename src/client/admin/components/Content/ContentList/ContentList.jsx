@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import config from 'client/../config/client'
 
-import l from './List.less'
+import l from './ContentList.less'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -12,16 +12,23 @@ const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
+const List = require('antd/lib/list')
+require('antd/lib/list/style/css')
+const Avatar = require('antd/lib/avatar')
+require('antd/lib/avatar/style/css')
 
-class List extends React.Component {
+class ContentList extends React.Component {
     constructor(props){
         super(props)
     }
 
-    itemRender(item){
+    /*itemRender(item){
         const { viewProperties, apiName, nameUrl } = this.props
         return(
-            <li key={ Math.random() } >
+            <List.Item 
+                key={ Math.random() }
+                className={ l.listItem }
+            >
                 <Link to={ `/${apiName}/${item[nameUrl]}` }>
                     <Row>
                         <Col sm={24} md={18}>
@@ -51,37 +58,78 @@ class List extends React.Component {
                         </Col>
                     </Row>
                 </Link>
-            </li>
+            </List.Item>
+        )
+    }*/
+    itemRender(item){
+        const { viewProperties, apiName, nameUrl } = this.props
+        return(
+            <List.Item 
+                key={ Math.random() }
+                className={ l.listItem }
+                actions={
+                    [
+                        <Link to={ `/${apiName}/${item[nameUrl]}` }>
+                            <Icon type='edit' />
+                        </Link>, 
+                        <Link to={'/'}>
+                            <Icon type='delete' />
+                        </Link>
+                    ]
+                }
+            >
+                <Link to={ `/${apiName}/${item[nameUrl]}` }>
+                {
+                    viewProperties.map(prop => {
+                        switch(prop.type){
+                            case 'string':
+                                return ( <span key={ Math.random() }>{ item[prop.value] }</span> )
+                            case 'image':
+                                return( <img key={ Math.random() } src={ `${ config.assetsPath }/imgs/${ item[prop.value] }` }/> )
+                            default: return null
+                        }
+                    })
+                }
+                </Link>
+            </List.Item>
         )
     }
+    /*
+        
+    */
 
     render(){
         const { items } = this.props
         return (
-            <ul className={ l.root }>
-                {
-                    items.map(item => {
-                        return this.itemRender(item)
-                    })
-                }
-            </ul>
+            <List
+                className={ l.root }
+                itemLayout='horizontal'
+                pagination={{
+                    onChange: (page) => {
+                        console.log(page)
+                    },
+                    pageSize: 8,
+                }}
+                dataSource={ items }
+                renderItem={ item => this.itemRender(item) }
+            />
         )
     }
 }
 
-List.propTypes = {
+ContentList.propTypes = {
     items:          array.isRequired,
     apiName:        string.isRequired,
     viewProperties: array.isRequired,
     nameUrl:        string.isRequired
 }
 
-export default List
+export default ContentList
 
 /*
 Use:
 
-<List 
+<ContentList 
     items={ categories } 
     apiName='categories'
     viewProperties={[

@@ -16,7 +16,7 @@ export default [     //TODO from api
         text: 'Офисы'
     },
     {
-        url: 'gallery',
+        url: '/gallery',
         text: 'Галерея изображений'
     }
 ]
