@@ -16,6 +16,7 @@ const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
 const FormItem = Form.Item
 
+import config from 'client/../config/client'
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
 import DateInput from         './formItems/DateInput/DateInput.jsx'
 import TimeInput from         './formItems/TimeInput/TimeInput.jsx'
@@ -88,7 +89,7 @@ class Order extends React.Component {
                             md={6}
                         >
                             <Link to={ categoriesLink }>
-                                <img src={ `/assets/imgs/categories/${ category.image }` }/>
+                                <img src={ `${ config.assetsPath }/imgs/${ category.image }` }/>
                             </Link>
                         </Col>
                         <Col

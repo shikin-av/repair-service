@@ -41,6 +41,7 @@ export default () => {
             image,
             problems
         } = req.body
+        console.log('REQ.BODY ', req.body)
         const category = new Category({
             name,
             singularName,

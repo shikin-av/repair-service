@@ -1,11 +1,14 @@
+import common from './common'
+
 export default {
-    protocol: 'http',
-    host: 'localhost',
-    port: 80,
+    protocol: common.protocol,
+    host: common.host,
+    port: common.port,
     assets: {
         logo: {
             gorizontal: 'logo-gorizontal.png',
             vertical:   'logo-vertical.png'
         }            
-    }
+    },
+    assetsPath: common.assetsPath
 }

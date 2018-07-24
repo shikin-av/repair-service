@@ -4,7 +4,7 @@ import { func } from 'prop-types'
 const AutoComplete = require('antd/lib/auto-complete')
 require('antd/lib/auto-complete/style/css')
 
-import brands from 'client/config/brands'
+import brands from 'client/../config/brands'
 
 class FirmsAutocomplete extends React.Component {
     constructor(props){

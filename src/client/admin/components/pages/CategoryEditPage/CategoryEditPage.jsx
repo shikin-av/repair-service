@@ -1,7 +1,13 @@
 import React from 'react'
 import { string } from 'prop-types'
 
-import { getCategory as getCategoryApi } from 'client/admin/api/categories'
+import { 
+    getCategory as getCategoryApi,
+    createCategory as createCategoryApi,
+    editCategory as editCategoryApi
+} from 'client/admin/api/categories'
+
+import config from 'client/../config/server'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -18,6 +24,10 @@ const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
+const message = require('antd/lib/message')
+require('antd/lib/message/style/css')
+const Upload = require('antd/lib/upload')
+require('antd/lib/upload/style/css')
 
 import l from './CategoryEditPage.less'
 
@@ -61,12 +71,41 @@ class CategoryEditPage extends React.Component {
     }
 
     async handleSave(e){
+        const isCreate = this.props.type == 'create'
+        
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log(values)
+                /*if(values.image){
+                    const image = values.image[0]['thumbUrl']
+                    values.image = image
+                }*/
+                console.log('VALUES: ', values)
+                if(isCreate){
+                    try {
+                        return createCategoryApi(values)
+                        .then(category => {
+                            message.success(`Категория ${category.shortName} создана.`)
+                        })
+                    } catch(err) {
+                        message.error(`Категория ${category.shortName} не создана.`)
+                        console.log(`ERROR ${err.stack}`)
+                    }
+                } else {
+                    const { nameUrl } = this.props.match.params
+                    try {
+                        return editCategoryApi(nameUrl, values)
+                        .then(category => {
+                            message.success(`Категория ${category.shortName} отредактирована.`)
+                        })
+                    } catch(err) {
+                        message.error(`Категория ${category.shortName} не отредактирована.`)
+                        console.log(`ERROR ${err.stack}`)
+                    }
+                }
+
             } else {
-                //TODO
+                console.log(`ERROR ${err.stack}`)
             }
         })
     }
@@ -102,6 +141,16 @@ class CategoryEditPage extends React.Component {
     onShortNameChange(val){
         this.props.form.setFieldsValue({ shortName: val })
     }
+    
+    onChangeImage(e){
+        if(e.file.status == 'done') {
+            console.log(e.file)
+            this.props.form.setFieldsValue({ image: e.file })
+
+        } else if (e.file.status == 'error') {
+            console.log(`ERROR ${err.stack}`)
+        }
+    }
 
     render(){
         const { category } = this.state
@@ -112,7 +161,32 @@ class CategoryEditPage extends React.Component {
                 <Row className={ l.root }>
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
-                            <img src={ `/assets/imgs/categories/${ category.image }` }/>
+                            {   category.image &&
+                                <img src={ `${ config.assetsPath }/imgs/${ category.image }` }/>
+                            }
+
+                            <FormItem
+                                label="Загрузить изображение"
+                                >
+                                {getFieldDecorator('image', 
+                                    { 
+                                        rules: [
+                                            { required: false, message: 'Обязательное поле' }
+                                        ],
+                                        //valuePropName: 'fileList',
+                                        //getValueFromEvent: this.onUploadImage
+                                    })(
+                                    <Upload
+                                        name='image'
+                                        onChange = { e => this.onChangeImage(e) }
+                                    >
+                                        <Button>
+                                            <Icon type="upload" /> Выберите изображение
+                                        </Button>
+                                    </Upload>
+                                )}
+                            </FormItem>
+
                             <FormItem>
                                 <Button 
                                     type='primary'
@@ -121,7 +195,7 @@ class CategoryEditPage extends React.Component {
                                 { !isCreate &&
                                     <Button
                                         onClick={ e => this.cancelChanges() }
-                                    >Отменить</Button>
+                                    >Отменить изменения</Button>
                                 }
                             </FormItem>
                         </Col>
@@ -170,6 +244,7 @@ class CategoryEditPage extends React.Component {
                                     )}
                                 </FormItem> 
                             }
+
                         </Col>
                         <Col sm={24} md={10}>
                             <p>Виды неполадок:</p>

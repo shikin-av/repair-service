@@ -9,7 +9,7 @@ require('antd/lib/icon/style/css')
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 
-import menu from 'client/config/menu'
+import menu from 'client/../config/menu'
 import l from './MainMenu.less'
 
 export default class MainMenu extends React.Component {

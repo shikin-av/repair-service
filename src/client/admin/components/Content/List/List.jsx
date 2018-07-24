@@ -2,6 +2,8 @@ import React from 'react'
 import { array, string } from 'prop-types'
 import { Link } from 'react-router-dom'
 
+import config from 'client/../config/client'
+
 import l from './List.less'
 
 const Row = require('antd/lib/row')
@@ -30,7 +32,7 @@ class List extends React.Component {
                                             case 'string':
                                                 return ( <span key={ Math.random() }>{ item[prop.value] }</span> )
                                             case 'image':
-                                                return( <img key={ Math.random() } src={ `/assets/imgs/${apiName}/${item[prop.value]}` }/> )
+                                                return( <img key={ Math.random() } src={ `${ config.assetsPath }/imgs/${ item[prop.value] }` }/> )
                                             default: return null
                                         }
                                     })

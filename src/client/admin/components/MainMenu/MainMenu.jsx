@@ -7,7 +7,7 @@ const { SubMenu } = Menu
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
 
-import menu from 'client/config/menuAdmin'
+import menu from 'client/../config/menuAdmin'
 
 import l from './MainMenu.less'
 

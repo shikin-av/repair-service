@@ -4,6 +4,7 @@ import {Switch, Route} from 'react-router-dom'
 import Categories from 'client/admin/components/pages/CategoriesPage/CategoriesPage.jsx'
 import CategoryEdit from 'client/admin/components/pages/CategoryEditPage/CategoryEditPage.jsx'
 import CategoryCreate from 'client/admin/components/pages/CategoryCreatePage/CategoryCreatePage.jsx'
+import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
 import Users from 'client/admin/components/pages/UsersPage/UsersPage.jsx'
 
@@ -27,6 +28,9 @@ export default class Content extends React.Component {
                 <Route
                     exact path='/users'
                     component={ Users } />
+                <Route
+                    exact path='/gallery'
+                    component={ Gallery } />
             </Switch>
         )
     }

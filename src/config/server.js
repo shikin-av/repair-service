@@ -1,7 +1,8 @@
 import db from './db'
+import common from './common'
 
 export default {
-    port: 80,
+    port: common.port,
     db,
     bundle: {
         js: {
@@ -17,5 +18,7 @@ export default {
     jwt: {
         secret: 'MY_SECRET',
         expiresSec: 60 * 60 * 12,
-    }
+    },
+    assetsPath: common.assetsPath,
+    assetsDir: common.assetsDir
 }

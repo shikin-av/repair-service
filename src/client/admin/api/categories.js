@@ -19,6 +19,21 @@ export const getCategory = async nameUrl => {
 export const createCategory = async params => {
     return fetch(`${ apiPath }/categories`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(params)
+    })
+    .then(res => res.json())
+}
+
+export const editCategory = async (nameUrl, params) => {
+    return fetch(`${ apiPath }/categories/${ nameUrl }`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         credentials: 'include',
         body: JSON.stringify(params)
     })

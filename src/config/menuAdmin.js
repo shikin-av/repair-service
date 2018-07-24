@@ -14,5 +14,9 @@ export default [     //TODO from api
     {
         url: '/cities',
         text: 'Офисы'
+    },
+    {
+        url: 'gallery',
+        text: 'Галерея изображений'
     }
 ]

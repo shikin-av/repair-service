@@ -1,13 +1,13 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 
-import config from 'client/config/config'
+import config from 'client/../config/client'
 import l from './Logo.less'
 
 const Logo = (props) => (
     <div className={ l.root }>
         <Link to='/'>
-            <img src={`/assets/imgs/design/${ config.assets.logo.gorizontal }`}/>
+            <img src={`${ config.assetsPath }/imgs/design/${ config.assets.logo.gorizontal }`}/>
         </Link>
     </div>
 )

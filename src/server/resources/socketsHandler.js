@@ -1,5 +1,5 @@
 import getAuthMethods from './auth'
-import config from '../config/index'
+import config from '../../config/server'
 
 export default (io) => {
     io.on('connection', socket => {

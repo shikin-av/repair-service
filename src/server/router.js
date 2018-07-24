@@ -7,7 +7,7 @@ export default (app) => {
     const auth = resources.auth()
     const config = app.get('config')
     app.use('/admin/', auth.verifyAdmin)
-
+    
     app.get('/', (req, res) => {
         res.send(layouts.base({
             title:  config.indexTitle,
@@ -41,11 +41,14 @@ export default (app) => {
                 res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })
             }
         }
-    })
+    })   
 
     const api = getApi()
     app.use('/admin/api', api)
 
     const publicApi = getPublicApi()
     app.use('/publicapi', publicApi)
+
+    const galleryControll = resources.galleryControll()
+    app.use('/gallery', [auth.verifyAdmin, galleryControll])
 }
