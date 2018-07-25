@@ -1,3 +1,5 @@
+@import '../../style/common.less';
+
 .root {
     img {
         height: 100px;
@@ -10,7 +12,7 @@
         text-align: right;
     }
     .selected {
-        //border: 2px solid blue;
-        background-color: lightblue;
+        transition: all .03s !important;
+        border-color: @blue !important;
     }
 }

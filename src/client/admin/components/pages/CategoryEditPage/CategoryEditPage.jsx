@@ -168,6 +168,8 @@ class CategoryEditPage extends React.Component {
             }, () => {
                 this.onImageChange(this.state.selectedImage)
             })
+        } else {
+            message.warning('Выберите изображение')
         }
     }
 
@@ -183,7 +185,7 @@ class CategoryEditPage extends React.Component {
     }
 
     render(){
-        const { category, showGallery, selectedImage } = this.state
+        const { category, showGallery, selectedImage, preSelectedImage } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreate = this.props.type == 'create'
         if(category){
@@ -280,9 +282,12 @@ class CategoryEditPage extends React.Component {
                         title='Выберите изображение'
                         visible={ showGallery }
                         onOk={ e => this.handleModalGalleryOk() }
-                        onCancel={ e => this.handleModalGalleryCancel() }
+                        onCancel={ e => this.handleModalGalleryCancel() }                        
                     >
-                        <Gallery onClickToImage={ fileName => this.handleSelectImage(fileName) } />
+                        <Gallery 
+                            onClickToImage={ fileName => this.handleSelectImage(fileName) }
+                            inModal={ true }
+                        />
                     </Modal>
                 </Row>
             )

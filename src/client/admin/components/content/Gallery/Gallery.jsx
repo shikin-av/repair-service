@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import { func } from 'prop-types'
+import { func, bool } from 'prop-types'
 
 import { 
     getImages as getImagesApi,
@@ -20,6 +20,8 @@ const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Popconfirm = require('antd/lib/popconfirm')
+require('antd/lib/popconfirm/style/css')
 
 import l from './Gallery.less'
 
@@ -52,6 +54,7 @@ class Gallery extends React.Component {
             images: [fileName, ...this.state.images]
         })
     }
+    
 
     deleteImage(fileName){        
         try {
@@ -74,21 +77,28 @@ class Gallery extends React.Component {
 
     selectImage(fileName){
         if(this.props.onClickToImage){
-            this.setState({ selected: fileName }, () => {
-                this.props.onClickToImage(fileName)
+            let select = null
+            if(this.state.selected != fileName){
+                select = fileName
+            } 
+            this.setState({ selected: select }, () => {
+                this.props.onClickToImage(select)
             })
         }        
     }
 
     render(){
         const { images, selected } = this.state
+        const { onClickToImage, inModal } = this.props
+        const grid      = { gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }
+        const modalGrid = { gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 3 }
         if(images){
             return (
                 <div className={ l.root }>
                     <UploadImage onUploadImage={ fileName => this.onUploadImageHandler(fileName) } />
                     <div>
                         <List
-                            grid={{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }}
+                            grid={ inModal ? modalGrid : grid }
                             pagination={{
                                 onChange: (page) => {
                                     console.log(page)
@@ -103,12 +113,17 @@ class Gallery extends React.Component {
                                     <Card 
                                         cover={ <img src={ `${ config.assetsPath }/imgs/${ fileName }` } /> }
                                         hoverable={ this.props.onClickToImage ? true : false }
-                                        className={ (selected == fileName && this.props.onClickToImage) ? l.selected : null }
+                                        className={ (selected == fileName && onClickToImage) ? l.selected : null }
                                         actions={[
-                                            <Icon 
-                                                type='delete'
-                                                onClick={ e => this.deleteImage(fileName) } 
-                                            />
+                                            <Popconfirm 
+                                                title={ `Удалить ${ fileName } ?` } 
+                                                onConfirm={ e => this.deleteImage(fileName) } 
+                                                onCancel={ null } 
+                                                okText="Да" 
+                                                cancelText="Нет"
+                                            >
+                                                <Icon type='delete'/>
+                                            </Popconfirm>
                                         ]}
                                         onClick={ e => this.selectImage(fileName) }
                                     >
@@ -127,7 +142,8 @@ class Gallery extends React.Component {
 }
 
 Gallery.propTypes = {
-    onClickToImage: func
+    onClickToImage: func,
+    inModal: bool
 }
 
 export default Gallery
