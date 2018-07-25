@@ -22,7 +22,7 @@ require('antd/lib/button/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 
-import ContentList from 'client/admin/components/Content/ContentList/ContentList.jsx'
+import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 
 import l from './CategoriesPage.less'
 

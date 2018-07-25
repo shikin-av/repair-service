@@ -6,7 +6,7 @@ import { object } from 'prop-types'
 import { getCurrentCategory as getCurrentCategoryAction } from 'client/site/actions/categories'
 import { getCurrentCategory as getCurrentCategorySelector } from 'client/site/selectors/categories'
 
-import OrderForm from 'client/site/components/Content/OrderForm/OrderForm.jsx'
+import OrderForm from 'client/site/components/content/OrderForm/OrderForm.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')

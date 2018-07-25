@@ -1,6 +1,8 @@
 import React from 'react'
 import { func } from 'prop-types'
 
+import { uploadUrl } from 'client/admin/api/gallery'
+
 const Form = require('antd/lib/form')
 require('antd/lib/form/style/css')
 const Button = require('antd/lib/button')
@@ -50,10 +52,11 @@ class UploadImage extends React.Component {
             <div className={ l.root }>
                 <Upload
                     name='image'
-                    action='/gallery/upload'
+                    action={ uploadUrl }
                     onChange = { e => this.onChangeImage(e) }
                     beforeUpload={ file => this.beforeUpload(file) }
                     multiple={ true }
+                    showUploadList={ false }
                 >
                     <Button>
                         <Icon type="upload" /> Загрузить изображение

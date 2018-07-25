@@ -1,6 +1,11 @@
 import React from 'react'
+import _ from 'lodash'
 
-import UploadImage from './UploadImage/UploadImage.jsx'
+import { 
+    getImages as getImagesApi,
+    deleteImage as deleteImageApi
+} from 'client/admin/api/gallery'
+import UploadImage from 'client/admin/components/content/UploadImage/UploadImage.jsx'
 import config from 'client/../config/client'
 
 const Spin = require('antd/lib/spin')
@@ -10,8 +15,10 @@ require('antd/lib/list/style/css')
 const Card = require('antd/lib/card')
 require('antd/lib/card/style/css')
 const { Meta } = Card
-const Avatar = require('antd/lib/avatar')
-require('antd/lib/avatar/style/css')
+const Icon = require('antd/lib/icon')
+require('antd/lib/icon/style/css')
+const message = require('antd/lib/message')
+require('antd/lib/message/style/css')
 
 import l from './GalleryPage.less'
 
@@ -29,13 +36,8 @@ class GalleryPage extends React.Component {
 
     async loadImages(){
         try {
-            return fetch(`/gallery`,{
-                method: 'GET',
-                credentials: 'include',
-            })
-            .then(res => res.json())
+            return getImagesApi()
             .then(images => {
-                console.log(images)
                 this.setState({ images: images })
             })
         } catch(err) {
@@ -44,7 +46,28 @@ class GalleryPage extends React.Component {
     }
 
     onUploadImageHandler(fileName){
-        console.log(fileName)
+        this.setState({
+            images: [fileName, ...this.state.images]
+        })
+    }
+
+    deleteImage(fileName){        
+        try {
+            return deleteImageApi(fileName)
+            .then(res => {
+                if(res.error){
+                    message.error(`Не удалось удалить файл ${ fileName }`)
+                } else if(res == 'OK'){                    
+                    this.setState({
+                        images: _.pull(this.state.images, fileName)
+                    }, () => {
+                        message.success(`Файл ${ fileName } успешно удален`)
+                    })
+                }
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+        }
     }
 
     render(){
@@ -60,19 +83,26 @@ class GalleryPage extends React.Component {
                                 onChange: (page) => {
                                     console.log(page)
                                 },
-                                pageSize: 8,
+                                pageSize: 24,
                             }}
                             dataSource={ images }
-                            renderItem={ image => (
+                            renderItem={ fileName => (
                                 <List.Item
-                                    key={ image }
+                                    key={ fileName }
                                 >
                                     <Card 
-                                        cover={ <img src={ `${ config.assetsPath }/imgs/${ image }` } /> }
+                                        cover={ <img src={ `${ config.assetsPath }/imgs/${ fileName }` } /> }
                                         hoverable
+                                        className={ l.card }
+                                        actions={[
+                                            <Icon 
+                                                type='delete'
+                                                onClick={ e => this.deleteImage(fileName) } 
+                                            />
+                                        ]}
                                     >
-                                        <Meta
-                                            title={ image }
+                                        <Meta 
+                                            description={ fileName }
                                         />
                                     </Card>
                                 </List.Item>

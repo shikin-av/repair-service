@@ -2,17 +2,16 @@ import { Router } from 'express'
 import getCategoriesApi from './categories'
 import getUsersApi from './users'
 import getCitiesApi from './cities'
+import getGalleryApi from './gallery'
 
 export default () => {
     const api = Router()
-    const categoriesApi = getCategoriesApi()
-    const usersApi = getUsersApi()
-    const citiesApi = getCitiesApi()
 
     api.all('/', (req, res) => ({}))
-    api.use('/categories', categoriesApi)
-    api.use('/users', usersApi)
-    api.use('/cities', citiesApi)
+    api.use('/categories', getCategoriesApi())
+    api.use('/users', getUsersApi())
+    api.use('/cities', getCitiesApi())
+    api.use('/gallery', getGalleryApi())
 
     return api
 }

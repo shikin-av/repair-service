@@ -12,10 +12,10 @@ import device from 'current-device'
 import reducers from 'client/site/reducers'
 import socketsHandler from 'client/site/resources/socketsHandler'
 import Header from 'client/site/components/Header/Header.jsx'
-import ContentRouter from 'client/site/components/Content/Content.jsx'
+import ContentRouter from 'client/site/components/Router/Router.jsx'
 
 require('antd/lib/icon/style/css')
-import 'client/site/components/common/app.css'
+import 'client/site/components/style/app.css'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)

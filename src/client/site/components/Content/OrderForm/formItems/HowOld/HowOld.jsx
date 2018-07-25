@@ -1,7 +1,7 @@
 import React from 'react'
 import { func } from 'prop-types'
 
-import Radio from 'client/site/components/common/Radio/Radio.jsx'
+import Radio from 'client/site/components/content/Radio/Radio.jsx'
 
 class HowOld extends React.Component {
     constructor(props){

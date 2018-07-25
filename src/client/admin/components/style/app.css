@@ -12,3 +12,9 @@ body, .ant-layout {
 button {
     border-radius: 0px !important;
 }
+.ant-card-body {
+    padding: 10px !important;
+}
+.ant-list-pagination {
+    text-align: center !important;
+}

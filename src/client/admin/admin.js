@@ -9,7 +9,7 @@ import thunk from 'redux-thunk'
 import 'babel-polyfill'
 
 import reducers from 'client/admin/reducers'
-import ContentRouter from 'client/admin/components/Content/Content.jsx'
+import ContentRouter from 'client/admin/components/Router/Router.jsx'
 import socketsHandler from 'client/admin/resources/socketsHandler'
 import getCookie from 'client/admin/resources/getCookie'
 
@@ -19,7 +19,7 @@ require('antd/lib/layout/style/css')
 const { Header, Content, Sider } = Layout
 
 import MainMenu from 'client/admin/components/MainMenu/MainMenu.jsx'
-import 'client/admin/components/common/app.css'
+import 'client/admin/components/style/app.css'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)

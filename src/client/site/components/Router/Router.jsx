@@ -7,9 +7,9 @@ import Login from 'client/site/components/pages/LoginPage/LoginPage.jsx'
 import Categories from 'client/site/components/pages/CategoriesPage/CategoriesPage.jsx'
 import Order from 'client/site/components/pages/OrderPage/OrderPage.jsx'
 
-import l from './Content.less'
+import l from './Router.less'
 
-export default class Content extends React.Component {
+export default class Router extends React.Component {
     constructor(props){
         super(props)
     }

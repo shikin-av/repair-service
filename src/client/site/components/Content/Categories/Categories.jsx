@@ -5,7 +5,7 @@ import { array } from 'prop-types'
 import { getCategories as getCategoriesAction } from 'client/site/actions/categories'
 import { getCategories as getCategoriesSelector } from 'client/site/selectors/categories'
 
-import CategoryItem from 'client/site/components/Content/CategoryItem/CategoryItem.jsx'
+import CategoryItem from 'client/site/components/content/CategoryItem/CategoryItem.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')

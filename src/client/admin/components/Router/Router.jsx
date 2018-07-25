@@ -8,7 +8,7 @@ import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
 import Users from 'client/admin/components/pages/UsersPage/UsersPage.jsx'
 
-export default class Content extends React.Component {
+export default class Router extends React.Component {
     constructor(props){
         super(props)
     }

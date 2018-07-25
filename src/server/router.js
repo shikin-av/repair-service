@@ -49,6 +49,6 @@ export default (app) => {
     const publicApi = getPublicApi()
     app.use('/publicapi', publicApi)
 
-    const galleryControll = resources.galleryControll()
-    app.use('/gallery', [auth.verifyAdmin, galleryControll])
+    //const galleryControll = resources.galleryControll()
+    //app.use('/gallery', [auth.verifyAdmin, galleryControll])
 }
