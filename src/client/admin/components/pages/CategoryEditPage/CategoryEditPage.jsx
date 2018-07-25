@@ -8,6 +8,7 @@ import {
 } from 'client/admin/api/categories'
 
 import config from 'client/../config/server'
+import Gallery from 'client/admin/components/content/Gallery/Gallery.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -26,6 +27,8 @@ const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Modal = require('antd/lib/modal')
+require('antd/lib/modal/style/css')
 
 import l from './CategoryEditPage.less'
 
@@ -34,7 +37,10 @@ class CategoryEditPage extends React.Component {
         super(props)
         this.state = {
             categoryInitial: null,
-            category: null
+            category: null,
+            showGallery: false,
+            selectedImage: null,
+            preSelectedImage: null
         }
     }
     
@@ -109,7 +115,9 @@ class CategoryEditPage extends React.Component {
     }
 
     cancelChanges(){
-        this.setAllInputs(this.state.categoryInitial)
+        this.setState({ selectedImage: null }, () => {
+            this.setAllInputs(this.state.categoryInitial)
+        })
     }
 
     setAllInputs(category){
@@ -125,6 +133,9 @@ class CategoryEditPage extends React.Component {
         if(category.shortName){
             this.onShortNameChange(category.shortName)
         }
+        if(category.image){
+            this.onImageChange(category.image)
+        }
     }
 
     onNameChange(val){
@@ -139,45 +150,65 @@ class CategoryEditPage extends React.Component {
     onShortNameChange(val){
         this.props.form.setFieldsValue({ shortName: val })
     }
+    onImageChange(val){
+        this.props.form.setFieldsValue({ image: val })
+    }
     
-    onChangeImage(e){
-        /*if(e.file.status == 'done') {
-            console.log(e.file)
-            this.props.form.setFieldsValue({ image: e.file })
+    openGallery(){
+        this.setState({ showGallery: true })
+    }
 
-        } else if (e.file.status == 'error') {
-            console.log(`ERROR ${err.stack}`)
-        }*/
+    handleModalGalleryOk(){
+        const { preSelectedImage } = this.state
+        
+        if(preSelectedImage){
+            this.setState({ 
+                selectedImage: preSelectedImage,
+                showGallery: false
+            }, () => {
+                this.onImageChange(this.state.selectedImage)
+            })
+        }
+    }
+
+    handleModalGalleryCancel(){
+        this.setState({ 
+            showGallery: false,
+            selectedImage: null
+        })
+    }
+
+    handleSelectImage(fileName){
+        this.setState({ preSelectedImage: fileName })
     }
 
     render(){
-        const { category } = this.state
-        const { getFieldDecorator }  = this.props.form
+        const { category, showGallery, selectedImage } = this.state
+        const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreate = this.props.type == 'create'
         if(category){
             return (
                 <Row className={ l.root }>
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
-                            {   category.image &&
-                                <img src={ `${ config.assetsPath }/imgs/${ category.image }` }/>
+                            {   (selectedImage || getFieldValue('image')) &&
+                                <img src={ `${ config.assetsPath }/imgs/${ selectedImage || getFieldValue('image') }` }/>
                             }
 
                             <FormItem
-                                label="Загрузить изображение"
                                 >
                                 {getFieldDecorator('image', 
                                     { 
                                         rules: [
-                                            { required: false, message: 'Обязательное поле' }
+                                            { required: true, message: 'Обязательное поле' }
                                         ],
                                         //valuePropName: 'fileList',
                                         //getValueFromEvent: this.onUploadImage
                                     })(
                                     <Button
-                                        onChange = { e => this.onChangeImage(e) }
+                                        onClick = { e => this.openGallery() }
                                     >
-                                        <Icon type="upload" /> Выберите изображение
+                                        <Icon type="picture" /> Выберите изображение
                                     </Button>
                                 )}
                             </FormItem>
@@ -245,6 +276,14 @@ class CategoryEditPage extends React.Component {
                             <p>Виды неполадок:</p>
                         </Col>
                     </Form>
+                    <Modal
+                        title='Выберите изображение'
+                        visible={ showGallery }
+                        onOk={ e => this.handleModalGalleryOk() }
+                        onCancel={ e => this.handleModalGalleryCancel() }
+                    >
+                        <Gallery onClickToImage={ fileName => this.handleSelectImage(fileName) } />
+                    </Modal>
                 </Row>
             )
         } else return ( <Spin/> )        
