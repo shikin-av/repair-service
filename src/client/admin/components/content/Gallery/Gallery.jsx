@@ -91,7 +91,7 @@ class Gallery extends React.Component {
         const { images, selected } = this.state
         const { onClickToImage, inModal } = this.props
         const grid      = { gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }
-        const modalGrid = { gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 3 }
+        const modalGrid = { gutter: 8, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 3 }
         if(images){
             return (
                 <div className={ l.root }>

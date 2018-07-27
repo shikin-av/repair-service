@@ -1,5 +1,6 @@
 import React from 'react'
 import { string } from 'prop-types'
+import { Link } from 'react-router-dom'
 
 import { 
     getCategory as getCategoryApi,
@@ -40,7 +41,9 @@ class CategoryEditPage extends React.Component {
             category: null,
             showGallery: false,
             selectedImage: null,
-            preSelectedImage: null
+            preSelectedImage: null,
+            isCreated: false,
+            problemsCounter: 0
         }
     }
     
@@ -50,7 +53,8 @@ class CategoryEditPage extends React.Component {
                 name: '',
                 singularName: '',
                 nameUrl: '',
-                shortName: ''
+                shortName: '',
+                problems: []
             }
             this.setState({ 
                 categoryInitial: empty,
@@ -61,9 +65,17 @@ class CategoryEditPage extends React.Component {
             try {
                 return getCategoryApi(nameUrl)
                 .then(category => {
+                    let maxCount = 0
+                    if(category.problems.length > 0 && category.problems[0].id){
+                        let maxProblemOnId = _.maxBy(category.problems, problem => {
+                            return problem.id
+                        })                    
+                        maxCount = maxProblemOnId.id++                        
+                    }
                     this.setState({ 
                         categoryInitial: category,
-                        category: category 
+                        category: category,
+                        problemsCounter: maxCount
                     }, () => {
                         this.setAllInputs(this.state.category)
                     })
@@ -71,25 +83,28 @@ class CategoryEditPage extends React.Component {
             } catch(err) {
                 console.log(`ERROR ${err.stack}`)
             }
-        }        
+        }
+    }    
+
+    componentDidMount(){
+        const { getFieldDecorator, getFieldValue }  = this.props.form
+        getFieldDecorator('problems', { initialValue: [] }) //TODO
     }
 
     async handleSave(e){
-        const isCreate = this.props.type == 'create'
+        const isCreateType = this.props.type == 'create'
         
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                /*if(values.image){
-                    const image = values.image[0]['thumbUrl']
-                    values.image = image
-                }*/
                 console.log('VALUES: ', values)
-                if(isCreate){
+                if(isCreateType){
                     try {
                         return createCategoryApi(values)
                         .then(category => {
-                            message.success(`Категория ${category.shortName} создана.`)
+                            this.setState({ isCreated: true }, () => {
+                                message.success(`Категория ${category.shortName} создана.`)
+                            })
                         })
                     } catch(err) {
                         message.error(`Категория ${category.shortName} не создана.`)
@@ -136,6 +151,9 @@ class CategoryEditPage extends React.Component {
         if(category.image){
             this.onImageChange(category.image)
         }
+        if(category.problems){
+            this.setProblems(category.problems)
+        }
     }
 
     onNameChange(val){
@@ -152,7 +170,7 @@ class CategoryEditPage extends React.Component {
     }
     onImageChange(val){
         this.props.form.setFieldsValue({ image: val })
-    }
+    }    
     
     openGallery(){
         this.setState({ showGallery: true })
@@ -184,10 +202,82 @@ class CategoryEditPage extends React.Component {
         this.setState({ preSelectedImage: fileName })
     }
 
+    removeProblem(id){
+        const { category } = this.state
+        const newProblems = _.compact(category.problems.map(problem => {
+            if(problem.id != id) return problem
+        }))
+        this.setState({
+            category: {
+                name: category.name,
+                singularName: category.singularName,
+                nameUrl: category.nameUrl,
+                shortName: category.shortName,
+                problems: newProblems
+            }
+        }, () => {
+            this.setProblems()
+        })
+    }
+
+    addProblemInput(){
+        const { category, problemsCounter } = this.state        
+        let maxCount = problemsCounter + 1
+        if(category.problems.length > 0 && category.problems[0].id){
+            let maxProblemOnId = _.maxBy(category.problems, problem => {
+                return problem.id
+            })
+            if(maxCount <= maxProblemOnId.id){
+                ++maxCount
+            }
+        }
+        this.setState({
+            problemsCounter: maxCount,
+            category: {
+                name: category.name,
+                singularName: category.singularName,
+                nameUrl: category.nameUrl,
+                shortName: category.shortName,
+                problems: [...category.problems, {
+                    id: this.state.problemsCounter,
+                    value: '',
+                }]
+            }
+        })
+    }
+    setProblems(){
+        this.props.form.setFieldsValue({ problems: this.state.category.problems })
+    }
+    onProblemChange(id, value){
+        const { category } = this.state
+        const newProblems = category.problems.map(problem => {
+            if(problem.id == id){
+                return { id, value }
+            }
+            return problem
+        })
+        this.setState({
+            category: {
+                name: category.name,
+                singularName: category.singularName,
+                nameUrl: category.nameUrl,
+                shortName: category.shortName,
+                problems: newProblems
+            }
+        }, () => {
+            this.setProblems()
+        })
+    }
+    
     render(){
-        const { category, showGallery, selectedImage, preSelectedImage } = this.state
+        const { 
+            category, 
+            showGallery, 
+            selectedImage,
+            isCreated
+        } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
-        const isCreate = this.props.type == 'create'
+        const isCreateType = this.props.type == 'create'
         if(category){
             return (
                 <Row className={ l.root }>
@@ -199,14 +289,9 @@ class CategoryEditPage extends React.Component {
 
                             <FormItem
                                 >
-                                {getFieldDecorator('image', 
-                                    { 
-                                        rules: [
+                                {getFieldDecorator('image', { rules: [
                                             { required: true, message: 'Обязательное поле' }
-                                        ],
-                                        //valuePropName: 'fileList',
-                                        //getValueFromEvent: this.onUploadImage
-                                    })(
+                                ] })(
                                     <Button
                                         onClick = { e => this.openGallery() }
                                     >
@@ -216,73 +301,100 @@ class CategoryEditPage extends React.Component {
                             </FormItem>
 
                             <FormItem>
-                                <Button 
-                                    type='primary'
-                                    htmlType='submit'
-                                >Сохранить</Button>
-                                { !isCreate &&
+                                { !isCreated ?
+                                    <Button 
+                                        type='primary'
+                                        htmlType='submit'
+                                    >Сохранить</Button>
+                                    : <Button 
+                                        type='primary'
+                                    >
+                                        <Link to='/categories/'>Назад</Link>
+                                    </Button>
+                                }
+                                { !isCreateType &&
                                     <Button
                                         onClick={ e => this.cancelChanges() }
                                     >Отменить изменения</Button>
                                 }
                             </FormItem>
                         </Col>
-                        <Col sm={24} md={10}>
-                            { (category.name || isCreate) && 
-                                <FormItem label='Название' className={ l.formItem }>
-                                    {getFieldDecorator('name', { rules: [
-                                        { required: true, message: 'Обязательное поле' }
-                                    ] })(
-                                        <Input
-                                            onChange={ val => this.onNameChange(val) } 
-                                        />
-                                    )}
-                                </FormItem> 
+                        <Col sm={24} md={20}>
+                            
+                            <FormItem label='Название' className={ l.formItem }>
+                                {getFieldDecorator('name', { rules: [
+                                    { required: true, message: 'Обязательное поле' }
+                                ] })(
+                                    <Input
+                                        onChange={ val => this.onNameChange(val) } 
+                                    />
+                                )}
+                            </FormItem> 
+                            
+                            
+                            <FormItem label='Название в одиночном числе'  className={ l.formItem }>
+                                {getFieldDecorator('singularName', { rules: [
+                                    { required: true, message: 'Обязательное поле' }
+                                ] })(
+                                    <Input
+                                        onChange={ val => this.onSingularNameChange(val) } 
+                                    />
+                                )}
+                            </FormItem> 
+                            
+                            
+                            <FormItem label='URL'  className={ l.formItem }>
+                                {getFieldDecorator('nameUrl', { rules: [
+                                    { required: true, message: 'Обязательное поле' }
+                                ] })(
+                                    <Input
+                                        onChange={ val => this.onNameUrlChange(val) } 
+                                    />
+                                )}
+                            </FormItem> 
+                            
+                            
+                            <FormItem label='Вид техники'  className={ l.formItem }>
+                                {getFieldDecorator('shortName', { rules: [
+                                    { required: true, message: 'Обязательное поле' }
+                                ] })(
+                                    <Input
+                                        onChange={ val => this.onShortNameChange(val) } 
+                                    />
+                                )}
+                            </FormItem> 
+                                                      
+                            <FormItem label='Возможные неисправности'  className={ l.formItem }>
+                            {
+                                category.problems.map(problem => {
+                                    return (
+                                        <div key={ problem.id }>
+                                            <Input
+                                                placeholder='Название неисправности'
+                                                onChange={ e => this.onProblemChange(problem.id, e.target.value)}
+                                                value={ problem.value }
+                                            />
+                                            <Icon 
+                                                type='delete'
+                                                onClick={ () => this.removeProblem(problem.id) }    
+                                            />
+                                        </div>
+                                    )
+                                })
                             }
-                            { (category.singularName || isCreate) && 
-                                <FormItem label='Название в одиночном числе'  className={ l.formItem }>
-                                    {getFieldDecorator('singularName', { rules: [
-                                        { required: true, message: 'Обязательное поле' }
-                                    ] })(
-                                        <Input
-                                            onChange={ val => this.onSingularNameChange(val) } 
-                                        />
-                                    )}
-                                </FormItem> 
-                            }
-                            { (category.nameUrl || isCreate) && 
-                                <FormItem label='URL'  className={ l.formItem }>
-                                    {getFieldDecorator('nameUrl', { rules: [
-                                        { required: true, message: 'Обязательное поле' }
-                                    ] })(
-                                        <Input
-                                            onChange={ val => this.onNameUrlChange(val) } 
-                                        />
-                                    )}
-                                </FormItem> 
-                            }
-                            { (category.shortName || isCreate) && 
-                                <FormItem label='Вид техники'  className={ l.formItem }>
-                                    {getFieldDecorator('shortName', { rules: [
-                                        { required: true, message: 'Обязательное поле' }
-                                    ] })(
-                                        <Input
-                                            onChange={ val => this.onShortNameChange(val) } 
-                                        />
-                                    )}
-                                </FormItem> 
-                            }
-
-                        </Col>
-                        <Col sm={24} md={10}>
-                            <p>Виды неполадок:</p>
+                            </FormItem> 
+                            <FormItem>
+                                <Button type='dashed' onClick={ () => this.addProblemInput() }>
+                                    <Icon type='plus' /> Добавить неисправность
+                                </Button>
+                            </FormItem>
                         </Col>
                     </Form>
                     <Modal
                         title='Выберите изображение'
                         visible={ showGallery }
                         onOk={ e => this.handleModalGalleryOk() }
-                        onCancel={ e => this.handleModalGalleryCancel() }                        
+                        onCancel={ e => this.handleModalGalleryCancel() }
                     >
                         <Gallery 
                             onClickToImage={ fileName => this.handleSelectImage(fileName) }

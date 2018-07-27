@@ -39,3 +39,14 @@ export const editCategory = async (nameUrl, params) => {
     })
     .then(res => res.json())
 }
+
+export const deleteCategory = async (nameUrl) => {
+    return fetch(`${ apiPath }/categories/${ nameUrl }`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+    .then(res => res.json())
+}

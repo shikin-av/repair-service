@@ -1,18 +1,11 @@
 import React from 'react'
-//import { connect } from 'react-redux'
-//import { array } from 'prop-types'
 import { Link } from 'react-router-dom'
+import _ from 'lodash'
 
-/*import { 
-    getCategories as getCategoriesSelector
-} from 'client/admin/selectors/categories'
-
-import {
-    getCategories  as getCategoriesAction
-} from 'client/admin/actions/categories'
-*/
-
-import { getCategories as getCategoriesApi } from 'client/admin/api/categories'
+import { 
+    getCategories as getCategoriesApi,
+    deleteCategory as deleteCategoryApi
+} from 'client/admin/api/categories'
 
 const Collapse = require('antd/lib/collapse')
 require('antd/lib/collapse/style/css')
@@ -21,6 +14,8 @@ const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
+const message = require('antd/lib/message')
+require('antd/lib/message/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 
@@ -35,7 +30,6 @@ class CategoriesPage extends React.Component {
     }
 
     componentWillMount(){
-        //this.props.getCategoriesAction()
         try {
             return getCategoriesApi()
             .then(categories => {
@@ -47,8 +41,26 @@ class CategoriesPage extends React.Component {
         }
     }
 
+    deleteCategory(nameUrl){
+        const { categories } = this.state
+        try {
+            return deleteCategoryApi(nameUrl)
+            .then(data => {
+                if(data.status == 'OK'){
+                    const category = categories[_.findIndex(categories, category => {
+                        return category.nameUrl == nameUrl
+                    })]
+                    this.setState({ categories: _.pull(categories, category) }, () => {
+                        message.success(`Категория ${ category.shortName } успешно удалена`)
+                    })
+                }
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+        }      
+    }
+
     render(){
-        //const { categories } = this.props
         const { categories } = this.state
         if(categories){
             return (
@@ -64,6 +76,7 @@ class CategoriesPage extends React.Component {
                             { value: 'shortName', type: 'string' }
                         ]}
                         nameUrl='nameUrl'
+                        onDelete={ nameUrl => this.deleteCategory(nameUrl) }
                     />
                 </div>
             )
@@ -71,17 +84,4 @@ class CategoriesPage extends React.Component {
     }
 }
 
-/*const mapStateToProps = state => ({
-    categories: getCategoriesSelector(state)
-})
-
-const mapDispatchToProps = {
-    getCategoriesAction
-}*/
-/*
-CategoriesPage.propTypes = {
-    categories: array
-}*/
-
-//export default connect(mapStateToProps, mapDispatchToProps)(CategoriesPage)
 export default CategoriesPage
