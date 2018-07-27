@@ -68,8 +68,7 @@ export default () => {
             shortName,
             image,
             problems
-        } = req.body
-        console.log('REQ.BODY ', req.body)
+        } = req.body        
         return await Category.findOne({
             nameUrl: req.params.nameUrl
         }, (err, category) => {

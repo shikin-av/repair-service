@@ -19,9 +19,9 @@ require('antd/lib/message/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 
-import l from './CategoriesPage.less'
+import l from './GetAll.less'
 
-class CategoriesPage extends React.Component {
+class GetAll extends React.Component {
     constructor(props){
         super(props)
         this.state = {
@@ -84,4 +84,4 @@ class CategoriesPage extends React.Component {
     }
 }
 
-export default CategoriesPage
+export default GetAll

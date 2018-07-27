@@ -31,9 +31,9 @@ require('antd/lib/message/style/css')
 const Modal = require('antd/lib/modal')
 require('antd/lib/modal/style/css')
 
-import l from './CategoryEditPage.less'
+import l from './Edit.less'
 
-class CategoryEditPage extends React.Component {
+class Edit extends React.Component {
     constructor(props){
         super(props)
         this.state = {
@@ -407,9 +407,9 @@ class CategoryEditPage extends React.Component {
     }
 }
 
-CategoryEditPage.propTypes = {
+Edit.propTypes = {
     type: string
 }
 
-const CategoryEditPageForm = Form.create()(CategoryEditPage)
-export default CategoryEditPageForm
+const EditForm = Form.create()(Edit)
+export default EditForm
