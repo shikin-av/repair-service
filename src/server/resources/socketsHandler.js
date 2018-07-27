@@ -10,7 +10,7 @@ export default (io) => {
             const auth = getAuthMethods()
             const user = auth.getUser(token, config.jwt.secret)
             //console.log('adminAuthToken USER: ', user)
-            if(user && user.role == 'admin' && user.city){
+            if(user && user.role == 'администратор' && user.city){
                 socket.join(user.city)  // room
                 socket.emit('authorize', 'авторизовался')
                 console.log('админ авторизовался')

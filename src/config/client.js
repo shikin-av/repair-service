@@ -10,5 +10,6 @@ export default {
             vertical:   'logo-vertical.png'
         }            
     },
-    assetsPath: common.assetsPath
+    assetsPath: common.assetsPath,
+    userRoles: common.userRoles
 }

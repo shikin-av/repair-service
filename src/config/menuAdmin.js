@@ -4,7 +4,7 @@ export default [     //TODO from api
         text: 'Заявки'
     },
     {
-        url: '/workers',
+        url: '/users',
         text: 'Работники'
     },
     {

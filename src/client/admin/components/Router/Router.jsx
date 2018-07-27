@@ -5,11 +5,15 @@ import Categories from 'client/admin/components/pages/categories/GetAll/GetAll.j
 import CategoryEdit from 'client/admin/components/pages/categories/Edit/Edit.jsx'
 import CategoryCreate from 'client/admin/components/pages/categories/Create/Create.jsx'
 
-import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
-
 import Cities from 'client/admin/components/pages/cities/GetAll/GetAll.jsx'
 import CityEdit from 'client/admin/components/pages/cities/Edit/Edit.jsx'
 import CityCreate from 'client/admin/components/pages/cities/Create/Create.jsx'
+
+import Users from 'client/admin/components/pages/users/GetAll/GetAll.jsx'
+import UserEdit from 'client/admin/components/pages/users/Edit/Edit.jsx'
+import UserCreate from 'client/admin/components/pages/users/Create/Create.jsx'
+
+import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
 export default class Router extends React.Component {
     constructor(props){
@@ -37,6 +41,15 @@ export default class Router extends React.Component {
                 <Route
                     exact path='/cities/:nameUrl'
                     component={ CityEdit } />
+                <Route
+                    exact path='/users'
+                    component={ Users } />
+                <Route
+                    exact path='/users/create'
+                    component={ UserCreate } />
+                <Route
+                    exact path='/users/:login'
+                    component={ UserEdit } />
                 <Route
                     exact path='/gallery'
                     component={ Gallery } />

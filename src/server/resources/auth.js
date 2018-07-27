@@ -12,7 +12,7 @@ export default () => {
 
     auth.verifyAdmin = express.Router()
     auth.verifyAdmin.all('*', function(req, res, next){
-        if(auth.verifyCookieToken(req, 'admin')){
+        if(auth.verifyCookieToken(req, 'администратор')){
             next()
         } else {
             auth.notAuthorized(res)
@@ -35,7 +35,7 @@ export default () => {
             const user = auth.getUser(token, config.jwt.secret)
             if(user){
                 if(needRole){
-                    if(user.role == needRole){
+                    if(user.role == needRole){                        
                         return true
                     } else {
                         return false

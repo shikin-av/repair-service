@@ -34,7 +34,7 @@ class ContentList extends React.Component {
                             <Icon type='edit' />
                         </Link>, 
                         <Popconfirm 
-                            title={ `Удалить ${ item['shortName'] || item['name'] || '' } ?` } 
+                            title={ `Удалить ${ item['shortName'] || item['name'] || item['fio'] || '' } ?` } 
                             onConfirm={ e => this.deleteItem(item[nameUrl]) } 
                             onCancel={ null } 
                             okText="Да" 

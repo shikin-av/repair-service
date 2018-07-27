@@ -8,6 +8,7 @@ const bcryptGenSalt = Promise.promisify(bcrypt.genSalt)
 const bcryptHash = Promise.promisify(bcrypt.hash)
 const bcryptCompare = Promise.promisify(bcrypt.compare)
 
+import config from '../../config/server'
 
 const UserSchema = new mongoose.Schema({
     login: {
@@ -19,18 +20,22 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
     },
     role: {
         type: String,
         required: true,
-        enum: ['admin', 'worker'],
+        enum: config.userRoles,
     },
     fio: {
         type: String,
         required: true,
     },
     city: {
+        type: String,
+        required: true
+    },
+    phone: {
         type: String,
         required: true
     }
@@ -41,8 +46,6 @@ const SALT_WORK_FACTOR = 10
 UserSchema.pre('save', function(next){
     const user = this
     if(!user.isModified('password')) return next()
-        
-    
     bcryptGenSalt(SALT_WORK_FACTOR)
     .then(salt => {
         bcryptHash(user.password, salt)
@@ -59,8 +62,8 @@ UserSchema.methods.verifyPassword = async function(password){
 }
 
 UserSchema.methods.toJSON = function(){
-    // get without "password", "role"
-    return _.omit(this.toObject(), ['password', 'role'])
+    // get without 'password'
+    return _.omit(this.toObject(), ['password'])
 }
 
 export default mongoose.model('User', UserSchema)

@@ -20,5 +20,6 @@ export default {
         expiresSec: 60 * 60 * 12,
     },
     assetsPath: common.assetsPath,
-    assetsDir: common.assetsDir
+    assetsDir: common.assetsDir,
+    userRoles: common.userRoles
 }

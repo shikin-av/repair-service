@@ -8,9 +8,6 @@ import {
     editCity as editCityApi
 } from 'client/admin/api/cities'
 
-import config from 'client/../config/server'
-import Gallery from 'client/admin/components/content/Gallery/Gallery.jsx'
-
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
 const Col = require('antd/lib/col')
@@ -28,8 +25,6 @@ const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
-const Modal = require('antd/lib/modal')
-require('antd/lib/modal/style/css')
 
 import l from './Edit.less'
 
