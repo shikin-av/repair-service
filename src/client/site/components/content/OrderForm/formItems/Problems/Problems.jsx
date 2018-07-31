@@ -26,7 +26,7 @@ class Problems extends React.Component {
                             label: problem.value,
                             value: problem.value
                         }
-                    }) }
+                    })}
                     onChange={ values => this.onChange(values) }
                     className={ l.root }
                 />

@@ -39,7 +39,9 @@ export default () => {
             role,
             fio,
             city,
-            phone
+            phone,
+            workingDays,
+            categories
         } = req.body
         const user = new User({
             login,
@@ -47,7 +49,9 @@ export default () => {
             fio,
             role : role || 'worker',
             city,
-            phone
+            phone,
+            workingDays: workingDays || [],
+            categories:  categories  || []
         })
         return await user.save(err => {
             if(!err){
@@ -65,7 +69,9 @@ export default () => {
             role,
             fio,
             city,
-            phone
+            phone,
+            workingDays,
+            categories
         } = req.body
         return await User.findOne({
             login: req.params.login
@@ -74,12 +80,14 @@ export default () => {
             if(!user) {
                 return next()
             } else {
-                user.login    = login || user.login
-                user.password = password || user.password
-                user.fio      = fio || user.fio
-                user.role     = role || user.role
-                user.city     = city || user.city
-                user.phone    = phone || user.phone
+                user.login       = login       || user.login
+                user.password    = password    || user.password
+                user.fio         = fio         || user.fio
+                user.role        = role        || user.role
+                user.city        = city        || user.city
+                user.phone       = phone       || user.phone
+                user.workingDays = workingDays || user.workingDays
+                user.categories  = categories  || user.categories
 
                 return user.save(err => {
                     if(err) return next(err)

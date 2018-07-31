@@ -1,8 +1,15 @@
 export default {
-    protocol: 'http',
-    host: 'localhost',
-    port: 80,
+    protocol:   'http',
+    host:       'localhost',
+    port:       80,
     assetsPath: '/assets',
     assetsDir: __dirname + '/../../assets',
-    userRoles: ['администратор', 'работник']
+    userRoles: ['администратор', 'работник'],
+    defaultWorkingDays: [
+        'понедельник',
+        'вторник',
+        'среда',
+        'четверг',
+        'пятница'
+    ]
 }

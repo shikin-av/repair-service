@@ -10,6 +10,9 @@ import {
 import {
     getCities as getCitiesApi
 } from 'client/admin/api/cities'
+import {
+    getCategories as getCategoriesApi
+} from 'client/admin/api/categories'
 import config from 'client/../config/client'
 
 const Row = require('antd/lib/row')
@@ -32,6 +35,9 @@ require('antd/lib/message/style/css')
 const Select = require('antd/lib/select')
 require('antd/lib/select/style/css')
 const Option = Select.Option
+const Checkbox = require('antd/lib/checkbox')
+require('antd/lib/checkbox/style/css')
+const CheckboxGroup = Checkbox.Group
 
 import l from './Edit.less'
 
@@ -39,22 +45,27 @@ class Edit extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            userInitial: null,
-            user: null,            
-            isCreated: false,            
-            cities: []
+            userInitial:   null,
+            user:          null,            
+            isCreated:     false,            
+            cities:        [],
+            workingDays:   config.defaultWorkingDays,
+            categories:    [],
+            allCategories: []
         }
     }
     
     componentWillMount(){
         if(this.props.type == 'create'){
             const empty = {
-                login: '',
-                password: '',
-                fio: '',
-                phone: '',
-                role: null,                
-                city: null
+                login:       '',
+                password:    '',
+                fio:         '',
+                phone:       '',
+                role:        null,                
+                city:        null,
+                workingDays: config.defaultWorkingDays,
+                categories:  []
             }
             this.setState({ 
                 userInitial: empty,
@@ -79,11 +90,34 @@ class Edit extends React.Component {
         
     }
 
+    getCategories(){
+        try {
+            return getCategoriesApi()
+            .then(categories => {
+                const checkboxOptions = categories.map(category => {
+                    return {
+                        label: category.shortName,
+                        value: category.shortName
+                    }
+                })
+                console.log('checkboxOptions ', checkboxOptions)
+                this.setState({ allCategories: checkboxOptions })
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+        }
+    }
+
     componentDidMount(){
+        const { getFieldDecorator }  = this.props.form
         try {
             return getCitiesApi()
             .then(cities => {
-                this.setState({ cities: cities })
+                this.setState({ cities: cities }, () => {
+                    this.getCategories()
+                    getFieldDecorator('workingDays', { initialValue: config.defaultWorkingDays })
+                    getFieldDecorator('categories',  { initialValue: [] })
+                })
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
@@ -151,6 +185,12 @@ class Edit extends React.Component {
         if(user.phone){
             this.onPhoneChange(user.phone)
         }
+        if(user.workingDays){
+            this.onWorkingDaysChange(user.workingDays)
+        }
+        if(user.categories){
+            this.onCategoriesChange(user.categories)
+        }
     }
 
     onLoginChange(val){
@@ -160,7 +200,11 @@ class Edit extends React.Component {
         this.props.form.setFieldsValue({ password: val })
     }
     onRoleChange(val){
-        this.props.form.setFieldsValue({ role: val })
+        const user = Object.assign({}, this.state.user)
+        user.role = val
+        this.setState({ user: user }, () => {            
+            this.props.form.setFieldsValue({ role: val })
+        })
     }    
     onFioChange(val){
         this.props.form.setFieldsValue({ fio: val })
@@ -171,12 +215,19 @@ class Edit extends React.Component {
     onPhoneChange(val){
         this.props.form.setFieldsValue({ phone: val })
     }
+    onWorkingDaysChange(arr){
+        this.props.form.setFieldsValue({ workingDays: arr })
+    }
+    onCategoriesChange(arr){
+        this.props.form.setFieldsValue({ categories: arr })
+    }
     
     render(){
         const { 
             user,
             isCreated,
-            cities
+            cities,
+            allCategories
         } = this.state
         const { getFieldDecorator }  = this.props.form
         const isCreateType = this.props.type == 'create'
@@ -275,7 +326,39 @@ class Edit extends React.Component {
                                         onChange={ val => this.onPhoneChange(val) } 
                                     />
                                 )}
-                            </FormItem>                           
+                            </FormItem>
+                            { allCategories && user.role == 'работник' &&
+                            <FormItem label='Виды техники'  className={ l.formItem }>
+                                {getFieldDecorator('categories', { rules: [{ 
+                                        required: user.role == 'работник' ? true : false, 
+                                        message: 'Обязательное поле'
+                                }]})(
+                                    <CheckboxGroup
+                                        options={ allCategories }
+                                    />
+                                )}
+                            </FormItem>
+                            }
+                            { user.role == 'работник' &&
+                            <FormItem label='Рабочие дни'  className={ l.formItem }>
+                                {getFieldDecorator('workingDays', { rules: [{ 
+                                        required: user.role == 'работник' ? true : false, 
+                                        message: 'Обязательное поле'
+                                }]})(
+                                    <CheckboxGroup
+                                        options={[
+                                            { label: 'понедельник', value: 'понедельник' },
+                                            { label: 'вторник',     value: 'вторник'     },
+                                            { label: 'среда',       value: 'среда'       },
+                                            { label: 'четверг',     value: 'четверг'     },
+                                            { label: 'пятница',     value: 'пятница'     },
+                                            { label: 'суббота',     value: 'суббота'     },
+                                            { label: 'воскресенье', value: 'воскресенье' }
+                                        ]}
+                                    />
+                                )}
+                            </FormItem>
+                            }
                         </Col>
                     </Form>
                 </Row>

@@ -38,6 +38,15 @@ const UserSchema = new mongoose.Schema({
     phone: {
         type: String,
         required: true
+    },
+    workingDays: {
+        type: Array,
+        required: false,
+        default: config.defaultWorkingDays
+    },
+    categories: {
+        type: Array,
+        required: false
     }
 })
 
