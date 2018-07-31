@@ -1,9 +1,11 @@
 import { Router } from 'express'
 import _ from 'lodash'
+import moment from 'moment'
 
 import City from '../models/City'
 import Category from '../models/Category'
 import Order from '../models/Order'
+import getRandomInt from '../resources/getRandomInt'
 
 export default () => {
     const api = Router()
@@ -62,74 +64,79 @@ export default () => {
             categoryShortName
         } = req.body
         //console.log('ORDER req.body ', req.body)
-        const id = Math.random()    //TODO id on Order
 
-        const order = new Order({
-            id:                 id,   
-            date:               date        || new Date(),
-            time:               time        || null,
-            firm:               firm        || null,
-            howOld:             howOld      || null,
-            problems:           problems    || [],
-            description:        description || null,
-            address,
-            phone,
-            name,
-            city,
-            categoryShortName:  categoryShortName,
-            status:             'new',
-            
-        })
-        return await order.save(err => {
-            if(!err){
-                console.log(`order "${ id }" created`)
-                return res.status(201).json({
-                    status: 'OK',
-                    order: order
-                })
-            } else return next(err)
-        })
-
-        /*return await Category.findOne({
-            nameUrl: categoryNameUrl
-        }, async (err, category) => {
-            if(!err){
-                if(category){
-
-                    const id = Math.random()    //TODO
-
-                    const order = new Order({
-                        id: id,
-                        date:        date        || new Date(),
-                        time:        time        || null,
-                        firm:        firm        || null,
-                        howOld:      howOld      || null,
-                        problems:    problems    || [],
-                        description: description || null,
-                        address,
-                        phone,
-                        name,
-                        city,
-                        category: category._id,
-                        status:      'new',
-                        
-                    })
-                    return await order.save(err => {
-                        if(!err){
-                            console.log(`order created`)
-                            return res.status(201).json({
-                                id: id,
-                                categoryName: category.shortName
-                            })
-                        } else return next(err)
-                    })
-                } else {
-                    return res.status(404).json('error')
-                }
-            } else {
-                return res.status(404).json('error')
+        const minInt = 0
+        const maxInt = 10000
+        const id = getRandomInt(minInt, maxInt)    // xxxx number
+                
+        const beginDay    = moment(date).startOf('day')
+        const endDay      = moment(beginDay).endOf('day')
+                
+        // make id be unique of current day
+        Order.find({
+            date: {
+                $gte: beginDay.toDate(),
+                $lt:  endDay.toDate()
             }
-        })*/
+        }, (err, orders) => {
+            if(err){
+                return next(err)
+            } else {                
+                if(orders){
+                    return orders        
+                } else return []
+            }
+        })
+        .then(orders => {
+            if(!orders.length){
+                return id
+            } else {
+                let ids = orders.map(order => {
+                    return order.id
+                })
+                const makeDifferValueFromArray = (val, arr, callbackForVal) => {
+                    const match = _.findIndex(arr, item => {
+                        return item == val
+                    })
+                    if(match == -1){    // not match
+                        return val      //it is unique
+                    } else {
+                        const newVal = callbackForVal(val)
+                        makeDifferValueFromArray(newVal, arr, callbackForVal)
+                    }
+                }
+                return makeDifferValueFromArray(id, ids, (val) => {
+                    return getRandomInt(minInt, maxInt)
+                })
+            }
+        })
+        .then(id => {
+            const order = new Order({
+                id:                 id,   
+                date:               date        || new Date(),
+                time:               time        || null,
+                firm:               firm        || null,
+                howOld:             howOld      || null,
+                problems:           problems    || [],
+                description:        description || null,
+                address,
+                phone,
+                name,
+                city,
+                categoryShortName:  categoryShortName,
+                status:             'new',
+                
+            })
+            return order.save(err => {
+                if(!err){
+                    console.log(`order "${ id }" created`)
+                    return res.status(201).json({
+                        status: 'OK',
+                        order: order
+                    })
+                } else return next(err)
+            })
+        })
     })
     return api
 }
