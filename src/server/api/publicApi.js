@@ -61,8 +61,7 @@ export default () => {
             city,
             categoryShortName
         } = req.body
-        console.log('ORDER req.body ', req.body)
-
+        //console.log('ORDER req.body ', req.body)
         const id = Math.random()    //TODO id on Order
 
         const order = new Order({

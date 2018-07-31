@@ -1,5 +1,5 @@
 import React from 'react'
-import { object } from 'prop-types'
+import { object, array } from 'prop-types'
 import { Link } from 'react-router-dom'
 import openSocket from 'socket.io-client'
 import { connect } from 'react-redux'
@@ -11,13 +11,15 @@ const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
 const Form = require('antd/lib/form')
 require('antd/lib/form/style/css')
+const FormItem = Form.Item
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
-const Input = require('antd/lib/input')
-require('antd/lib/input/style/css')
-const FormItem = Form.Item
+const Alert = require('antd/lib/alert')
+require('antd/lib/alert/style/css')
+const Spin = require('antd/lib/spin')
+require('antd/lib/spin/style/css')
 
 import config            from 'client/../config/client'
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
@@ -44,44 +46,89 @@ import l from './OrderForm.less'
 class Order extends React.Component {
     constructor(props){
         super(props)
+        this.state = {
+            status: 'new'
+        }
     }
 
     async handleSubmit(e){
         const { getFieldDecorator }  = this.props.form
         const { currentCity, category } = this.props
-        e.preventDefault()
-                
-        this.onCityChange(currentCity)
-
-        console.log('CATEGORY ', category)
-        const categoryShortName = 'Телевизор'   //TODO get in Redux Store       
-        getFieldDecorator('categoryShortName', { initialValue: categoryShortName })
-        
+        e.preventDefault()        
+        this.onCityChange(currentCity.name)                
+        getFieldDecorator('categoryShortName', { initialValue: category.shortName })        
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log(values)
-                
+                //console.log(values)                
                 try {
+                    //message.loading('Ваша заявка отправляется...')
+                    //TODO
+                    this.setState({ status: 'pending' })
                     createOrderApi(values)
                     .then(res => {                        
-                        if(res.status == 'OK'){                            
+                        if(res.status == 'OK'){
+                            //message.success('Ваша заявка принята в работу. Наш менеджер свяжется с Вами в ближайшее время')
+                            //TODO
+                            this.setState({ status: 'complite' })
+
+                            //console.log('ORDER res ', res.order)
                             const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
                             socket.on('connected', data => {
                                 console.log('i connected')
                                 socket.emit('clientOrder', res.order)
                             })        
+                        } else {
+                            //message.error(`Что то пошло не так. Свяжитесь с нами по телефону ${ currentCity.phone }`)
+                            //TODO
+                            this.setState({ status: 'error' })
                         }
                     })
                 } catch(err) {
                     console.log(`ERROR ${err.stack}`)
-                    //TODO message
+                    //TODO
+                    this.setState({ status: 'error' })
                 }
-                
-                
-            } else {
-
             }
         })
+    }
+
+    showSubmitOrMessage(){
+        const { currentCity } = this.props
+        const { status } = this.state
+        switch(status){
+            case 'new':
+                return(
+                    <FormItem>
+                        <Button 
+                            type='primary'
+                            htmlType='submit'
+                        >Отправить</Button>
+                    </FormItem>
+                )
+            case 'pending':
+                return (
+                    <Spin/>
+                )
+
+            case 'complite':
+                return (
+                    <Alert 
+                        message='Ваша заявка принята в работу. Наш менеджер свяжется с Вами в ближайшее время'
+                        type='success'
+                        closable
+                        onClose={ () => this.setState({ status: 'new' })}
+                    />
+                )
+            case 'error':
+                return (
+                    <Alert 
+                        message={ `Что то пошло не так. Свяжитесь с нами по телефону ${ currentCity.phone }` }
+                        type='error'
+                        closable
+                        onClose={ () => this.setState({ status: 'new' })}
+                    />
+                )
+        }
     }
     
     onFirmSelect(val) {
@@ -261,12 +308,7 @@ class Order extends React.Component {
                             )}
                         </FormItem>
 
-                        <FormItem>
-                            <Button 
-                                type='primary'
-                                htmlType='submit'
-                            >Отправить</Button>
-                        </FormItem>
+                        { this.showSubmitOrMessage() }
                         
                     </Form>
 
@@ -277,7 +319,9 @@ class Order extends React.Component {
 }
 
 Order.propTypes = {
-    category: object,
+    category:    object,
+    cities:      array,
+    currentCity: object
 }
 
 const OrderForm = Form.create()(Order)
