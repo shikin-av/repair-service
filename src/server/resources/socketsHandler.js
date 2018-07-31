@@ -23,11 +23,11 @@ export default (io) => {
             }
         })
 
-        socket.on('clientTask', data => {   // server -> admin room
-            console.log('clientTask: ', data)
+        socket.on('clientOrder', data => {   // server -> admin room
+            console.log('clientOrder: ', data)
             const { city } = data
-            //TODO save to DB
-            io.to(city).emit('clientTask', data)
+            
+            io.to(city).emit('clientOrder', data)
             console.log('клиентская задача создана')
             
         })

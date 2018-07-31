@@ -64,8 +64,7 @@ class SelectCity extends React.Component {
                                 this.setState({ selectShow: true })
                             }
                         })
-                    } else {    // if blocked on browser
-                        console.log('no')
+                    } else {    // if blocked on browser                        
                         this.setState({ selectShow: true })
                     }
                 }
@@ -125,12 +124,39 @@ class SelectCity extends React.Component {
 
     render(){
         const { cities } = this.props
-        const { currentCity, selectShow } = this.state
+        const { selectShow } = this.state
+        const { currentCity } = this.props
         if(cities){
             return (
                 <div className={ l.root }>
-                    { !selectShow && currentCity && currentCity.name && this.cityInfoRender(currentCity) }   
-                    { selectShow && this.selectRender(cities, this.selectDefaultText) }
+                    { !selectShow && currentCity && currentCity.name && 
+                    <div className={ l.cityInfo }>
+                        <a className={ l.cityName }
+                        onClick={ e => this.selectShowToggle() }
+                        >
+                            { 'г.' + currentCity.name }
+                        </a>
+                        <br/>
+                        <span>{ currentCity.officeAddress }</span>
+                    </div>
+                    }   
+                    { selectShow && 
+                    <Select 
+                        defaultValue={ this.selectDefaultText }
+                        onChange={ val => this.selectHandle(val) }
+                        className={ l.select }
+                    >
+                        {
+                            cities.map(city => {
+                            return ( 
+                                <Option 
+                                    value={ city.name }
+                                    key={ Math.random() }
+                                >{ city.name }</Option> )
+                            })
+                        }
+                    </Select>
+                    }
                 </div>
             )
         } else return null

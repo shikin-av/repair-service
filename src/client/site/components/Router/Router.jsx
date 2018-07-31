@@ -1,11 +1,11 @@
 import React from 'react'
 import {Switch, Route} from 'react-router-dom'
 
-import Home from 'client/site/components/pages/HomePage/HomePage.jsx'
+import Home from 'client/site/components/pages/Home/Home.jsx'
 import Page404 from 'client/site/components/pages/Page404/Page404.jsx'
-import Login from 'client/site/components/pages/LoginPage/LoginPage.jsx'
-import Categories from 'client/site/components/pages/CategoriesPage/CategoriesPage.jsx'
-import Order from 'client/site/components/pages/OrderPage/OrderPage.jsx'
+import Login from 'client/site/components/pages/Login/Login.jsx'
+import Categories from 'client/site/components/pages/Categories/Categories.jsx'
+import Order from 'client/site/components/pages/Order/Order.jsx'
 
 import l from './Router.less'
 

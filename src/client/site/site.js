@@ -10,7 +10,7 @@ import 'babel-polyfill'
 import device from 'current-device'
 
 import reducers from 'client/site/reducers'
-import socketsHandler from 'client/site/resources/socketsHandler'
+//import socketsHandler from 'client/site/resources/socketsHandler'
 import Header from 'client/site/components/Header/Header.jsx'
 import ContentRouter from 'client/site/components/Router/Router.jsx'
 
@@ -31,7 +31,7 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        socketsHandler()
+        //socketsHandler()
     }    
 
     render(){

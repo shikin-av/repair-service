@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import _ from 'lodash'
 import { object } from 'prop-types'
 
 import { getCurrentCategory as getCurrentCategoryAction } from 'client/site/actions/categories'
@@ -13,9 +12,9 @@ require('antd/lib/row/style/css')
 const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
 
-import l from './OrderPage.less'
+import l from './Order.less'
 
-class CategoryPage extends React.Component {
+class OrderPage extends React.Component {
     constructor(props){
         super(props)
     }
@@ -50,8 +49,8 @@ const mapDispatchToProps = {
     getCurrentCategoryAction
 }
 
-CategoryPage.propTypes = {
+OrderPage.propTypes = {
     category: object,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CategoryPage)
+export default connect(mapStateToProps, mapDispatchToProps)(OrderPage)

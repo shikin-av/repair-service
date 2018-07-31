@@ -17,8 +17,8 @@ export default (authToken) => {
             console.log(data)
         })
 
-        socket.on('clientTask', data => {   //TODO
-            console.log('clientTask: ', data)
+        socket.on('clientOrder', data => {   //TODO
+            console.log('clientOrder: ', data)
         })
     })
 }

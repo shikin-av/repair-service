@@ -1,6 +1,9 @@
 import React from 'react'
 import { object } from 'prop-types'
 import { Link } from 'react-router-dom'
+import openSocket from 'socket.io-client'
+import { connect } from 'react-redux'
+import _ from 'lodash'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -16,14 +19,25 @@ const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
 const FormItem = Form.Item
 
-import config from 'client/../config/client'
+import config            from 'client/../config/client'
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
-import DateInput from         './formItems/DateInput/DateInput.jsx'
-import TimeInput from         './formItems/TimeInput/TimeInput.jsx'
-import HowOld from            './formItems/HowOld/HowOld.jsx'
-import Description from       './formItems/Description/Description.jsx'
-import AddressInput from      './formItems/AddressInput/AddressInput.jsx'
-import SimpleInput from        './formItems/SimpleInput/SimpleInput.jsx'
+import DateInput         from './formItems/DateInput/DateInput.jsx'
+import TimeInput         from './formItems/TimeInput/TimeInput.jsx'
+import HowOld            from './formItems/HowOld/HowOld.jsx'
+import Description       from './formItems/Description/Description.jsx'
+import AddressInput      from './formItems/AddressInput/AddressInput.jsx'
+import SimpleInput       from './formItems/SimpleInput/SimpleInput.jsx'
+import Problems          from './formItems/Problems/Problems.jsx'
+import SelectCity        from './formItems/SelectCity/SelectCity.jsx'
+
+import { createOrder as createOrderApi } from 'client/site/api'
+import {     
+    setCurrentCity   as setCurrentCityAction
+} from 'client/site/actions/cities'
+import { 
+    getCities      as getCitiesSelector,
+    getCurrentCity as getCurrentCitySelector
+} from 'client/site/selectors/cities'
 
 import l from './OrderForm.less'
 
@@ -33,10 +47,37 @@ class Order extends React.Component {
     }
 
     async handleSubmit(e){
+        const { getFieldDecorator }  = this.props.form
+        const { currentCity, category } = this.props
         e.preventDefault()
+                
+        this.onCityChange(currentCity)
+
+        console.log('CATEGORY ', category)
+        const categoryShortName = 'Телевизор'   //TODO get in Redux Store       
+        getFieldDecorator('categoryShortName', { initialValue: categoryShortName })
+        
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log(values)
+                
+                try {
+                    createOrderApi(values)
+                    .then(res => {                        
+                        if(res.status == 'OK'){                            
+                            const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
+                            socket.on('connected', data => {
+                                console.log('i connected')
+                                socket.emit('clientOrder', res.order)
+                            })        
+                        }
+                    })
+                } catch(err) {
+                    console.log(`ERROR ${err.stack}`)
+                    //TODO message
+                }
+                
+                
             } else {
 
             }
@@ -75,10 +116,23 @@ class Order extends React.Component {
         this.props.form.setFieldsValue({ name: val })
     }
 
+    onProblemsChange(values){        
+        this.props.form.setFieldsValue({ problems: values })
+    }
+
+    onCityChange(val){
+        const { cities, setCurrentCityAction } = this.props
+        this.props.form.setFieldsValue({ city: val })
+        const currentCity = cities[_.findIndex(cities, { name: val })]        
+        setCurrentCityAction(currentCity)
+        localStorage.setItem('currentCity', JSON.stringify(currentCity))
+    }
+
     render(){
-        const { category } = this.props
+        const { category, cities, currentCity } = this.props
         const { getFieldDecorator }  = this.props.form
         const categoriesLink = '/categories'
+        
         if(category && category.name){
             return (
                 <div className={ l.root }>
@@ -145,21 +199,50 @@ class Order extends React.Component {
                                 <HowOld onDataToForm={ val => this.onHowOldChange(val) } />
                             )}
                         </FormItem>
-                         
+                        
+                        { category.problems.length ?
+                            <FormItem label='Выберите варианты:'>
+                                {getFieldDecorator('problems', { rules: [] })(
+                                    <Problems 
+                                        problems={ category.problems }
+                                        onDataToForm={ val => this.onProblemsChange(val) } 
+                                    />
+                                )}
+                            </FormItem>
+                            : null
+                        }
+
                         <FormItem label='Описание проблемы (кратко):'>
                             {getFieldDecorator('description', { rules: [] })(
                                 <Description onDataToForm={ val => this.onDescriptionChange(val) } />
                             )}
                         </FormItem>
-                        
-                        <FormItem label='Ваш адрес:'>
-                            {getFieldDecorator('address', { rules: [] })(
-                                <AddressInput onDataToForm={ val => this.onAddressChange(val) } />
+
+                        <FormItem label='Ваш город:'>
+                            {getFieldDecorator('city', { rules: [] })(
+                                <SelectCity 
+                                    onDataToForm={ val => this.onCityChange(val) }
+                                    cities={ cities }
+                                    currentCity={ currentCity }
+                                />
                             )}
                         </FormItem>
-
+                        { currentCity && currentCity.name &&
+                        <FormItem label='Ваш адрес:'>
+                            {getFieldDecorator('address', { rules: [
+                                { required: true, message: 'Обязательное поле' }
+                            ] })(
+                                <AddressInput 
+                                    onDataToForm={ val => this.onAddressChange(val) }
+                                    city={ currentCity.name } 
+                                />
+                            )}
+                        </FormItem>
+                        }
                         <FormItem label='Ваш телефон:'>
-                            {getFieldDecorator('phone', { rules: [] })(
+                            {getFieldDecorator('phone', { rules: [
+                                { required: true, message: 'Обязательное поле' }
+                            ] })(
                                 <SimpleInput 
                                     onDataToForm={ val => this.onPhoneChange(val) } 
                                     placeholder='Контактный номер телефона'
@@ -168,7 +251,9 @@ class Order extends React.Component {
                         </FormItem>
 
                         <FormItem label='Ваше имя:'>
-                            {getFieldDecorator('name', { rules: [] })(
+                            {getFieldDecorator('name', { rules: [
+                                { required: true, message: 'Обязательное поле' }
+                            ] })(
                                 <SimpleInput 
                                     onDataToForm={ val => this.onNameChange(val) } 
                                     placeholder='Контактное лицо'
@@ -197,4 +282,11 @@ Order.propTypes = {
 
 const OrderForm = Form.create()(Order)
 
-export default OrderForm
+const mapStateToProps = state => ({
+    cities: getCitiesSelector(state),
+    currentCity: getCurrentCitySelector(state)  
+})
+const mapDispatchToProps = {    
+    setCurrentCityAction
+}
+export default connect(mapStateToProps, mapDispatchToProps)(OrderForm)

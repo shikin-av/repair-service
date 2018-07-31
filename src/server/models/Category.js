@@ -5,6 +5,7 @@ import uniqueValidator from 'mongoose-unique-validator'
 import clearSpecialSymbols from '../resources/clearSpecialSymbols'
 
 const  CategorySchema = new mongoose.Schema({
+    //_id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
         required: true,

@@ -10,7 +10,7 @@ const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
 const FormItem = Form.Item
 
-import l from './LoginPage.less'
+import l from './Login.less'
 
 class LoginForm extends React.Component {
     constructor(props){

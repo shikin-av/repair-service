@@ -1,5 +1,5 @@
 import React from 'react'
-import { func } from 'prop-types'
+import { func, string } from 'prop-types'
 
 const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
@@ -12,25 +12,46 @@ class AddressInput extends React.Component {
     }
 
     componentDidMount(){
-        window.ymaps.ready(() => {
-            // address autocomplite
-            const suggestView = new ymaps.SuggestView('addressInput')
-            suggestView.events.add('select', e => {
-                const address = e.originalEvent.item.displayName
-                this.props.onDataToForm(address)
-            })
+        const { city } =  this.props
+        window.ymaps.ready(() => {            
+            if(city){
+                this.setSuggetsViewer(city)                
+            }
         })
     }
 
-    onChange(e){
-        this.props.onDataToForm(e.target.value)
+    setSuggetsViewer(city){     // address autocomplite        
+        this.suggestOptions = {}
+        if(city){               // search for one city            
+            this.suggestOptions.provider = {
+                suggest: ((req, options) => {
+                    return ymaps.suggest(`${ city }, ${ req }`)
+                })
+            }
+        }        
+        const suggestView = new ymaps.SuggestView('addressInput', this.suggestOptions)
+        suggestView.events.add('select', e => {
+            const address = e.originalEvent.item.displayName
+            this.onChange(address)
+        })
+    }
+
+    componentWillReceiveProps(nextProps){
+        const { city } = this.props
+        if(city != nextProps.city){
+            this.setSuggetsViewer(nextProps.city)
+        }
+    }
+
+    onChange(val){
+        this.props.onDataToForm(val)
     }
 
     render(){
         return (
             <Input
                 id='addressInput'
-                onChange={ e => this.onChange(e) }
+                onChange={ e => this.onChange(e.target.value) }
                 placeholder='Начните печатать...'
             />
         )
@@ -38,7 +59,8 @@ class AddressInput extends React.Component {
 }
 
 AddressInput.propTypes = {
-    onDataToForm: func.isRequired
+    onDataToForm: func.isRequired,
+    city: string
 }
 
 export default AddressInput
