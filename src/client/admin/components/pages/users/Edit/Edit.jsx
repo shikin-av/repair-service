@@ -1,6 +1,7 @@
 import React from 'react'
 import { string } from 'prop-types'
 import { Link } from 'react-router-dom'
+import _ from 'lodash'
 
 import { 
     getUser as getUserApi,
@@ -210,7 +211,25 @@ class Edit extends React.Component {
         this.props.form.setFieldsValue({ fio: val })
     }
     onCityChange(val){
+        const { cities } = this.state
+        const { getFieldDecorator, setFieldsValue } = this.props.form
+
+        console.log('cities ', cities)
+
         this.props.form.setFieldsValue({ city: val })
+        
+        if(cities.length){
+            const cityId = _.findIndex(cities, city => {
+                return city.name == val
+            })
+            const city = cities[cityId]
+            console.log('city ', city)
+            const cityNameUrl = city.nameUrl
+    
+            getFieldDecorator('cityNameUrl', { initialValue: null })
+            setFieldsValue({ cityNameUrl: cityNameUrl })
+        }
+        
     }
     onPhoneChange(val){
         this.props.form.setFieldsValue({ phone: val })

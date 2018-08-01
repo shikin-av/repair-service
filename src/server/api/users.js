@@ -1,7 +1,6 @@
 import { Router } from 'express'
 
 import User from '../models/User'
-import auth from '../resources/auth'
 
 export default () => {
     const api = Router()
@@ -39,6 +38,7 @@ export default () => {
             role,
             fio,
             city,
+            cityNameUrl,
             phone,
             workingDays,
             categories
@@ -49,6 +49,7 @@ export default () => {
             fio,
             role : role || 'worker',
             city,
+            cityNameUrl,
             phone,
             workingDays: workingDays || [],
             categories:  categories  || []
@@ -69,6 +70,7 @@ export default () => {
             role,
             fio,
             city,
+            cityNameUrl,
             phone,
             workingDays,
             categories
@@ -88,6 +90,7 @@ export default () => {
                 user.phone       = phone       || user.phone
                 user.workingDays = workingDays || user.workingDays
                 user.categories  = categories  || user.categories
+                user.cityNameUrl = cityNameUrl || user.cityNameUrl
 
                 return user.save(err => {
                     if(err) return next(err)

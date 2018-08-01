@@ -3,6 +3,7 @@ import getCategoriesApi from './categories'
 import getUsersApi from './users'
 import getCitiesApi from './cities'
 import getGalleryApi from './gallery'
+import getOrdersApi from './orders'
 
 export default () => {
     const api = Router()
@@ -12,6 +13,7 @@ export default () => {
     api.use('/users', getUsersApi())
     api.use('/cities', getCitiesApi())
     api.use('/gallery', getGalleryApi())
+    api.use('/orders', getOrdersApi())
 
     return api
 }

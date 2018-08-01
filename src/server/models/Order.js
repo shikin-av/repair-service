@@ -43,12 +43,15 @@ const  OrderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    /*category: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Category',
+    cityNameUrl: {
+        type: String,
         required: true
-    },*/
+    },
     categoryShortName: {
+        type: String,
+        required: true
+    },
+    categoryNameUrl: {
         type: String,
         required: true
     },
@@ -57,13 +60,16 @@ const  OrderSchema = new mongoose.Schema({
         required: true
     },
     worker: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User',
+        type: String,
+        required: false
+    },
+    workerLogin: {
+        type: String,
         required: false
     },
     status: {
         type: String,        
-        enum: ['new', 'working', 'complete'],
+        enum: ['new', 'working', 'complete', 'trash'],
         default: 'new',
         required: true,
     }

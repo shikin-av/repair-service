@@ -1,5 +1,6 @@
 import React from 'react'
 import { func, array, object } from 'prop-types'
+import _ from 'lodash'
 
 const Select = require('antd/lib/select')
 require('antd/lib/select/style/css')
@@ -10,8 +11,28 @@ class SelectCity extends React.Component {
         super(props)
     }
 
-    onChange(val){
-        this.props.onDataToForm(val)
+    componentDidMount(){
+        const { currentCity } = this.props
+        if(currentCity){
+            console.log('currentCity ', currentCity)
+            this.onChange(currentCity.name)
+        }
+    }
+
+    onChange(cityName){
+        /*const { cities } = this.props
+        console.log('cities ', cities)
+        const selectedCityInd = _.findIndex(cities, city => {
+            return city.name == cityName
+        })
+        console.log('selectedCity index', selectedCityInd)
+        const selectedCity = cities[selectedCityInd]
+        console.log('selectedCity ', selectedCity)
+
+        const nameUrl = selectedCity.nameUrl
+        */
+
+        this.props.onDataToForm(cityName)
     }
 
     render(){

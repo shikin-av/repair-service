@@ -58,10 +58,11 @@ export default () => {
             return {
                 isAuthenticated: true,
                 user: {
-                    login: user.login,
-                    role: user.role,
-                    fio: user.fio,
-                    city: user.city
+                    login:       user.login,
+                    role:        user.role,
+                    fio:         user.fio,
+                    city:        user.city,
+                    cityNameUrl: user.cityNameUrl
                 }
             }
         } else {

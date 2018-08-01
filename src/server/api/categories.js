@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import _ from 'lodash'
 
 import Category from '../models/Category'
 

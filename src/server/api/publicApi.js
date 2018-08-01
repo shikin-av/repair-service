@@ -61,7 +61,9 @@ export default () => {
             phone,
             name,
             city,
-            categoryShortName
+            cityNameUrl,
+            categoryShortName,
+            categoryNameUrl
         } = req.body
         //console.log('ORDER req.body ', req.body)
 
@@ -123,7 +125,9 @@ export default () => {
                 phone,
                 name,
                 city,
-                categoryShortName:  categoryShortName,
+                cityNameUrl,
+                categoryShortName,
+                categoryNameUrl,
                 status:             'new',
                 
             })

@@ -56,30 +56,23 @@ class Order extends React.Component {
         const { currentCity, category } = this.props
         e.preventDefault()        
         this.onCityChange(currentCity.name)                
-        getFieldDecorator('categoryShortName', { initialValue: category.shortName })        
+        getFieldDecorator('categoryShortName', { initialValue: category.shortName })
+        getFieldDecorator('categoryNameUrl',   { initialValue: category.nameUrl })
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 //console.log(values)                
                 try {
-                    //message.loading('Ваша заявка отправляется...')
-                    //TODO
                     this.setState({ status: 'pending' })
                     createOrderApi(values)
                     .then(res => {                        
                         if(res.status == 'OK'){
-                            //message.success('Ваша заявка принята в работу. Наш менеджер свяжется с Вами в ближайшее время')
-                            //TODO
                             this.setState({ status: 'complite' })
-
-                            //console.log('ORDER res ', res.order)
                             const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
                             socket.on('connected', data => {
                                 console.log('i connected')
                                 socket.emit('clientOrder', res.order)
                             })        
                         } else {
-                            //message.error(`Что то пошло не так. Свяжитесь с нами по телефону ${ currentCity.phone }`)
-                            //TODO
                             this.setState({ status: 'error' })
                         }
                     })
@@ -167,12 +160,30 @@ class Order extends React.Component {
         this.props.form.setFieldsValue({ problems: values })
     }
 
-    onCityChange(val){
-        const { cities, setCurrentCityAction } = this.props
-        this.props.form.setFieldsValue({ city: val })
-        const currentCity = cities[_.findIndex(cities, { name: val })]        
+    onCityChange(cityName){
+        const { 
+            cities,
+            setCurrentCityAction 
+        } = this.props
+        const { getFieldDecorator } = this.props.form
+        
+        this.props.form.setFieldsValue({ city: cityName })
+        const currentCity = cities[_.findIndex(cities, { name: cityName })]                
+        const cityNameUrl = currentCity.nameUrl
+        getFieldDecorator('cityNameUrl',   { initialValue: cityNameUrl })
+
+        console.log('name ', cityName, ' | nameUrl ', cityNameUrl)
+
         setCurrentCityAction(currentCity)
         localStorage.setItem('currentCity', JSON.stringify(currentCity))
+        
+        
+        /*this.props.form.setFieldsValue({ city: obj.name })
+        getFieldDecorator('cityNameUrl',   { initialValue: obj.nameUrl })
+        */
+        /*const currentCity = cities[_.findIndex(cities, { name: obj.name })]        
+        setCurrentCityAction(currentCity)
+        localStorage.setItem('currentCity', JSON.stringify(currentCity))*/
     }
 
     render(){
@@ -264,9 +275,13 @@ class Order extends React.Component {
                                 <Description onDataToForm={ val => this.onDescriptionChange(val) } />
                             )}
                         </FormItem>
-
+                        { currentCity && 
+                          currentCity.name &&
+                          cities.length &&
                         <FormItem label='Ваш город:'>
-                            {getFieldDecorator('city', { rules: [] })(
+                            {getFieldDecorator('city', { rules: [
+                                { required: true, message: 'Обязательное поле' }
+                            ] })(
                                 <SelectCity 
                                     onDataToForm={ val => this.onCityChange(val) }
                                     cities={ cities }
@@ -274,6 +289,7 @@ class Order extends React.Component {
                                 />
                             )}
                         </FormItem>
+                        }
                         { currentCity && currentCity.name &&
                         <FormItem label='Ваш адрес:'>
                             {getFieldDecorator('address', { rules: [
