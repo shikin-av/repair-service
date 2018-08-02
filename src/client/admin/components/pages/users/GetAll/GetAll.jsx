@@ -7,17 +7,17 @@ import {
     deleteUser as deleteUserApi
 } from 'client/admin/api/users'
 
-const Collapse = require('antd/lib/collapse')
-require('antd/lib/collapse/style/css')
-const Panel = Collapse.Panel
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Checkbox = require('antd/lib/checkbox')
+require('antd/lib/checkbox/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
+import getCookie from 'client/admin/resources/getCookie'
 
 import l from './GetAll.less'
 
@@ -25,11 +25,14 @@ class GetAll extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            users: []
+            users: [],
+            usersOnlyCity: true
         }
     }
 
     componentWillMount(){
+        this.userCityNameUrl = getCookie('userCityNameUrl')
+        
         try {
             return getUsersApi()
             .then(users => {
@@ -60,16 +63,35 @@ class GetAll extends React.Component {
         }      
     }
 
+    checkOnlyCity(e){        
+        this.setState({ usersOnlyCity: e.target.checked })
+    }
+
     render(){
-        const { users } = this.state
+        const { users, usersOnlyCity } = this.state
         if(users){
+            console.log(users)
             return (
                 <div className={ l.root }>
                     <Link to='/users/create'>
                         <Button className={ l.create }>+</Button>
                     </Link>
+
+                    { this.userCityNameUrl &&
+                    <Checkbox
+                        onChange={ e => this.checkOnlyCity(e) }
+                        checked={ usersOnlyCity }
+                    >Работники только Вашего города</Checkbox>
+                    }
+
                     <ContentList 
-                        items={ users } 
+                        items={ 
+                            (this.userCityNameUrl && usersOnlyCity) 
+                            ? users.filter(user => {
+                                return user.cityNameUrl == this.userCityNameUrl
+                            }) 
+                            :users 
+                        } 
                         apiName='users'
                         viewProperties={[
                             { value: 'fio', type: 'string' },

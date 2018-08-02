@@ -42,6 +42,10 @@ const  OrderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    apartment: {
+        type: String,
+        required: false
+    },
     phone: {
         type: String,
         required: true

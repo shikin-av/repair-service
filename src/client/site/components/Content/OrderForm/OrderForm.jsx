@@ -163,6 +163,10 @@ class Order extends React.Component {
         this.props.form.setFieldsValue({ address: val })
     }
 
+    onApartmentChange(val){
+        this.props.form.setFieldsValue({ apartment: val })
+    }
+
     onPhoneChange(val){
         this.props.form.setFieldsValue({ phone: val })
     }
@@ -309,6 +313,16 @@ class Order extends React.Component {
                             )}
                         </FormItem>
                         }
+                        <FormItem label='Квартира:'>
+                            {getFieldDecorator('phone', { rules: [                                
+                            ] })(
+                                <SimpleInput 
+                                    onDataToForm={ val => this.onApartmentChange(val) } 
+                                    placeholder='Номер квартира'
+                                />
+                            )}
+                        </FormItem>
+
                         <FormItem label='Ваш телефон:'>
                             {getFieldDecorator('phone', { rules: [
                                 { required: true, message: 'Обязательное поле' }

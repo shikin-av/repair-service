@@ -7,6 +7,9 @@ import {
  import { 
      getOrders as getOrdersSelector 
 } from 'client/admin/selectors/orders'
+import { 
+    setOrdersOptions as setOrdersOptionsAction 
+} from 'client/admin/actions/ordersOptions'
 
 import GetAll from './GetAll.jsx'
 import getCookie from 'client/admin/resources/getCookie'
@@ -24,11 +27,20 @@ class ByCity extends React.Component {
     }
 
     componentDidMount(){
-        const { orders, getOrdersByCityAction } = this.props        
-        if(!orders.length) {
+        const { 
+            orders, 
+            getOrdersByCityAction,
+            setOrdersOptionsAction
+        } = this.props
+        
+        setOrdersOptionsAction({
+            cityNameUrl: this.userCityNameUrl
+        })
+        
+        if(!orders.length) {            
             getOrdersByCityAction(this.userCityNameUrl)
             .then(() => {
-                console.log('заявки ', this.props.orders)
+                //console.log('заявки ', this.props.orders)
             })
         }
     }
@@ -51,7 +63,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-    getOrdersByCityAction
+    getOrdersByCityAction,
+    setOrdersOptionsAction
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ByCity)

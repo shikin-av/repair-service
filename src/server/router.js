@@ -36,7 +36,8 @@ export default (app) => {
                     config.jwt.expiresSec
                 )
                 res.cookie('auth_token', token)
-                res.cookie('userCityNameUrl', userResult.user.cityNameUrl)
+                res.cookie('userCityNameUrl', userResult.user.cityNameUrl)                
+                
                 res.json({ redirectTo: '/admin#/' })
             }else{
                 res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })

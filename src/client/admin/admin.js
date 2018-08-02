@@ -10,16 +10,17 @@ import 'babel-polyfill'
 
 import reducers from 'client/admin/reducers'
 import ContentRouter from 'client/admin/components/Router/Router.jsx'
-import socketsHandler from 'client/admin/resources/socketsHandler'
-import getCookie from 'client/admin/resources/getCookie'
+//import socketsHandler from 'client/admin/resources/socketsHandler'
+//import getCookie from 'client/admin/resources/getCookie'
+import MainMenu from 'client/admin/components/MainMenu/MainMenu.jsx'
+import 'client/admin/components/style/app.css'
+import OrderNotification from 'client/admin/components/content/OrderNotification/OrderNotification.jsx'
+
 
 require('antd/lib/icon/style/css')
 const Layout = require('antd/lib/layout')
 require('antd/lib/layout/style/css')
 const { Header, Content, Sider } = Layout
-
-import MainMenu from 'client/admin/components/MainMenu/MainMenu.jsx'
-import 'client/admin/components/style/app.css'
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
@@ -31,16 +32,17 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        const authToken = getCookie('auth_token')
+        /*const authToken = getCookie('auth_token')
         if(authToken){
             socketsHandler(authToken)
-        }
+        }*/
     }
 
     render(){
         return (
             <Layout>
                 <Header/>
+                <OrderNotification/>
                 <Layout>
                     <Sider id='sider'>
                         <MainMenu/>
