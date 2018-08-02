@@ -8,7 +8,7 @@ export default () => {
 
     api.get('/city/:cityNameUrl', async (req, res, next) => {
         return await Order.find({
-            cityNameUrl: req.params.nameUrl
+            cityNameUrl: req.params.cityNameUrl
         },(err, orders) => {
             if(!err){
                 return res.json(orders)
@@ -74,6 +74,7 @@ export default () => {
         }
     })
 
+    // for Edit page
     api.put('/city/:cityNameUrl/date/:dateString/id/:id', async (req, res, next) => {
         const { cityNameUrl, dateString, id } = req.params
         const { 

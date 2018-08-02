@@ -12,5 +12,6 @@ export default {
     },
     assetsPath:         common.assetsPath,
     userRoles:          common.userRoles,
-    defaultWorkingDays: common.defaultWorkingDays
+    defaultWorkingDays: common.defaultWorkingDays,
+    apiPath: '/admin/api'
 }

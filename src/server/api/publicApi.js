@@ -52,6 +52,8 @@ export default () => {
     api.post('/orders', async (req, res, next) => {
         const { 
             date,
+            dateToLink,
+            dateToView,
             time,
             firm,
             howOld,
@@ -116,6 +118,8 @@ export default () => {
             const order = new Order({
                 id:                 id,   
                 date:               date        || new Date(),
+                dateToLink,
+                dateToView,
                 time:               time        || null,
                 firm:               firm        || null,
                 howOld:             howOld      || null,

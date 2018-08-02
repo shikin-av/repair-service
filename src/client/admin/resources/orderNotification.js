@@ -6,6 +6,7 @@ const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 
 const orderNotification = (order) => {
+    //TODO action -> append to redux store (city, date!!!)
     const key = order.id
     const btn = (
         <Button 
@@ -13,7 +14,7 @@ const orderNotification = (order) => {
             size='small' 
             onClick={ () => notification.close(key) }
         >
-            <a href={ `/admin#/orders/${ order.id }` }>Открыть</a>
+            <a href={ `/admin#/orders/city/${ order.cityNameUrl }/date/${ order.dateToLink }/id/${ order.id }` }>Открыть</a>
         </Button>
     )
     const category = order.categoryShortName

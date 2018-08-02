@@ -1,4 +1,5 @@
-const apiPath = '/admin/api'
+import config from 'client/../config/client'
+const apiPath = config.apiPath
 
 export const getCities = async () => {
     return fetch(`${ apiPath }/cities`, {

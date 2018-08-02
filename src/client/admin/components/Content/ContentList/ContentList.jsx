@@ -23,14 +23,18 @@ class ContentList extends React.Component {
     }
     
     itemRender(item){
-        const { viewProperties, apiName, nameUrl } = this.props
+        const { viewProperties, apiName, nameUrl, type } = this.props
+        let link = `/${ apiName }/${ item[nameUrl] }`
+        if(type == 'orders'){
+            link = `/${ apiName }/date/${ item.dateToLink }/id/${ item.id }`
+        }
         return(
             <List.Item 
                 key={ Math.random() }
                 className={ l.listItem }
                 actions={
                     [
-                        <Link to={ `/${apiName}/${item[nameUrl]}` }>
+                        <Link to={ link }>
                             <Icon type='edit' />
                         </Link>, 
                         <Popconfirm 
@@ -45,7 +49,7 @@ class ContentList extends React.Component {
                     ]
                 }
             >
-                <Link to={ `/${apiName}/${item[nameUrl]}` }>
+                <Link to={ link }>
                 {
                     viewProperties.map(prop => {
                         switch(prop.type){
@@ -86,7 +90,8 @@ ContentList.propTypes = {
     apiName:        string.isRequired,
     viewProperties: array.isRequired,
     nameUrl:        string.isRequired,
-    onDelete:       func.isRequired
+    onDelete:       func.isRequired,
+    type:           string
 }
 
 export default ContentList
@@ -102,5 +107,6 @@ Use:
         { value: 'shortName', type: 'string' }
     ]}
     nameUrl='nameUrl'
+    type='categories'
 />
 */

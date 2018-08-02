@@ -13,6 +13,8 @@ import Users from 'client/admin/components/pages/users/GetAll/GetAll.jsx'
 import UserEdit from 'client/admin/components/pages/users/Edit/Edit.jsx'
 import UserCreate from 'client/admin/components/pages/users/Create/Create.jsx'
 
+import OrdersByCity from 'client/admin/components/pages/orders/GetAll/ByCity.jsx'
+
 import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
 export default class Router extends React.Component {
@@ -50,6 +52,9 @@ export default class Router extends React.Component {
                 <Route
                     exact path='/users/:login'
                     component={ UserEdit } />
+                <Route
+                    exact path='/orders'
+                    component={ OrdersByCity } />                
                 <Route
                     exact path='/gallery'
                     component={ Gallery } />

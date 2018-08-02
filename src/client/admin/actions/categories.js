@@ -1,7 +1,7 @@
 import * as types from './actionTypes'
 import * as api from 'client/admin/api/categories'
 
-export const getCategories = () => async dispatch => {
+/*export const getCategories = () => async dispatch => {
     dispatch({ type: types.GET_CATEGORIES_START })
     try {
         const categories = await api.getCategories()
@@ -16,7 +16,7 @@ export const getCategories = () => async dispatch => {
             error: true
         })
     }
-}
+}*/
 
 /*export const getCategory = nameUrl => async dispatch => {
     dispatch({ type: types.GET_CATEGORY_START })

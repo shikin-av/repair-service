@@ -1,9 +1,6 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { array } from 'prop-types'
 
-import { getCategories as getCategoriesAction } from 'client/site/actions/categories'
-import { getCategories as getCategoriesSelector } from 'client/site/selectors/categories'
+import { getCategories as getCategoriesApi } from 'client/site/api'
 
 import CategoryItem from 'client/site/components/content/CategoryItem/CategoryItem.jsx'
 
@@ -11,49 +8,52 @@ const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
 const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
+const Spin = require('antd/lib/spin')
+require('antd/lib/spin/style/css')
 
 import l from './Categories.less'
 
 class Categories extends React.Component {
     constructor(props){
         super(props)
+        this.state = {
+            categories: []
+        }
     }
 
-    componentWillMount(){
-        this.props.getCategoriesAction()
+    componentWillMount(){        
+        try {
+            getCategoriesApi()
+            .then(categories => {
+                this.setState({ categories: categories })
+            })
+
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+        }
     }
 
     render(){
-        const { categories } = this.props
-        return (
-            <Row gutter={16}>
-                {
-                    categories.map(category => (
-                        <Col
-                            xs={24}
-                            sm={12}
-                            md={6}
-                            key={ Math.random() }
-                        >
-                            <CategoryItem category={ category } />
-                        </Col>
-                    ))
-                }
-            </Row>
-        )
+        const { categories } = this.state
+        if(categories){
+            return (
+                <Row gutter={16}>
+                    {
+                        categories.map(category => (
+                            <Col
+                                xs={24}
+                                sm={12}
+                                md={6}
+                                key={ Math.random() }
+                            >
+                                <CategoryItem category={ category } />
+                            </Col>
+                        ))
+                    }
+                </Row>
+            )
+        } else return ( <Spin/> )
     }
 }
 
-const mapStateToProps = state => ({
-    categories: getCategoriesSelector(state),
-})
-
-const mapDispatchToProps = {
-    getCategoriesAction
-}
-
-Categories.propTypes = {
-    categories: array,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Categories)
+export default Categories

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import openSocket from 'socket.io-client'
 import { connect } from 'react-redux'
 import _ from 'lodash'
+import moment from 'moment'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -129,7 +130,21 @@ class Order extends React.Component {
     }
 
     onDateChange(val){
+        const { getFieldDecorator, getFieldValue } = this.props.form
         this.props.form.setFieldsValue({ date: val })
+
+        const dateViewOptions = {        
+            month: 'long',
+            day: 'numeric'
+        }        
+        const date = new Date(val)
+        const dateToView = date.toLocaleDateString('ru-RU', dateViewOptions)
+        getFieldDecorator('dateToView',   { initialValue: dateToView })
+        
+        const dateLinkFormat = 'YYYY-MM-DD'        
+        const dateToLink = moment(date).format(dateLinkFormat)
+        getFieldDecorator('dateToLink',   { initialValue: dateToLink })
+        console.log('dateToView ', getFieldValue('dateToView'), ' | dateToLink ', getFieldValue('dateToLink'))
     }
 
     onTimeChange(val){
@@ -175,15 +190,7 @@ class Order extends React.Component {
         console.log('name ', cityName, ' | nameUrl ', cityNameUrl)
 
         setCurrentCityAction(currentCity)
-        localStorage.setItem('currentCity', JSON.stringify(currentCity))
-        
-        
-        /*this.props.form.setFieldsValue({ city: obj.name })
-        getFieldDecorator('cityNameUrl',   { initialValue: obj.nameUrl })
-        */
-        /*const currentCity = cities[_.findIndex(cities, { name: obj.name })]        
-        setCurrentCityAction(currentCity)
-        localStorage.setItem('currentCity', JSON.stringify(currentCity))*/
+        localStorage.setItem('currentCity', JSON.stringify(currentCity))        
     }
 
     render(){

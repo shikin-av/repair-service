@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import _ from 'lodash'
 
 const  OrderSchema = new mongoose.Schema({
     //_id: mongoose.Schema.Types.ObjectId,
@@ -9,6 +8,14 @@ const  OrderSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
+        required: true
+    },
+    dateToLink: {
+        type: String,
+        required: true
+    },
+    dateToView: {
+        type: String,
         required: true
     },
     time: {
