@@ -89,22 +89,24 @@ class Order extends React.Component {
     showSubmitOrMessage(){
         const { currentCity } = this.props
         const { status } = this.state
+        const showBtn = (text='Отправить', disabled=false) => (
+            <FormItem>
+                <Button 
+                    disabled={ disabled }
+                    type='primary'
+                    htmlType='submit'
+                >{ text }</Button>
+                { disabled && <Spin/> }
+            </FormItem>
+        )
         switch(status){
             case 'new':
-                return(
-                    <FormItem>
-                        <Button 
-                            type='primary'
-                            htmlType='submit'
-                        >Отправить</Button>
-                    </FormItem>
-                )
+                return showBtn('Отправить', false)
             case 'pending':
-                return (
-                    <Spin/>
-                )
+                return showBtn('Заявка отаправляется', true)
 
             case 'complite':
+                //TODO clear all inputs
                 return (
                     <Alert 
                         message='Ваша заявка принята в работу. Наш менеджер свяжется с Вами в ближайшее время'

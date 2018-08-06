@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import _ from 'lodash'
 
-import { 
+import {
     getCategories as getCategoriesApi,
     deleteCategory as deleteCategoryApi
 } from 'client/admin/api/categories'
@@ -18,8 +18,9 @@ const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
+import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
-import l from './GetAll.less'
+import l from  'client/admin/components/style/GetAll.less'
 
 class GetAll extends React.Component {
     constructor(props){
@@ -30,6 +31,7 @@ class GetAll extends React.Component {
     }
 
     componentWillMount(){
+        { console.log('this.props', this.props) }
         try {
             return getCategoriesApi()
             .then(categories => {
@@ -57,7 +59,7 @@ class GetAll extends React.Component {
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
-        }      
+        }
     }
 
     render(){
@@ -65,11 +67,18 @@ class GetAll extends React.Component {
         if(categories){
             return (
                 <div className={ l.root }>
+                    <BreadcrumbsPanel
+                        history={ this.props.history }
+                        backButton={ true }
+                        links={[
+                            { url: '/categories', text: 'Категории' }
+                        ]}
+                    />
                     <Link to='/categories/create'>
                         <Button className={ l.create }>+</Button>
                     </Link>
-                    <ContentList 
-                        items={ categories } 
+                    <ContentList
+                        items={ categories }
                         apiName='categories'
                         viewProperties={[
                             { value: 'image', type: 'image' },
@@ -80,7 +89,7 @@ class GetAll extends React.Component {
                     />
                 </div>
             )
-        } else return ( <Spin/> )        
+        } else return ( <Spin/> )
     }
 }
 

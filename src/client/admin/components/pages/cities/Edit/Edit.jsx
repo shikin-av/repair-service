@@ -2,11 +2,12 @@ import React from 'react'
 import { string } from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { 
+import {
     getCity as getCityApi,
     createCity as createCityApi,
     editCity as editCityApi
 } from 'client/admin/api/cities'
+import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -33,12 +34,12 @@ class Edit extends React.Component {
         super(props)
         this.state = {
             cityInitial: null,
-            city: null,            
+            city: null,
             isCreated: false,
         }
     }
-    
-    componentWillMount(){        
+
+    componentWillMount(){
         if(this.props.type == 'create'){
             const empty = {
                 name: '',
@@ -46,16 +47,16 @@ class Edit extends React.Component {
                 phone: '',
                 officeAddress: ''
             }
-            this.setState({ 
+            this.setState({
                 cityInitial: empty,
-                city: empty 
+                city: empty
             })
         } else {
             const { nameUrl } = this.props.match.params
             try {
                 return getCityApi(nameUrl)
                 .then(city => {
-                    this.setState({ 
+                    this.setState({
                         cityInitial: city,
                         city: city
                     }, () => {
@@ -70,7 +71,7 @@ class Edit extends React.Component {
 
     async handleSave(e){
         const isCreateType = this.props.type == 'create'
-        
+
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -116,7 +117,7 @@ class Edit extends React.Component {
         }
         if(city.nameUrl){
             this.onNameUrlChange(city.nameUrl)
-        }            
+        }
         if(city.phone){
             this.onPhoneChange(city.phone)
         }
@@ -133,34 +134,40 @@ class Edit extends React.Component {
     }
     onPhoneChange(val){
         this.props.form.setFieldsValue({ phone: val })
-    }    
+    }
     onOfficeAddressChange(val){
         this.props.form.setFieldsValue({ officeAddress: val })
     }
-    
+
     render(){
-        const { 
+        const {
             city,
             isCreated
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreateType = this.props.type == 'create'
         if(city){
+            const breadcrumbsLinks = [{ url: '/cities', text:'Офисы' }]
+            if(this.props.type == 'create'){
+                breadcrumbsLinks.push({ url: 'create', text: 'Новый офис' })
+            } else {
+                breadcrumbsLinks.push({ url: city.nameUrl, text: city.name })
+            }
             return (
                 <Row className={ l.root }>
+                    <BreadcrumbsPanel
+                        history={ this.props.history }
+                        backButton={ true }
+                        links={ breadcrumbsLinks }
+                    />
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             <FormItem>
-                                { !isCreated ?
-                                    <Button 
+                                { !isCreated &&
+                                    <Button
                                         type='primary'
                                         htmlType='submit'
                                     >Сохранить</Button>
-                                    : <Button 
-                                        type='primary'
-                                    >
-                                        <Link to='/cities/'>Назад</Link>
-                                    </Button>
                                 }
                                 { !isCreateType &&
                                     <Button
@@ -169,13 +176,13 @@ class Edit extends React.Component {
                                 }
                             </FormItem>
                         </Col>
-                        <Col sm={24} md={20}>                            
+                        <Col sm={24} md={20}>
                             <FormItem label='Город' className={ l.formItem }>
                                 {getFieldDecorator('name', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onNameChange(val) } 
+                                        onChange={ val => this.onNameChange(val) }
                                     />
                                 )}
                             </FormItem>
@@ -185,35 +192,35 @@ class Edit extends React.Component {
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onNameUrlChange(val) } 
+                                        onChange={ val => this.onNameUrlChange(val) }
                                     />
                                 )}
                             </FormItem>
-                            
+
                             <FormItem label='Телефон'  className={ l.formItem }>
                                 {getFieldDecorator('phone', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onPhoneChange(val) } 
+                                        onChange={ val => this.onPhoneChange(val) }
                                     />
                                 )}
                             </FormItem>
-                            
+
                             <FormItem label='Адрес'  className={ l.formItem }>
                                 {getFieldDecorator('officeAddress', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onOfficeAddressChange(val) } 
+                                        onChange={ val => this.onOfficeAddressChange(val) }
                                     />
                                 )}
-                            </FormItem>                            
+                            </FormItem>
                         </Col>
                     </Form>
                 </Row>
             )
-        } else return ( <Spin/> )        
+        } else return ( <Spin/> )
     }
 }
 

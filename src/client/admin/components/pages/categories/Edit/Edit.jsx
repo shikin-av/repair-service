@@ -2,7 +2,7 @@ import React from 'react'
 import { string } from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { 
+import {
     getCategory as getCategoryApi,
     createCategory as createCategoryApi,
     editCategory as editCategoryApi
@@ -10,6 +10,7 @@ import {
 
 import config from 'client/../config/server'
 import Gallery from 'client/admin/components/content/Gallery/Gallery.jsx'
+import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -46,8 +47,8 @@ class Edit extends React.Component {
             problemsCounter: 0
         }
     }
-    
-    componentWillMount(){        
+
+    componentWillMount(){
         if(this.props.type == 'create'){
             const empty = {
                 name: '',
@@ -56,12 +57,13 @@ class Edit extends React.Component {
                 shortName: '',
                 problems: []
             }
-            this.setState({ 
+            this.setState({
                 categoryInitial: empty,
-                category: empty 
+                category: empty
             })
         } else {
             const { nameUrl } = this.props.match.params
+            console.log('props ', this.props.match);
             try {
                 return getCategoryApi(nameUrl)
                 .then(category => {
@@ -69,10 +71,10 @@ class Edit extends React.Component {
                     if(category.problems.length > 0 && category.problems[0].id){
                         let maxProblemOnId = _.maxBy(category.problems, problem => {
                             return problem.id
-                        })                    
-                        maxCount = maxProblemOnId.id++                        
+                        })
+                        maxCount = maxProblemOnId.id++
                     }
-                    this.setState({ 
+                    this.setState({
                         categoryInitial: category,
                         category: category,
                         problemsCounter: maxCount
@@ -84,7 +86,7 @@ class Edit extends React.Component {
                 console.log(`ERROR ${err.stack}`)
             }
         }
-    }    
+    }
 
     componentDidMount(){
         const { getFieldDecorator, getFieldValue }  = this.props.form
@@ -93,7 +95,7 @@ class Edit extends React.Component {
 
     async handleSave(e){
         const isCreateType = this.props.type == 'create'
-        
+
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -138,10 +140,10 @@ class Edit extends React.Component {
     setAllInputs(category){
         if(category.name){
             this.onNameChange(category.name)
-        }            
+        }
         if(category.singularName){
             this.onSingularNameChange(category.singularName)
-        }            
+        }
         if(category.nameUrl){
             this.onNameUrlChange(category.nameUrl)
         }
@@ -170,17 +172,17 @@ class Edit extends React.Component {
     }
     onImageChange(val){
         this.props.form.setFieldsValue({ image: val })
-    }    
-    
+    }
+
     openGallery(){
         this.setState({ showGallery: true })
     }
 
     handleModalGalleryOk(){
         const { preSelectedImage } = this.state
-        
+
         if(preSelectedImage){
-            this.setState({ 
+            this.setState({
                 selectedImage: preSelectedImage,
                 showGallery: false
             }, () => {
@@ -192,7 +194,7 @@ class Edit extends React.Component {
     }
 
     handleModalGalleryCancel(){
-        this.setState({ 
+        this.setState({
             showGallery: false,
             selectedImage: null
         })
@@ -221,7 +223,7 @@ class Edit extends React.Component {
     }
 
     addProblemInput(){
-        const { category, problemsCounter } = this.state        
+        const { category, problemsCounter } = this.state
         let maxCount = problemsCounter + 1
         if(category.problems.length > 0 && category.problems[0].id){
             let maxProblemOnId = _.maxBy(category.problems, problem => {
@@ -268,19 +270,30 @@ class Edit extends React.Component {
             this.setProblems()
         })
     }
-    
+
     render(){
-        const { 
-            category, 
-            showGallery, 
+        const {
+            category,
+            showGallery,
             selectedImage,
             isCreated
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreateType = this.props.type == 'create'
         if(category){
+            const breadcrumbsLinks = [{ url: '/categories', text:'Категории' }]
+            if(this.props.type == 'create'){
+                breadcrumbsLinks.push({ url: 'create', text: 'Новая категория' })
+            } else {
+                breadcrumbsLinks.push({ url: category.nameUrl, text: category.shortName })
+            }
             return (
                 <Row className={ l.root }>
+                    <BreadcrumbsPanel
+                        history={ this.props.history }
+                        backButton={ true }
+                        links={ breadcrumbsLinks }
+                    />
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             {   (selectedImage || getFieldValue('image')) &&
@@ -301,16 +314,11 @@ class Edit extends React.Component {
                             </FormItem>
 
                             <FormItem>
-                                { !isCreated ?
-                                    <Button 
+                                { !isCreated &&
+                                    <Button
                                         type='primary'
                                         htmlType='submit'
                                     >Сохранить</Button>
-                                    : <Button 
-                                        type='primary'
-                                    >
-                                        <Link to='/categories/'>Назад</Link>
-                                    </Button>
                                 }
                                 { !isCreateType &&
                                     <Button
@@ -320,50 +328,50 @@ class Edit extends React.Component {
                             </FormItem>
                         </Col>
                         <Col sm={24} md={20}>
-                            
+
                             <FormItem label='Название' className={ l.formItem }>
                                 {getFieldDecorator('name', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onNameChange(val) } 
+                                        onChange={ val => this.onNameChange(val) }
                                     />
                                 )}
-                            </FormItem> 
-                            
-                            
+                            </FormItem>
+
+
                             <FormItem label='Название в одиночном числе'  className={ l.formItem }>
                                 {getFieldDecorator('singularName', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onSingularNameChange(val) } 
+                                        onChange={ val => this.onSingularNameChange(val) }
                                     />
                                 )}
-                            </FormItem> 
-                            
-                            
+                            </FormItem>
+
+
                             <FormItem label='URL'  className={ l.formItem }>
                                 {getFieldDecorator('nameUrl', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onNameUrlChange(val) } 
+                                        onChange={ val => this.onNameUrlChange(val) }
                                     />
                                 )}
-                            </FormItem> 
-                            
-                            
+                            </FormItem>
+
+
                             <FormItem label='Вид техники'  className={ l.formItem }>
                                 {getFieldDecorator('shortName', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onShortNameChange(val) } 
+                                        onChange={ val => this.onShortNameChange(val) }
                                     />
                                 )}
-                            </FormItem> 
-                                                      
+                            </FormItem>
+
                             <FormItem label='Возможные неисправности'  className={ l.formItem }>
                             {
                                 category.problems.map(problem => {
@@ -374,15 +382,15 @@ class Edit extends React.Component {
                                                 onChange={ e => this.onProblemChange(problem.id, e.target.value)}
                                                 value={ problem.value }
                                             />
-                                            <Icon 
+                                            <Icon
                                                 type='delete'
-                                                onClick={ () => this.removeProblem(problem.id) }    
+                                                onClick={ () => this.removeProblem(problem.id) }
                                             />
                                         </div>
                                     )
                                 })
                             }
-                            </FormItem> 
+                            </FormItem>
                             <FormItem>
                                 <Button type='dashed' onClick={ () => this.addProblemInput() }>
                                     <Icon type='plus' /> Добавить неисправность
@@ -396,14 +404,14 @@ class Edit extends React.Component {
                         onOk={ e => this.handleModalGalleryOk() }
                         onCancel={ e => this.handleModalGalleryCancel() }
                     >
-                        <Gallery 
+                        <Gallery
                             onClickToImage={ fileName => this.handleSelectImage(fileName) }
                             inModal={ true }
                         />
                     </Modal>
                 </Row>
             )
-        } else return ( <Spin/> )        
+        } else return ( <Spin/> )
     }
 }
 

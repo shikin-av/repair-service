@@ -3,7 +3,7 @@ import { string } from 'prop-types'
 import { Link } from 'react-router-dom'
 import _ from 'lodash'
 
-import { 
+import {
     getUser as getUserApi,
     createUser as createUserApi,
     editUser as editUserApi
@@ -15,6 +15,7 @@ import {
     getCategories as getCategoriesApi
 } from 'client/admin/api/categories'
 import config from 'client/../config/client'
+import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -47,15 +48,15 @@ class Edit extends React.Component {
         super(props)
         this.state = {
             userInitial:   null,
-            user:          null,            
-            isCreated:     false,            
+            user:          null,
+            isCreated:     false,
             cities:        [],
             workingDays:   config.defaultWorkingDays,
             categories:    [],
             allCategories: []
         }
     }
-    
+
     componentWillMount(){
         if(this.props.type == 'create'){
             const empty = {
@@ -63,21 +64,21 @@ class Edit extends React.Component {
                 password:    '',
                 fio:         '',
                 phone:       '',
-                role:        null,                
+                role:        null,
                 city:        null,
                 workingDays: config.defaultWorkingDays,
                 categories:  []
             }
-            this.setState({ 
+            this.setState({
                 userInitial: empty,
-                user: empty 
+                user: empty
             })
         } else {
             const { login } = this.props.match.params
             try {
                 return getUserApi(login)
                 .then(user => {
-                    this.setState({ 
+                    this.setState({
                         userInitial: user,
                         user: user
                     }, () => {
@@ -88,7 +89,7 @@ class Edit extends React.Component {
                 console.log(`ERROR ${err.stack}`)
             }
         }
-        
+
     }
 
     getCategories(){
@@ -127,7 +128,7 @@ class Edit extends React.Component {
 
     async handleSave(e){
         const isCreateType = this.props.type == 'create'
-        
+
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -167,13 +168,13 @@ class Edit extends React.Component {
         this.setAllInputs(this.state.userInitial)
     }
 
-    setAllInputs(user){        
+    setAllInputs(user){
         if(user.login){
             this.onLoginChange(user.login)
-        }            
+        }
         if(user.password){
             this.onPasswordChange(user.password)
-        }        
+        }
         if(user.role){
             this.onRoleChange(user.role)
         }
@@ -203,10 +204,10 @@ class Edit extends React.Component {
     onRoleChange(val){
         const user = Object.assign({}, this.state.user)
         user.role = val
-        this.setState({ user: user }, () => {            
+        this.setState({ user: user }, () => {
             this.props.form.setFieldsValue({ role: val })
         })
-    }    
+    }
     onFioChange(val){
         this.props.form.setFieldsValue({ fio: val })
     }
@@ -217,7 +218,7 @@ class Edit extends React.Component {
         console.log('cities ', cities)
 
         this.props.form.setFieldsValue({ city: val })
-        
+
         if(cities.length){
             const cityId = _.findIndex(cities, city => {
                 return city.name == val
@@ -225,11 +226,11 @@ class Edit extends React.Component {
             const city = cities[cityId]
             console.log('city ', city)
             const cityNameUrl = city.nameUrl
-    
+
             getFieldDecorator('cityNameUrl', { initialValue: null })
             setFieldsValue({ cityNameUrl: cityNameUrl })
         }
-        
+
     }
     onPhoneChange(val){
         this.props.form.setFieldsValue({ phone: val })
@@ -240,9 +241,9 @@ class Edit extends React.Component {
     onCategoriesChange(arr){
         this.props.form.setFieldsValue({ categories: arr })
     }
-    
+
     render(){
-        const { 
+        const {
             user,
             isCreated,
             cities,
@@ -251,21 +252,27 @@ class Edit extends React.Component {
         const { getFieldDecorator }  = this.props.form
         const isCreateType = this.props.type == 'create'
         if(user){
+            const breadcrumbsLinks = [{ url: '/users', text:'Категории' }]
+            if(this.props.type == 'create'){
+                breadcrumbsLinks.push({ url: 'create', text: 'Новый работник' })
+            } else {
+                breadcrumbsLinks.push({ url: user.login, text: user.fio })
+            }
             return (
                 <Row className={ l.root }>
+                    <BreadcrumbsPanel
+                        history={ this.props.history }
+                        backButton={ true }
+                        links={ breadcrumbsLinks }
+                    />
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             <FormItem>
-                                { !isCreated ?
-                                    <Button 
+                                { !isCreated &&
+                                    <Button
                                         type='primary'
                                         htmlType='submit'
                                     >Сохранить</Button>
-                                    : <Button 
-                                        type='primary'
-                                    >
-                                        <Link to='/users/'>Назад</Link>
-                                    </Button>
                                 }
                                 { !isCreateType &&
                                     <Button
@@ -274,13 +281,13 @@ class Edit extends React.Component {
                                 }
                             </FormItem>
                         </Col>
-                        <Col sm={24} md={20}>                            
+                        <Col sm={24} md={20}>
                             <FormItem label='Фамилия Имя Отчество' className={ l.formItem }>
                                 {getFieldDecorator('fio', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onFioChange(val) } 
+                                        onChange={ val => this.onFioChange(val) }
                                     />
                                 )}
                             </FormItem>
@@ -290,33 +297,33 @@ class Edit extends React.Component {
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onLoginChange(val) } 
+                                        onChange={ val => this.onLoginChange(val) }
                                     />
                                 )}
                             </FormItem>
-                            
+
                             <FormItem label='Пароль'  className={ l.formItem }>
                                 {getFieldDecorator('password', { rules: [
                                     { required: false, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onPasswordChange(val) } 
+                                        onChange={ val => this.onPasswordChange(val) }
                                     />
                                 )}
                             </FormItem>
-                            
+
                             <FormItem label='Роль'  className={ l.formItem }>
                                 {getFieldDecorator('role', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Select onChange={ val => this.onRoleChange(val) }>
-                                        { 
+                                        {
                                             config.userRoles.map(role => (
-                                                <Option 
+                                                <Option
                                                     value={ role }
                                                     key={ role }
                                                 >{ role }</Option>
-                                            )) 
+                                            ))
                                         }
                                     </Select>
                                 )}
@@ -326,13 +333,13 @@ class Edit extends React.Component {
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Select onChange={ val => this.onCityChange(val) }>
-                                        { 
+                                        {
                                             cities && cities.map(city => (
-                                                <Option 
+                                                <Option
                                                     value={ city.name }
                                                     key={ city.name }
                                                 >{ city.name }</Option>
-                                            )) 
+                                            ))
                                         }
                                     </Select>
                                 )}
@@ -342,14 +349,14 @@ class Edit extends React.Component {
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
-                                        onChange={ val => this.onPhoneChange(val) } 
+                                        onChange={ val => this.onPhoneChange(val) }
                                     />
                                 )}
                             </FormItem>
                             { allCategories && user.role == 'работник' &&
                             <FormItem label='Виды техники'  className={ l.formItem }>
-                                {getFieldDecorator('categories', { rules: [{ 
-                                        required: user.role == 'работник' ? true : false, 
+                                {getFieldDecorator('categories', { rules: [{
+                                        required: user.role == 'работник' ? true : false,
                                         message: 'Обязательное поле'
                                 }]})(
                                     <CheckboxGroup
@@ -360,8 +367,8 @@ class Edit extends React.Component {
                             }
                             { user.role == 'работник' &&
                             <FormItem label='Рабочие дни'  className={ l.formItem }>
-                                {getFieldDecorator('workingDays', { rules: [{ 
-                                        required: user.role == 'работник' ? true : false, 
+                                {getFieldDecorator('workingDays', { rules: [{
+                                        required: user.role == 'работник' ? true : false,
                                         message: 'Обязательное поле'
                                 }]})(
                                     <CheckboxGroup
@@ -382,7 +389,7 @@ class Edit extends React.Component {
                     </Form>
                 </Row>
             )
-        } else return ( <Spin/> )        
+        } else return ( <Spin/> )
     }
 }
 

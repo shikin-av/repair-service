@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import _ from 'lodash'
 
-import { 
+import {
     getCities as getCitiesApi,
     deleteCity as deleteCityApi
 } from 'client/admin/api/cities'
@@ -18,8 +18,9 @@ const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
+import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
-import l from './GetAll.less'
+import l from  'client/admin/components/style/GetAll.less'
 
 class GetAll extends React.Component {
     constructor(props){
@@ -57,7 +58,7 @@ class GetAll extends React.Component {
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
-        }      
+        }
     }
 
     render(){
@@ -65,11 +66,18 @@ class GetAll extends React.Component {
         if(cities){
             return (
                 <div className={ l.root }>
+                    <BreadcrumbsPanel
+                        history={ this.props.history }
+                        backButton={ true }
+                        links={[
+                            { url: '/cities', text:'Офисы' }
+                        ]}
+                    />
                     <Link to='/cities/create'>
                         <Button className={ l.create }>+</Button>
                     </Link>
-                    <ContentList 
-                        items={ cities } 
+                    <ContentList
+                        items={ cities }
                         apiName='cities'
                         viewProperties={[
                             { value: 'name', type: 'string' },
@@ -81,7 +89,7 @@ class GetAll extends React.Component {
                     />
                 </div>
             )
-        } else return ( <Spin/> )        
+        } else return ( <Spin/> )
     }
 }
 

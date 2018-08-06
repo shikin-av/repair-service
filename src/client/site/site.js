@@ -30,10 +30,6 @@ class App extends React.Component {
         this.isMobile = device.mobile()
     }
 
-    componentDidMount(){
-        //socketsHandler()
-    }    
-
     render(){
         return (
             <div>
@@ -45,8 +41,8 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-    <Provider store={store}>
-        <Router history={history}>
+    <Provider store={ store }>
+        <Router history={ history }>
             <App />
         </Router>
     </Provider>,

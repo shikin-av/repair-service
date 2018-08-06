@@ -10,12 +10,9 @@ import 'babel-polyfill'
 
 import reducers from 'client/admin/reducers'
 import ContentRouter from 'client/admin/components/Router/Router.jsx'
-//import socketsHandler from 'client/admin/resources/socketsHandler'
-//import getCookie from 'client/admin/resources/getCookie'
 import MainMenu from 'client/admin/components/MainMenu/MainMenu.jsx'
 import 'client/admin/components/style/app.css'
 import OrderNotification from 'client/admin/components/content/OrderNotification/OrderNotification.jsx'
-
 
 require('antd/lib/icon/style/css')
 const Layout = require('antd/lib/layout')
@@ -29,13 +26,6 @@ const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyM
 class App extends React.Component {
     constructor(props){
         super(props)
-    }
-
-    componentDidMount(){
-        /*const authToken = getCookie('auth_token')
-        if(authToken){
-            socketsHandler(authToken)
-        }*/
     }
 
     render(){
@@ -57,8 +47,8 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-    <Provider store={store}>
-        <Router history={history}>
+    <Provider store={ store }>
+        <Router history={ history }>
             <App />
         </Router>
     </Provider>,

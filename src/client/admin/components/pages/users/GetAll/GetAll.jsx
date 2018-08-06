@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import _ from 'lodash'
 
-import { 
+import {
     getUsers as getUsersApi,
     deleteUser as deleteUserApi
 } from 'client/admin/api/users'
@@ -18,8 +18,9 @@ require('antd/lib/checkbox/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 import getCookie from 'client/admin/resources/getCookie'
+import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
-import l from './GetAll.less'
+import l from  'client/admin/components/style/GetAll.less'
 
 class GetAll extends React.Component {
     constructor(props){
@@ -32,7 +33,7 @@ class GetAll extends React.Component {
 
     componentWillMount(){
         this.userCityNameUrl = getCookie('userCityNameUrl')
-        
+
         try {
             return getUsersApi()
             .then(users => {
@@ -60,19 +61,25 @@ class GetAll extends React.Component {
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
-        }      
+        }
     }
 
-    checkOnlyCity(e){        
+    checkOnlyCity(e){
         this.setState({ usersOnlyCity: e.target.checked })
     }
 
     render(){
         const { users, usersOnlyCity } = this.state
         if(users){
-            console.log(users)
             return (
                 <div className={ l.root }>
+                    <BreadcrumbsPanel
+                        history={ this.props.history }
+                        backButton={ true }
+                        links={[
+                            { url: '/users', text: 'Работники' }
+                        ]}
+                    />
                     <Link to='/users/create'>
                         <Button className={ l.create }>+</Button>
                     </Link>
@@ -84,14 +91,14 @@ class GetAll extends React.Component {
                     >Работники только Вашего города</Checkbox>
                     }
 
-                    <ContentList 
-                        items={ 
-                            (this.userCityNameUrl && usersOnlyCity) 
+                    <ContentList
+                        items={
+                            (this.userCityNameUrl && usersOnlyCity)
                             ? users.filter(user => {
                                 return user.cityNameUrl == this.userCityNameUrl
-                            }) 
-                            :users 
-                        } 
+                            })
+                            :users
+                        }
                         apiName='users'
                         viewProperties={[
                             { value: 'fio', type: 'string' },
@@ -103,7 +110,7 @@ class GetAll extends React.Component {
                     />
                 </div>
             )
-        } else return ( <Spin/> )        
+        } else return ( <Spin/> )
     }
 }
 
