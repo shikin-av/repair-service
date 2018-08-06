@@ -4,8 +4,8 @@ import openSocket from 'socket.io-client'
 
 import config from 'config/client'
 import getCookie from 'client/admin/resources/getCookie'
-import { 
-    getOrdersOptions as getOrdersOptionsSelector 
+import {
+    getOrdersOptions as getOrdersOptionsSelector
 } from 'client/admin/selectors/ordersOptions'
 import {
     appendOrder as appendOrderAction
@@ -48,12 +48,12 @@ class OrderNotification extends React.Component {
         const { ordersOptions, appendOrderAction } = this.props
         const key = order.id
         const btn = (
-            <Button 
-                type='primary' 
-                size='small' 
+            <Button
+                type='primary'
+                size='small'
                 onClick={ () => notification.close(key) }
             >
-                <a href={ `/admin#/orders/city/${ order.cityNameUrl }/date/${ order.dateToLink }/id/${ order.id }` }>Открыть</a>
+                <a href={ `admin#/orders/date/${ order.dateToLink }/id/${ order.id }` }>Открыть</a>
             </Button>
         )
         const category = order.categoryShortName
@@ -62,16 +62,16 @@ class OrderNotification extends React.Component {
             day: 'numeric'
         }
         const date     = new Date(order.date)
-        const dateFormatted = date.toLocaleDateString('ru-RU', dateOptions)    
+        const dateFormatted = date.toLocaleDateString('ru-RU', dateOptions)
         const time     = order.time ? `в ${ order.time }` : ''
-        
+
         if(ordersOptions){
             const optionsKeys = Object.keys(ordersOptions)
             let discrepancy = false
             for(let i in optionsKeys){
                 console.log(`option ${ optionsKeys[i] } = ${ ordersOptions[optionsKeys[i]] }`)
                 console.log(`order  ${ optionsKeys[i] } = ${ order[optionsKeys[i]] }`)
-                
+
                 const optionVal = ordersOptions[optionsKeys[i]]
                 const orderVal  = order[optionsKeys[i]]
                 if(orderVal != optionVal){
@@ -83,7 +83,7 @@ class OrderNotification extends React.Component {
                 appendOrderAction(order)
             }
         }
-        
+
 
         notification.open({
             message: `Заявка №${ order.id }`,
@@ -94,7 +94,7 @@ class OrderNotification extends React.Component {
         })
     }
 
-    render(){ 
+    render(){
         return null
     }
 }

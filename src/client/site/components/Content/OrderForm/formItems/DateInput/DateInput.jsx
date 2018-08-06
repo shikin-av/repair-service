@@ -1,5 +1,5 @@
 import React from 'react'
-import { func } from 'prop-types'
+import { func, object } from 'prop-types'
 
 const DatePicker = require('antd/lib/date-picker')
 require('antd/lib/date-picker/style/css')
@@ -27,11 +27,15 @@ class DateInput extends React.Component {
     }
 
     componentWillMount(){
-        this.onDateChange(this.today)
-    }    
+        let initialDate = this.today
+        if(this.props.defaultDate){
+            initialDate = this.props.defaultDate
+        }
+        this.onDateChange(initialDate)
+    }
 
     onDateChange(date) {
-        this.setState({ currentDate: date }, () => {            
+        this.setState({ currentDate: date }, () => {
             const dateString = date.format(dateFormat)
             switch(dateString){
                 case this.today.format(dateFormat):
@@ -47,18 +51,23 @@ class DateInput extends React.Component {
     }
 
     disabledDate(current) {
-        return current && current < moment().subtract(1, 'day')
+        const { disablePrevDates } = this.props
+        if(disablePrevDates){
+            return current && current < moment().subtract(1, 'day')
+        } else {
+            return false
+        }
     }
 
     render(){
         const { currentDate, activeEl } = this.state
         return (
             <div className={ l.root }>
-                <Button 
+                <Button
                     onClick={ e => this.onDateChange(this.today) }
                     className={ (activeEl == 'today') ? l.activeButton : null }
                 >Сегодня</Button>
-                
+
                 <Button
                     onClick={ e => this.onDateChange(this.tomorrow) }
                     className={ (activeEl == 'tomorrow') ? l.activeButton : null }
@@ -82,6 +91,7 @@ class DateInput extends React.Component {
 
 DateInput.propTypes = {
     onDataToForm: func.isRequired,
+    defaultDate:  object
 }
 
 export default DateInput

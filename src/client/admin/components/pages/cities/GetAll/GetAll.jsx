@@ -68,7 +68,7 @@ class GetAll extends React.Component {
                 <div className={ l.root }>
                     <BreadcrumbsPanel
                         history={ this.props.history }
-                        backButton={ true }
+                        backButton={ false }
                         links={[
                             { url: '/cities', text:'Офисы' }
                         ]}

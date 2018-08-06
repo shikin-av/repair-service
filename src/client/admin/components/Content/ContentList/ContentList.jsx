@@ -21,7 +21,7 @@ class ContentList extends React.Component {
     deleteItem(nameUrl){
         this.props.onDelete(nameUrl)
     }
-    
+
     itemRender(item){
         const { viewProperties, apiName, nameUrl, type } = this.props
         let link = `/${ apiName }/${ item[nameUrl] }`
@@ -29,19 +29,19 @@ class ContentList extends React.Component {
             link = `/${ apiName }/date/${ item.dateToLink }/id/${ item.id }`
         }
         return(
-            <List.Item 
+            <List.Item
                 key={ Math.random() }
                 className={ l.listItem }
                 actions={
                     [
                         <Link to={ link }>
                             <Icon type='edit' />
-                        </Link>, 
-                        <Popconfirm 
-                            title={ `Удалить ${ item['shortName'] || item['name'] || item['fio'] || '' } ?` } 
-                            onConfirm={ e => this.deleteItem(item[nameUrl]) } 
-                            onCancel={ null } 
-                            okText="Да" 
+                        </Link>,
+                        <Popconfirm
+                            title={ `Удалить ${ item['shortName'] || item['name'] || item['fio'] || '' } ?` }
+                            onConfirm={ e => this.deleteItem(item[nameUrl]) }
+                            onCancel={ null }
+                            okText="Да"
                             cancelText="Нет"
                         >
                             <Icon type='delete' />
@@ -54,7 +54,37 @@ class ContentList extends React.Component {
                     viewProperties.map(prop => {
                         switch(prop.type){
                             case 'string':
-                                return ( <span key={ Math.random() }>{ item[prop.value] }</span> )
+                                if(prop.value == 'status'){
+                                    const status = item[prop.value]
+                                    let statusText = 'Новая'
+                                    let statusColor = '#1890ff'
+                                    if(status == 'working'){
+                                        statusText = 'Выполняется'
+                                        statusColor = 'orange'
+                                    } else if(status == 'complete'){
+                                        statusText = 'Завершена'
+                                        statusColor = 'green'
+                                    } else if(status == 'trash'){
+                                        statusText = 'Удалена'
+                                        statusColor = 'grey'
+                                    }
+                                    return (
+                                        <span
+                                            key={ Math.random() }
+                                            className={ l.property }
+                                            style={{
+                                                color: statusColor,
+                                                fontWeight: 'bold'
+                                            }}
+                                        >{ statusText }</span>
+                                    )
+                                }
+                                return (
+                                    <span
+                                        key={ Math.random() }
+                                        className={ l.property }
+                                    >{ item[prop.value] }</span>
+                                )
                             case 'image':
                                 return( <img key={ Math.random() } src={ `${ config.assetsPath }/imgs/${ item[prop.value] }` }/> )
                             default: return null
@@ -65,7 +95,7 @@ class ContentList extends React.Component {
             </List.Item>
         )
     }
-    
+
     render(){
         const { items } = this.props
         return (
@@ -99,8 +129,8 @@ export default ContentList
 /*
 Use:
 
-<ContentList 
-    items={ categories } 
+<ContentList
+    items={ categories }
     apiName='categories'
     viewProperties={[
         { value: 'image', type: 'image' },

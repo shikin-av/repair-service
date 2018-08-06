@@ -9,7 +9,7 @@ const GalleryPage = props => (
     <div>
         <BreadcrumbsPanel
             history={ props.history }
-            backButton={ true }
+            backButton={ false }
             links={[
                 { url: '/gallery', text:'Галерея изображений' }
             ]}

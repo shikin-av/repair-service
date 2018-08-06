@@ -14,6 +14,7 @@ import UserEdit from 'client/admin/components/pages/users/Edit/Edit.jsx'
 import UserCreate from 'client/admin/components/pages/users/Create/Create.jsx'
 
 import OrdersByCity from 'client/admin/components/pages/orders/GetAll/ByCity.jsx'
+import OrdersByCityDate from 'client/admin/components/pages/orders/GetAll/ByCityDate.jsx'
 
 import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
@@ -59,6 +60,11 @@ const Router = () => (
         <Route
             exact path='/orders'
             component={ OrdersByCity }
+
+        />
+        <Route
+            exact path='/orders/date/:dateString'
+            component={ OrdersByCityDate }
 
         />
         <Route

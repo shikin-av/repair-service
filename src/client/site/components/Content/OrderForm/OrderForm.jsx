@@ -34,10 +34,10 @@ import Problems          from './formItems/Problems/Problems.jsx'
 import SelectCity        from './formItems/SelectCity/SelectCity.jsx'
 
 import { createOrder as createOrderApi } from 'client/site/api'
-import {     
+import {
     setCurrentCity   as setCurrentCityAction
 } from 'client/site/actions/cities'
-import { 
+import {
     getCities      as getCitiesSelector,
     getCurrentCity as getCurrentCitySelector
 } from 'client/site/selectors/cities'
@@ -55,24 +55,24 @@ class Order extends React.Component {
     async handleSubmit(e){
         const { getFieldDecorator }  = this.props.form
         const { currentCity, category } = this.props
-        e.preventDefault()        
-        this.onCityChange(currentCity.name)                
+        e.preventDefault()
+        this.onCityChange(currentCity.name)
         getFieldDecorator('categoryShortName', { initialValue: category.shortName })
         getFieldDecorator('categoryNameUrl',   { initialValue: category.nameUrl })
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                //console.log(values)                
+                //console.log(values)
                 try {
                     this.setState({ status: 'pending' })
                     createOrderApi(values)
-                    .then(res => {                        
+                    .then(res => {
                         if(res.status == 'OK'){
                             this.setState({ status: 'complite' })
                             const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
                             socket.on('connected', data => {
                                 console.log('i connected')
                                 socket.emit('clientOrder', res.order)
-                            })        
+                            })
                         } else {
                             this.setState({ status: 'error' })
                         }
@@ -91,7 +91,7 @@ class Order extends React.Component {
         const { status } = this.state
         const showBtn = (text='Отправить', disabled=false) => (
             <FormItem>
-                <Button 
+                <Button
                     disabled={ disabled }
                     type='primary'
                     htmlType='submit'
@@ -108,7 +108,7 @@ class Order extends React.Component {
             case 'complite':
                 //TODO clear all inputs
                 return (
-                    <Alert 
+                    <Alert
                         message='Ваша заявка принята в работу. Наш менеджер свяжется с Вами в ближайшее время'
                         type='success'
                         closable
@@ -117,7 +117,7 @@ class Order extends React.Component {
                 )
             case 'error':
                 return (
-                    <Alert 
+                    <Alert
                         message={ `Что то пошло не так. Свяжитесь с нами по телефону ${ currentCity.phone }` }
                         type='error'
                         closable
@@ -126,7 +126,7 @@ class Order extends React.Component {
                 )
         }
     }
-    
+
     onFirmSelect(val) {
         this.props.form.setFieldsValue({ firm: val})
     }
@@ -135,15 +135,15 @@ class Order extends React.Component {
         const { getFieldDecorator, getFieldValue } = this.props.form
         this.props.form.setFieldsValue({ date: val })
 
-        const dateViewOptions = {        
+        const dateViewOptions = {
             month: 'long',
             day: 'numeric'
-        }        
+        }
         const date = new Date(val)
         const dateToView = date.toLocaleDateString('ru-RU', dateViewOptions)
         getFieldDecorator('dateToView',   { initialValue: dateToView })
-        
-        const dateLinkFormat = 'YYYY-MM-DD'        
+
+        const dateLinkFormat = 'YYYY-MM-DD'
         const dateToLink = moment(date).format(dateLinkFormat)
         getFieldDecorator('dateToLink',   { initialValue: dateToLink })
         console.log('dateToView ', getFieldValue('dateToView'), ' | dateToLink ', getFieldValue('dateToLink'))
@@ -177,33 +177,33 @@ class Order extends React.Component {
         this.props.form.setFieldsValue({ name: val })
     }
 
-    onProblemsChange(values){        
+    onProblemsChange(values){
         this.props.form.setFieldsValue({ problems: values })
     }
 
     onCityChange(cityName){
-        const { 
+        const {
             cities,
-            setCurrentCityAction 
+            setCurrentCityAction
         } = this.props
         const { getFieldDecorator } = this.props.form
-        
+
         this.props.form.setFieldsValue({ city: cityName })
-        const currentCity = cities[_.findIndex(cities, { name: cityName })]                
+        const currentCity = cities[_.findIndex(cities, { name: cityName })]
         const cityNameUrl = currentCity.nameUrl
         getFieldDecorator('cityNameUrl',   { initialValue: cityNameUrl })
 
         console.log('name ', cityName, ' | nameUrl ', cityNameUrl)
 
         setCurrentCityAction(currentCity)
-        localStorage.setItem('currentCity', JSON.stringify(currentCity))        
+        localStorage.setItem('currentCity', JSON.stringify(currentCity))
     }
 
     render(){
         const { category, cities, currentCity } = this.props
         const { getFieldDecorator }  = this.props.form
         const categoriesLink = '/categories'
-        
+
         if(category && category.name){
             return (
                 <div className={ l.root }>
@@ -242,7 +242,10 @@ class Order extends React.Component {
                             >
                                 <FormItem label='Когда нужен мастер'>
                                     {getFieldDecorator('date', { rules: [] })(
-                                        <DateInput onDataToForm={ val => this.onDateChange(val) } />
+                                        <DateInput
+                                            onDataToForm={ val => this.onDateChange(val) }
+                                            disablePrevDates={ true }
+                                        />
                                     )}
                                 </FormItem>
                             </Col>
@@ -257,7 +260,7 @@ class Order extends React.Component {
                                 </FormItem>
                             </Col>
                         </Row>
-                        
+
 
                         <FormItem label='Фирма производитель:'>
                             {getFieldDecorator('firm', { rules: [] })(
@@ -270,13 +273,13 @@ class Order extends React.Component {
                                 <HowOld onDataToForm={ val => this.onHowOldChange(val) } />
                             )}
                         </FormItem>
-                        
+
                         { category.problems.length ?
                             <FormItem label='Выберите варианты:'>
                                 {getFieldDecorator('problems', { rules: [] })(
-                                    <Problems 
+                                    <Problems
                                         problems={ category.problems }
-                                        onDataToForm={ val => this.onProblemsChange(val) } 
+                                        onDataToForm={ val => this.onProblemsChange(val) }
                                     />
                                 )}
                             </FormItem>
@@ -288,14 +291,14 @@ class Order extends React.Component {
                                 <Description onDataToForm={ val => this.onDescriptionChange(val) } />
                             )}
                         </FormItem>
-                        { currentCity && 
+                        { currentCity &&
                           currentCity.name &&
                           cities.length &&
                         <FormItem label='Ваш город:'>
                             {getFieldDecorator('city', { rules: [
                                 { required: true, message: 'Обязательное поле' }
                             ] })(
-                                <SelectCity 
+                                <SelectCity
                                     onDataToForm={ val => this.onCityChange(val) }
                                     cities={ cities }
                                     currentCity={ currentCity }
@@ -308,18 +311,18 @@ class Order extends React.Component {
                             {getFieldDecorator('address', { rules: [
                                 { required: true, message: 'Обязательное поле' }
                             ] })(
-                                <AddressInput 
+                                <AddressInput
                                     onDataToForm={ val => this.onAddressChange(val) }
-                                    city={ currentCity.name } 
+                                    city={ currentCity.name }
                                 />
                             )}
                         </FormItem>
                         }
                         <FormItem label='Квартира:'>
-                            {getFieldDecorator('phone', { rules: [                                
+                            {getFieldDecorator('phone', { rules: [
                             ] })(
-                                <SimpleInput 
-                                    onDataToForm={ val => this.onApartmentChange(val) } 
+                                <SimpleInput
+                                    onDataToForm={ val => this.onApartmentChange(val) }
                                     placeholder='Номер квартира'
                                 />
                             )}
@@ -329,8 +332,8 @@ class Order extends React.Component {
                             {getFieldDecorator('phone', { rules: [
                                 { required: true, message: 'Обязательное поле' }
                             ] })(
-                                <SimpleInput 
-                                    onDataToForm={ val => this.onPhoneChange(val) } 
+                                <SimpleInput
+                                    onDataToForm={ val => this.onPhoneChange(val) }
                                     placeholder='Контактный номер телефона'
                                 />
                             )}
@@ -340,15 +343,15 @@ class Order extends React.Component {
                             {getFieldDecorator('name', { rules: [
                                 { required: true, message: 'Обязательное поле' }
                             ] })(
-                                <SimpleInput 
-                                    onDataToForm={ val => this.onNameChange(val) } 
+                                <SimpleInput
+                                    onDataToForm={ val => this.onNameChange(val) }
                                     placeholder='Контактное лицо'
                                 />
                             )}
                         </FormItem>
 
                         { this.showSubmitOrMessage() }
-                        
+
                     </Form>
 
                 </div>
@@ -367,9 +370,9 @@ const OrderForm = Form.create()(Order)
 
 const mapStateToProps = state => ({
     cities: getCitiesSelector(state),
-    currentCity: getCurrentCitySelector(state)  
+    currentCity: getCurrentCitySelector(state)
 })
-const mapDispatchToProps = {    
+const mapDispatchToProps = {
     setCurrentCityAction
 }
 export default connect(mapStateToProps, mapDispatchToProps)(OrderForm)
