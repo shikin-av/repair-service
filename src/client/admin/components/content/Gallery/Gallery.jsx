@@ -7,7 +7,7 @@ import {
     deleteImage as deleteImageApi
 } from 'client/admin/api/gallery'
 import UploadImage from 'client/admin/components/content/UploadImage/UploadImage.jsx'
-import config from 'client/../config/client'
+import config from 'config/client'
 
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')

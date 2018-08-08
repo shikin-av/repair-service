@@ -13,5 +13,16 @@ export default {
     assetsPath:         common.assetsPath,
     userRoles:          common.userRoles,
     defaultWorkingDays: common.defaultWorkingDays,
-    apiPath: '/admin/api'
+    apiPath: '/admin/api',
+    date: {
+        dateLinkFormat: 'YYYY-MM-DD',
+        dateViewOptions: {
+            month: 'long',
+            day: 'numeric'
+        }
+    },
+    workTime: {
+        begin: 9,
+        end: 18
+    }
 }

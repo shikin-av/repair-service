@@ -65,7 +65,7 @@ class OrderNotification extends React.Component {
         const dateFormatted = date.toLocaleDateString('ru-RU', dateOptions)
         const time     = order.time ? `в ${ order.time }` : ''
 
-        if(ordersOptions){
+        if(ordersOptions){  // order --> list
             const optionsKeys = Object.keys(ordersOptions)
             let discrepancy = false
             for(let i in optionsKeys){

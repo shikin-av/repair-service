@@ -2,7 +2,6 @@ import React from 'react'
 import { array, string } from 'prop-types'
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
-import OrdersFilter from 'client/admin/components/content/OrdersFilter/OrdersFilter.jsx'
 
 class GetAll extends React.Component {
     constructor(props){
@@ -13,10 +12,6 @@ class GetAll extends React.Component {
         const { orders, cityNameUrl, dateString } = this.props
         return (
             <div>
-                <OrdersFilter
-                    cityNameUrl={ cityNameUrl }
-                    dateString={ dateString }
-                />
                 <ContentList
                     items={ orders }
                     apiName='orders'

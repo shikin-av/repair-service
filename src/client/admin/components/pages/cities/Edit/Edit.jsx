@@ -192,6 +192,7 @@ class Edit extends React.Component {
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
+                                        disabled={ this.props.type == 'create' ? false : true}
                                         onChange={ val => this.onNameUrlChange(val) }
                                     />
                                 )}

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import config from 'client/../config/client'
+import config from 'config/client'
 
 import l from './CategoryItem.less'
 

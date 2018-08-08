@@ -22,7 +22,7 @@ require('antd/lib/alert/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 
-import config            from 'client/../config/client'
+import config            from 'config/client'
 import FirmsAutocomplete from './formItems/FirmsAutocomplete/FirmsAutocomplete.jsx'
 import DateInput         from './formItems/DateInput/DateInput.jsx'
 import TimeInput         from './formItems/TimeInput/TimeInput.jsx'
@@ -134,19 +134,14 @@ class Order extends React.Component {
     onDateChange(val){
         const { getFieldDecorator, getFieldValue } = this.props.form
         this.props.form.setFieldsValue({ date: val })
-
-        const dateViewOptions = {
-            month: 'long',
-            day: 'numeric'
-        }
+        
         const date = new Date(val)
-        const dateToView = date.toLocaleDateString('ru-RU', dateViewOptions)
+        const dateToView = date.toLocaleDateString('ru-RU', config.date.dateViewOptions)
         getFieldDecorator('dateToView',   { initialValue: dateToView })
-
-        const dateLinkFormat = 'YYYY-MM-DD'
-        const dateToLink = moment(date).format(dateLinkFormat)
+        
+        const dateToLink = moment(date).format(config.date.dateLinkFormat)
         getFieldDecorator('dateToLink',   { initialValue: dateToLink })
-        console.log('dateToView ', getFieldValue('dateToView'), ' | dateToLink ', getFieldValue('dateToLink'))
+        //console.log('dateToView ', getFieldValue('dateToView'), ' | dateToLink ', getFieldValue('dateToLink'))
     }
 
     onTimeChange(val){
@@ -235,32 +230,22 @@ class Order extends React.Component {
                     </Row>
 
                     <Form onSubmit = { e => this.handleSubmit(e) }>
-                        <Row>
-                            <Col
-                                sm={24}
-                                md={16}
-                            >
-                                <FormItem label='Когда нужен мастер'>
-                                    {getFieldDecorator('date', { rules: [] })(
-                                        <DateInput
-                                            onDataToForm={ val => this.onDateChange(val) }
-                                            disablePrevDates={ true }
-                                        />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col
-                                sm={24}
-                                md={8}
-                            >
-                                <FormItem label='В какое время'>
-                                    {getFieldDecorator('time', { rules: [] })(
-                                        <TimeInput onDataToForm={ val => this.onTimeChange(val) } />
-                                    )}
-                                </FormItem>
-                            </Col>
-                        </Row>
-
+                        
+                        <FormItem label='Когда нужен мастер' className={ l.inline }>
+                            {getFieldDecorator('date', { rules: [] })(
+                                <DateInput
+                                    onDataToForm={ val => this.onDateChange(val) }
+                                    disablePrevDates={ true }
+                                />
+                            )}
+                        </FormItem>
+                    
+                        <FormItem label='В какое время' className={ l.inline }>
+                            {getFieldDecorator('time', { rules: [] })(
+                                <TimeInput onDataToForm={ val => this.onTimeChange(val) } />
+                            )}
+                        </FormItem>
+                            
 
                         <FormItem label='Фирма производитель:'>
                             {getFieldDecorator('firm', { rules: [] })(
@@ -319,7 +304,7 @@ class Order extends React.Component {
                         </FormItem>
                         }
                         <FormItem label='Квартира:'>
-                            {getFieldDecorator('phone', { rules: [
+                            {getFieldDecorator('apartment', { rules: [
                             ] })(
                                 <SimpleInput
                                     onDataToForm={ val => this.onApartmentChange(val) }

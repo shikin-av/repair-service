@@ -20,6 +20,7 @@ import {
 } from 'client/admin/actions/ordersOptions'
 
 import DateInput from 'client/site/components/content/OrderForm/formItems/DateInput/DateInput.jsx'
+import config from 'config/client'
 
 class OrderFilter extends React.Component {
     constructor(props){
@@ -35,7 +36,7 @@ class OrderFilter extends React.Component {
                 const link = `/admin#/orders/date/${ values.dateString }`
                 setOrdersOptionsAction({
                     cityNameUrl: cityNameUrl,
-                    dateString: values.dateString
+                    dateToLink: values.dateString
                 }).then(() => {
                     window.location.replace(link)
                 })
@@ -44,14 +45,12 @@ class OrderFilter extends React.Component {
     }
 
     componentDidMount(){
-        const { cityNameUrl, dateString } = this.props
-        console.log('FILTER cityNameUrl', cityNameUrl, 'dateString', dateString)
+        const { cityNameUrl, dateString } = this.props        
     }
 
     onDateChange(date){
         const { getFieldDecorator } = this.props.form
-        const dateLinkFormat = 'YYYY-MM-DD'
-        const dateString = moment(date).format(dateLinkFormat)
+        const dateString = moment(date).format(config.date.dateLinkFormat)
         getFieldDecorator('dateString',   { initialValue: dateString })
     }
 

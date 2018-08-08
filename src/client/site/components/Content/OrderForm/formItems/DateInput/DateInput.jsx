@@ -1,5 +1,5 @@
 import React from 'react'
-import { func, object } from 'prop-types'
+import { func, object, bool } from 'prop-types'
 
 const DatePicker = require('antd/lib/date-picker')
 require('antd/lib/date-picker/style/css')
@@ -90,8 +90,9 @@ class DateInput extends React.Component {
 }
 
 DateInput.propTypes = {
-    onDataToForm: func.isRequired,
-    defaultDate:  object
+    onDataToForm:     func.isRequired,
+    defaultDate:      object,
+    disablePrevDates: bool
 }
 
 export default DateInput

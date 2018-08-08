@@ -9,7 +9,9 @@ export default () => {
     api.get('/city/:cityNameUrl', async (req, res, next) => {
         return await Order.find({
             cityNameUrl: req.params.cityNameUrl
-        },(err, orders) => {
+        })
+        .sort({ date: -1 })
+        .exec((err, orders) => {
             if(!err){
                 return res.json(orders)
             } else {
@@ -34,7 +36,9 @@ export default () => {
                     $gte: beginDay.toDate(),
                     $lt:  endDay.toDate()
                 }
-            },(err, orders) => {
+            })
+            .sort({ date: -1 })
+            .exec((err, orders) => {
                 if(!err){
                     return res.json(orders)
                 } else {
@@ -79,10 +83,14 @@ export default () => {
         const { cityNameUrl, dateString, id } = req.params
         const { 
             date,
+            dateToLink,
+            dateToView,
             time,
             description,
             address,
+            apartment,
             phone,
+            name,
             worker,
             workerLogin,
             status
@@ -107,10 +115,14 @@ export default () => {
                         return next()
                     } else {
                         order.date            = date        || order.date
+                        order.dateToLink      = dateToLink  || order.dateToLink
+                        order.dateToView      = dateToView  || order.dateToView
                         order.time            = time        || order.time
                         order.description     = description || order.description
                         order.address         = address     || order.address
+                        order.apartment       = apartment   || order.apartment
                         order.phone           = phone       || order.phone
+                        order.name            = name        || order.name
                         if(order.status == 'new'){
                             order.status      = status      || order.status
                             order.worker      = worker      || order.worker

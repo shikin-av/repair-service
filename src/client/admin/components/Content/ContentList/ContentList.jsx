@@ -2,7 +2,7 @@ import React from 'react'
 import { array, string, func } from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import config from 'client/../config/client'
+import config from 'config/client'
 
 import l from './ContentList.less'
 

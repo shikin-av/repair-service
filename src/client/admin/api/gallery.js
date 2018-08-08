@@ -1,4 +1,4 @@
-import config from 'client/../config/client'
+import config from 'config/client'
 const apiPath = config.apiPath
 
 export const uploadUrl = 'admin/api/gallery/upload'

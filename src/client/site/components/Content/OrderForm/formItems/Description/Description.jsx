@@ -1,5 +1,5 @@
 import React from 'react'
-import { func } from 'prop-types'
+import { func, string } from 'prop-types'
 
 const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
@@ -20,13 +20,15 @@ class Description extends React.Component {
                 rows={4}
                 onChange={ e => this.onChange(e) }
                 placeholder='Своими словами: что происходит или что нужно сделать?'
+                defaultValue={ this.props.defaultValue }
             />
         )
     }
 }
 
 Description.propTypes = {
-    onDataToForm: func.isRequired
+    onDataToForm: func.isRequired,
+    defaultValue: string
 }
 
 export default Description

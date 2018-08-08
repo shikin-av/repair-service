@@ -7,25 +7,56 @@ const { SubMenu } = Menu
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
 
-import menu from 'client/../config/menuAdmin'
+import menu from 'config/menuAdmin'
 
 import l from './MainMenu.less'
 
 const MainMenu = props => (
     <Menu
-        mode='inline'
+        mode='vertical'
         className={ l.root }
     >
         {
-            menu.map(item =>(
-                <Menu.Item 
-                    key={ Math.random() }
-                >
-                    <Link to={ item.url }>
-                        { item.text }
-                    </Link>
-                </Menu.Item>
-            ))
+            menu.map(item =>{
+                let text = ( <span>{ item.text }</span> )
+                if(item.icon){
+                    text = ( <span><Icon type={ item.icon } />{ item.text }</span> )
+                }
+                if(item.submenu){
+                    return (
+                        <SubMenu
+                            key={ Math.random() }
+                            title={ text }
+                        >
+                        {
+                            item.submenu.map(item => {
+                                let text = ( <span>{ item.text }</span> )
+                                if(item.icon){
+                                    text = ( <span><Icon type={ item.icon } />{ item.text }</span> )
+                                }
+                                return (
+                                    <Menu.Item 
+                                        key={ Math.random() }
+                                    >
+                                        <Link to={ item.url }>
+                                            { text }
+                                        </Link>
+                                    </Menu.Item>
+                                )
+                            })
+                        }
+                        </SubMenu>
+                    )
+                } else return (
+                    <Menu.Item 
+                        key={ Math.random() }
+                    >
+                        <Link to={ item.url }>
+                            { text }
+                        </Link>
+                    </Menu.Item>
+                )
+            })
         }
     </Menu>
 )

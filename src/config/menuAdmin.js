@@ -1,22 +1,46 @@
 export default [     //TODO from api
     {
+        url: '/',
+        text: 'Главная',
+        icon: 'home'
+    },
+    {
         url: '/orders',
-        text: 'Заявки'
+        text: 'Заявки',
+        icon: 'message',
+        submenu: [
+            {
+                url: '/orders',
+                text: 'Сегодня',
+            },
+            {
+                url: '/orders/all',
+                text: 'Все заявки',
+            },
+            {
+                url: '/orders/calendar',
+                text: 'Календарь',
+            },
+        ]
     },
     {
         url: '/users',
-        text: 'Работники'
+        text: 'Работники',
+        icon: 'team'
     },
     {
         url: '/categories',
-        text: 'Виды техники'
+        text: 'Виды техники',
+        icon: 'laptop'
     },
     {
         url: '/cities',
-        text: 'Офисы'
+        text: 'Офисы',
+        icon: 'environment-o'
     },
     {
         url: '/gallery',
-        text: 'Галерея изображений'
+        text: 'Галерея изображений',
+        icon: 'picture'
     }
 ]

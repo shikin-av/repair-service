@@ -8,7 +8,7 @@ import {
     editCategory as editCategoryApi
 } from 'client/admin/api/categories'
 
-import config from 'client/../config/server'
+import config from 'config/server'
 import Gallery from 'client/admin/components/content/Gallery/Gallery.jsx'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
@@ -303,7 +303,7 @@ class Edit extends React.Component {
                             <FormItem
                                 >
                                 {getFieldDecorator('image', { rules: [
-                                            { required: true, message: 'Обязательное поле' }
+                                    { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Button
                                         onClick = { e => this.openGallery() }

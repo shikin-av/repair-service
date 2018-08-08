@@ -70,8 +70,9 @@ const  OrderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    worker: { 
-        type: String,
+    worker: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: false
     },
     workerLogin: {
@@ -79,7 +80,7 @@ const  OrderSchema = new mongoose.Schema({
         required: false
     },
     status: {
-        type: String,        
+        type: String,
         enum: ['new', 'working', 'complete', 'trash'],
         default: 'new',
         required: true,

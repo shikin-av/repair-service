@@ -13,6 +13,7 @@ import Users from 'client/admin/components/pages/users/GetAll/GetAll.jsx'
 import UserEdit from 'client/admin/components/pages/users/Edit/Edit.jsx'
 import UserCreate from 'client/admin/components/pages/users/Create/Create.jsx'
 
+import OrderEdit from 'client/admin/components/pages/orders/Edit/Edit.jsx'
 import OrdersByCity from 'client/admin/components/pages/orders/GetAll/ByCity.jsx'
 import OrdersByCityDate from 'client/admin/components/pages/orders/GetAll/ByCityDate.jsx'
 
@@ -55,22 +56,30 @@ const Router = () => (
         <Route
             exact path='/users/:login'
             component={ UserEdit }
-
+        />
+        <Route
+            exact path='/'
+            component={ OrdersByCityDate }
         />
         <Route
             exact path='/orders'
+            component={ OrdersByCityDate }
+        />
+        <Route
+            exact path='/orders/all'
             component={ OrdersByCity }
-
         />
         <Route
             exact path='/orders/date/:dateString'
             component={ OrdersByCityDate }
-
+        />
+        <Route
+            exact path='/orders/date/:dateString/id/:id'
+            component={ OrderEdit }
         />
         <Route
             exact path='/gallery'
             component={ Gallery }
-
         />
     </Switch>
 )

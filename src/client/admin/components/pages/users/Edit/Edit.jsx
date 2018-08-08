@@ -1,6 +1,6 @@
 import React from 'react'
 import { string } from 'prop-types'
-import { Link } from 'react-router-dom'
+//import { Link } from 'react-router-dom'
 import _ from 'lodash'
 
 import {
@@ -14,7 +14,7 @@ import {
 import {
     getCategories as getCategoriesApi
 } from 'client/admin/api/categories'
-import config from 'client/../config/client'
+import config from 'config/client'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 
 const Row = require('antd/lib/row')
@@ -224,7 +224,7 @@ class Edit extends React.Component {
                 return city.name == val
             })
             const city = cities[cityId]
-            console.log('city ', city)
+            //console.log('city ', city)
             const cityNameUrl = city.nameUrl
 
             getFieldDecorator('cityNameUrl', { initialValue: null })
@@ -252,7 +252,7 @@ class Edit extends React.Component {
         const { getFieldDecorator }  = this.props.form
         const isCreateType = this.props.type == 'create'
         if(user){
-            const breadcrumbsLinks = [{ url: '/users', text:'Категории' }]
+            const breadcrumbsLinks = [{ url: '/users', text:'Работники' }]
             if(this.props.type == 'create'){
                 breadcrumbsLinks.push({ url: 'create', text: 'Новый работник' })
             } else {

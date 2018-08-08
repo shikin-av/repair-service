@@ -1,4 +1,4 @@
-import config from 'client/../config/client'
+import config from 'config/client'
 const apiPath = config.apiPath
 
 export const getOrdersByCity = async city => {
@@ -17,7 +17,15 @@ export const getOrdersByCityDate = async (city, dateString) => {
     .then(res => res.json())
 }
 
-export const editOrder = async (city, dateString, id) => {
+export const getOrder = async (city, dateString, id) => {
+    return fetch(`${ apiPath }/orders/city/${ city }/date/${ dateString }/id/${ id }`, {
+        method: 'GET',
+        credentials: 'include',
+    })
+    .then(res => res.json())
+}
+
+export const editOrder = async (city, dateString, id, params) => {  //TODO
     return fetch(`${ apiPath }/orders/city/${ city }/date/${ dateString }/id/${ id }`, {
         method: 'PUT',
         headers: {
