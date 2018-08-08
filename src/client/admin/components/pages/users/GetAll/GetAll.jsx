@@ -9,8 +9,6 @@ import {
 
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
-const Spin = require('antd/lib/spin')
-require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 const Checkbox = require('antd/lib/checkbox')
@@ -19,6 +17,7 @@ require('antd/lib/checkbox/style/css')
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 import getCookie from 'client/admin/resources/getCookie'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 import l from  'client/admin/components/style/GetAll.less'
 
@@ -27,7 +26,8 @@ class GetAll extends React.Component {
         super(props)
         this.state = {
             users: [],
-            usersOnlyCity: true
+            usersOnlyCity: true,
+            loadStatus: 'load'
         }
     }
 
@@ -37,7 +37,18 @@ class GetAll extends React.Component {
         try {
             return getUsersApi()
             .then(users => {
-                this.setState({ users: users })
+                if(users.length){
+                    this.setState({ 
+                        users: users,
+                        loadStatus: 'complete'
+                    })    
+                } else {
+                    this.setState({ 
+                        users: [],
+                        loadStatus: 'empty'
+                    }) 
+                }
+                
             })
 
         } catch(err) {
@@ -69,28 +80,31 @@ class GetAll extends React.Component {
     }
 
     render(){
-        const { users, usersOnlyCity } = this.state
-        if(users){
-            return (
-                <div className={ l.root }>
-                    <BreadcrumbsPanel
-                        history={ this.props.history }
-                        backButton={ false }
-                        links={[
-                            { url: '/users', text: 'Работники' }
-                        ]}
-                    />
-                    <Link to='/users/create'>
-                        <Button className={ l.create }>+</Button>
-                    </Link>
+        const { users, usersOnlyCity, loadStatus } = this.state        
+        return (
+            <div className={ l.root }>
+                <BreadcrumbsPanel
+                    history={ this.props.history }
+                    backButton={ false }
+                    links={[
+                        { url: '/users', text: 'Работники' }
+                    ]}
+                />
+                <Link to='/users/create'>
+                    <Button className={ l.create }>+</Button>
+                </Link>
 
-                    { this.userCityNameUrl &&
+                { 
+                    this.userCityNameUrl &&
                     <Checkbox
                         onChange={ e => this.checkOnlyCity(e) }
                         checked={ usersOnlyCity }
                     >Работники только Вашего города</Checkbox>
-                    }
-
+                }
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Добавьте первого работника'
+                >
                     <ContentList
                         items={
                             (this.userCityNameUrl && usersOnlyCity)
@@ -108,9 +122,9 @@ class GetAll extends React.Component {
                         nameUrl='login'
                         onDelete={ login => this.deleteUser(login) }
                     />
-                </div>
-            )
-        } else return ( <Spin/> )
+                </LoadedContentView>
+            </div>
+        )        
     }
 }
 

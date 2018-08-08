@@ -12,6 +12,8 @@ const List = require('antd/lib/list')
 require('antd/lib/list/style/css')
 const Popconfirm = require('antd/lib/popconfirm')
 require('antd/lib/popconfirm/style/css')
+const Tooltip = require('antd/lib/tooltip')
+require('antd/lib/tooltip/style/css')
 
 class ContentList extends React.Component {
     constructor(props){
@@ -34,18 +36,23 @@ class ContentList extends React.Component {
                 className={ l.listItem }
                 actions={
                     [
-                        <Link to={ link }>
-                            <Icon type='edit' />
-                        </Link>,
-                        <Popconfirm
-                            title={ `Удалить ${ item['shortName'] || item['name'] || item['fio'] || '' } ?` }
-                            onConfirm={ e => this.deleteItem(item[nameUrl]) }
-                            onCancel={ null }
-                            okText="Да"
-                            cancelText="Нет"
-                        >
-                            <Icon type='delete' />
-                        </Popconfirm>
+                        <Tooltip title='Открыть в новом окне'>
+                            <Link to={ link } target='_blank'>
+                                <Icon type='edit' />
+                            </Link>
+                        </Tooltip>
+                        ,
+                        <Tooltip title='Удалить'>
+                            <Popconfirm
+                                title={ `Удалить ${ item['shortName'] || item['name'] || item['fio'] || '' } ?` }
+                                onConfirm={ e => this.deleteItem(item[nameUrl]) }
+                                onCancel={ null }
+                                okText="Да"
+                                cancelText="Нет"
+                            >
+                                <Icon type='delete' />
+                            </Popconfirm>
+                        </Tooltip>
                     ]
                 }
             >

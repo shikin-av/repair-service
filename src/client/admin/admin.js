@@ -23,6 +23,8 @@ const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(historyMiddleware, thunk)))
 
+import l from 'client/admin/components/style/content.less'
+
 class App extends React.Component {
     constructor(props){
         super(props)
@@ -37,7 +39,7 @@ class App extends React.Component {
                     <Sider id='sider'>
                         <MainMenu/>
                     </Sider>
-                    <Layout>
+                    <Layout className={ l.root }>
                         <ContentRouter/>
                     </Layout>
                 </Layout>

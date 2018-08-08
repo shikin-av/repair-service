@@ -8,9 +8,8 @@ import {
 } from 'client/admin/api/gallery'
 import UploadImage from 'client/admin/components/content/UploadImage/UploadImage.jsx'
 import config from 'config/client'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
-const Spin = require('antd/lib/spin')
-require('antd/lib/spin/style/css')
 const List = require('antd/lib/list')
 require('antd/lib/list/style/css')
 const Card = require('antd/lib/card')
@@ -30,7 +29,8 @@ class Gallery extends React.Component {
         super(props)
         this.state = {
             images: [],
-            selected: null
+            selected: null,
+            loadStatus: 'load'
         }
     }
 
@@ -42,7 +42,18 @@ class Gallery extends React.Component {
         try {
             return getImagesApi()
             .then(images => {
-                this.setState({ images: images })
+                if(images.length){
+                    this.setState({ 
+                        images: images,
+                        loadStatus: 'complete'
+                    })    
+                } else {
+                    this.setState({ 
+                        images: [],
+                        loadStatus: 'empty'
+                    }) 
+                }
+                
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
@@ -88,15 +99,18 @@ class Gallery extends React.Component {
     }
 
     render(){
-        const { images, selected } = this.state
+        const { images, selected, loadStatus } = this.state
         const { onClickToImage, inModal } = this.props
         const grid      = { gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }
         const modalGrid = { gutter: 8, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 3 }
-        if(images){
+        
             return (
                 <div className={ l.root }>
                     <UploadImage onUploadImage={ fileName => this.onUploadImageHandler(fileName) } />
-                    <div>
+                    <LoadedContentView
+                        loadStatus={ loadStatus }
+                        message='Загрузите первое изображение'
+                    >
                         <List
                             grid={ inModal ? modalGrid : grid }
                             pagination={{
@@ -134,10 +148,10 @@ class Gallery extends React.Component {
                                 </List.Item>
                             )}
                         />
-                    </div>
+                    </LoadedContentView>
                 </div>
             )
-        } else return ( <Spin/> )        
+        
     }
 }
 
