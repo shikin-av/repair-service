@@ -75,10 +75,10 @@ const  OrderSchema = new mongoose.Schema({
         ref: 'User',
         required: false
     },
-    workerLogin: {
+    /*workerLogin: {
         type: String,
         required: false
-    },
+    },*/
     status: {
         type: String,
         enum: ['new', 'working', 'complete', 'trash'],

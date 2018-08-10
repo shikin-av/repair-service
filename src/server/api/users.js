@@ -31,6 +31,24 @@ export default () => {
         })
     })
 
+    // for OrderEdit page
+    api.get('/city/:cityNameUrl/category/:categoryNameUrl/day/:dayCyrilic', async (req, res, next) => {
+        const { cityNameUrl, categoryNameUrl, dayCyrilic } = req.params
+        const decodedDay = decodeURI(dayCyrilic)        
+        return await User.find({
+            role:             'работник',
+            cityNameUrl:      cityNameUrl,
+            categories:       categoryNameUrl,
+            workingDays:      decodedDay 
+        },(err, users) => {
+            if(!err){
+                return res.json(users)
+            } else {
+                return next(err)
+            }
+        })
+    })    
+
     api.post('/', async (req, res, next) => {
         const {
             login,

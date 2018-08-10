@@ -27,7 +27,7 @@ require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 
-import l from './Edit.less'
+import l from 'client/admin/components/style/Edit.less'
 
 class Edit extends React.Component {
     constructor(props){

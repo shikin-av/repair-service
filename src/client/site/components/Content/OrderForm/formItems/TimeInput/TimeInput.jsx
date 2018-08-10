@@ -24,7 +24,7 @@ class TimeInput extends React.Component {
 
     render(){      
         const { defaultValue } = this.props
-        console.log('TimeInput defaultValue', defaultValue)
+        //console.log('TimeInput defaultValue', defaultValue)
         return (
             <InputNumber
                 min={config.workTime.begin}

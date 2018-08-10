@@ -9,6 +9,15 @@ export const getUsers = async () => {
     .then(res => res.json())
 }
 
+export const getUsersByCityCategoryDays = async (cityNameUrl, categoryNameUrl, dayCyrilic) => {
+    const encodedDay = encodeURI(dayCyrilic)
+    return fetch(`${ apiPath }/users/city/${ cityNameUrl }/category/${ categoryNameUrl }/day/${ encodedDay }`, {
+        method: 'GET',
+        credentials: 'include',
+    })
+    .then(res => res.json())
+}
+
 export const getUser = async nameUrl => {
     return fetch(`${ apiPath }/users/${ nameUrl }`, {
         method: 'GET',

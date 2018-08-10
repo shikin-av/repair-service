@@ -70,7 +70,7 @@ export default class App {
         }
 
         this.db.on('error', (err) => {
-            console.log('connection error:', err.message)
+            console.log('db connection error:', err.message)
         })
         this.db.on('open', () => {
             console.log('Connected to DB')

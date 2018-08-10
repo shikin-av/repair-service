@@ -61,6 +61,7 @@ class DateInput extends React.Component {
 
     render(){
         const { currentDate, activeEl } = this.state
+        //console.log('currentDate', currentDate)
         return (
             <div className={ l.root }>
                 <Button

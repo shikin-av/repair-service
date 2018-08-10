@@ -3,7 +3,7 @@ import config from '../../config/server'
 
 export default (io) => {
     io.on('connection', socket => {
-        console.log('connection')
+        //console.log('connection')
         socket.emit('connected', 'connected')
         
         socket.on('adminAuthToken', token => {
@@ -13,7 +13,7 @@ export default (io) => {
             if(user && user.role == 'администратор' && user.city){
                 socket.join(user.city)  // room
                 socket.emit('authorize', 'авторизовался')
-                console.log('админ авторизовался')
+                //console.log('админ авторизовался')
             } else {
                 console.log('админ НЕ авторизовался')
                 socket.emit('errorMsg', { 

@@ -32,7 +32,7 @@ require('antd/lib/message/style/css')
 const Modal = require('antd/lib/modal')
 require('antd/lib/modal/style/css')
 
-import l from './Edit.less'
+import l from 'client/admin/components/style/Edit.less'
 
 class Edit extends React.Component {
     constructor(props){

@@ -31,13 +31,16 @@ class Radio extends React.Component {
                 }
             }
             return { value, text }
-        })
+        })        
     }
 
     componentDidMount(){
+        const { defaultChecked } = this.props
         if(this.formatItems){
             const firstValue = this.formatItems[0].value
-            this.setState({ checked: firstValue }, () => {
+            this.setState({ 
+                checked: defaultChecked || firstValue 
+            }, () => {
                 this.props.onData(this.state.checked)
             })
         }
@@ -45,7 +48,7 @@ class Radio extends React.Component {
     }
 
     onChange(e){
-        console.log(e.target.value)
+        //console.log(e.target.value)
         this.setState({ checked: e.target.value }, () => {
             this.props.onData(this.state.checked)
         })
@@ -81,10 +84,11 @@ class Radio extends React.Component {
 }
 
 Radio.propTypes = {
-    name: string.isRequired,
-    items: array.isRequired,
-    onData: func.isRequired,
-    style: string
+    name:           string.isRequired,
+    items:          array.isRequired,
+    onData:         func.isRequired,
+    style:          string,
+    defaultChecked: string
 }
 
 export default Radio

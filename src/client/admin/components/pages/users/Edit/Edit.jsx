@@ -41,7 +41,7 @@ const Checkbox = require('antd/lib/checkbox')
 require('antd/lib/checkbox/style/css')
 const CheckboxGroup = Checkbox.Group
 
-import l from './Edit.less'
+import l from 'client/admin/components/style/Edit.less'
 
 class Edit extends React.Component {
     constructor(props){
@@ -99,7 +99,7 @@ class Edit extends React.Component {
                 const checkboxOptions = categories.map(category => {
                     return {
                         label: category.shortName,
-                        value: category.shortName
+                        value: category.nameUrl
                     }
                 })
                 console.log('checkboxOptions ', checkboxOptions)
