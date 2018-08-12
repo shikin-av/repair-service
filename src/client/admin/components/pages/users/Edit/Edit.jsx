@@ -133,6 +133,9 @@ class Edit extends React.Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log('VALUES: ', values)
+                if(values.phone[0] == '9'){
+                    values.phone = '7' + values.phone
+                }
                 if(isCreateType){
                     try {
                         return createUserApi(values)
@@ -232,7 +235,7 @@ class Edit extends React.Component {
         }
 
     }
-    onPhoneChange(val){
+    onPhoneChange(val){        
         this.props.form.setFieldsValue({ phone: val })
     }
     onWorkingDaysChange(arr){
@@ -349,6 +352,7 @@ class Edit extends React.Component {
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
+                                        addonBefore='+7'
                                         onChange={ val => this.onPhoneChange(val) }
                                     />
                                 )}

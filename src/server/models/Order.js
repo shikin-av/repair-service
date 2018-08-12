@@ -70,20 +70,22 @@ const  OrderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    worker: {
+    workerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: false
     },
-    /*workerLogin: {
-        type: String,
-        required: false
-    },*/
     status: {
         type: String,
         enum: ['new', 'working', 'complete', 'trash'],
         default: 'new',
         required: true,
+    },
+    smsStatus: {
+        type: String,
+        enum: ['not sended', 'sended', 'error'],
+        default: 'not sended',
+        required: false,
     }
 }, {
     timestamps: true

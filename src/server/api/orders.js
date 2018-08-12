@@ -2,6 +2,8 @@ import { Router } from 'express'
 import moment from 'moment'
 
 import Order from  '../models/Order'
+import sms from '../resources/sms'
+import smsConfig from '../../config/smsc.ru'
 
 export default () => {
     const api = Router()
@@ -92,8 +94,7 @@ export default () => {
             phone,
             name,
             worker,
-            workerLogin,
-            status
+            status,
         } = req.body
         const orderDate = new Date(dateString)
         if(orderDate == 'Invalid Date'){
@@ -114,6 +115,18 @@ export default () => {
                     if(!order){
                         return next()
                     } else {
+
+                        const saveToDb = async order => {                            
+                            return await order.save(err => {
+                                if(!err) {
+                                    console.log(`order "${ order.id }" updated`)
+                                    return res.status(202).json(order)
+                                } else {
+                                    return next(err)
+                                }
+                            })
+                        }
+
                         order.date            = date        || order.date
                         order.dateToLink      = dateToLink  || order.dateToLink
                         order.dateToView      = dateToView  || order.dateToView
@@ -123,19 +136,28 @@ export default () => {
                         order.apartment       = apartment   || order.apartment
                         order.phone           = phone       || order.phone
                         order.name            = name        || order.name
-                        if(order.status == 'new'){
-                            order.status      = status      || order.status
-                            order.worker      = worker      || order.worker
-                            order.workerLogin = workerLogin || order.workerLogin
+                        order.status          = status      || order.status
+                        order.workerId        = worker._id  || order.workerId                    
+                                                
+                        if(order.smsStatus != 'sended'){
+                            const smsMessage = sms.makeSmsOrderMessage(order)                        
+                            sms.send_sms({
+                                phones: worker.phone,
+                                mes: smsMessage,
+                                sender: smsConfig.companyNameForSms,
+                                charset: 'utf-8',
+                            }, (data, raw, err, code) => {
+                                if(err){
+                                    console.log('sms send:', err, 'code: ' + code)  
+                                    order.smsStatus = 'error'
+                                    return saveToDb(order)
+                                } 
+                                console.log(data)
+                                order.smsStatus = 'sended'
+                                return saveToDb(order)                                
+                            })
                         }
-                        return order.save((err) => {
-                            if(!err) {
-                                console.log(`order "${ order.id }" updated`)
-                                return res.status(202).json(order)
-                            } else {
-                                return next(err)
-                            }
-                        })
+                        return saveToDb(order)
                     }
                     
                 } else {

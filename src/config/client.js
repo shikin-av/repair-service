@@ -24,5 +24,5 @@ export default {
     workTime: {
         begin: 9,
         end: 18
-    }
+    },    
 }

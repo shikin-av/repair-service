@@ -13,7 +13,7 @@ export default {
             site:  './dist/site.bundle.css',
             admin: './dist/admin.bundle.css',
         }
-    },
+    },    
     indexTitle:     'Ремонт бытовой техники',
     jwt: {
         secret:     'MY_SECRET',

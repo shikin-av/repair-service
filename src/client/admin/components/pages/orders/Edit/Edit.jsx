@@ -38,6 +38,7 @@ import {
 import {
     setOrdersOptions as setOrdersOptionsAction
 } from 'client/admin/actions/ordersOptions'
+//import sms from 'client/admin/resources/sms'
 
 import config from 'config/client'
 import DateInput from 'client/site/components/content/OrderForm/formItems/DateInput/DateInput.jsx'
@@ -51,48 +52,30 @@ class Edit extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            isWorkerSelected:   false,
-            orderInitial:       null,
-            order:              null,
-            workers:            [],
-            categoryNameUrl:    null,
-            cyrilicDay:         null,
-            status:             null
+            order:                   null,
+            workers:                 [],
+            selectedWorker:          null,
+            categoryNameUrl:         null,
+            cyrilicDay:              null,
+            status:                  null,
+            smsStatus:               null,
         }
         this.userCityNameUrl = null
     }
 
     componentWillMount(){
         moment.locale('ru')   
-    }
-
-    initialOrder(cityNameUrl, dateString, id){
-        const { getFieldValue } = this.props.form
-        try {
-            getOrderApi(cityNameUrl, dateString, id)
-            .then(order => {
-                //console.log('get Order', order)
-                const dateFromUrl = new Date(dateString)
-                
-                this.setState({
-                    orderInitial:     order,
-                    order:            order,
-                    categoryNameUrl:  order.categoryNameUrl,
-                    cyrilicDay:       moment(getFieldValue('date')).format('dddd'),
-                    isWorkerSelected: order.worker ? true : false,
-                    status:           order.status
-                }, () => {
-                    this.workersLoad(cityNameUrl, this.state.categoryNameUrl, this.state.cyrilicDay)
-                })
-            })
-        } catch(err) {
-            console.log(`ERROR ${err.stack}`)
-        }
-    }
+    }    
 
     componentDidMount(){
         const { dateString, id } = this.props.match.params
+        const { getFieldDecorator } = this.props.form
         this.userCityNameUrl = getCookie('userCityNameUrl')
+
+        getFieldDecorator('worker',   { initialValue: null })
+        getFieldDecorator('workerId',   { initialValue: null })
+        getFieldDecorator('status',   { initialValue: null })
+
         this.initialOrder(this.userCityNameUrl, dateString, id)  
         this.props.setOrdersOptionsAction({ 
             cityNameUrl: this.userCityNameUrl 
@@ -109,7 +92,6 @@ class Edit extends React.Component {
 
         if(newDateString != oldDateString || newId != oldId){
             this.setState({
-                orderInitial: null,
                 order: null,
             }, () => {
                 this.initialOrder(this.userCityNameUrl, newDateString, newId)  
@@ -117,38 +99,82 @@ class Edit extends React.Component {
         }
     }
 
-    handleSave(e){     
-        const { getFieldValue, setFieldsValue } = this.props.form   
+    initialOrder(cityNameUrl, dateString, id){
+        const { getFieldValue } = this.props.form
+        try {
+            getOrderApi(cityNameUrl, dateString, id)
+            .then(order => {
+                console.log('get Order', order)
+
+                if(order.error == '404 - Not found'){
+                    window.location.replace('admin/404')
+                }
+
+                const dateFromUrl = new Date(dateString)                
+                this.setState({
+                    order:                   order,
+                    categoryNameUrl:         order.categoryNameUrl,
+                    cyrilicDay:              moment(getFieldValue('date')).format('dddd'),
+                    status:                  order.status,
+                    smsStatus:               order.smsStatus,
+                }, () => {
+                    const { order, categoryNameUrl, cyrilicDay } = this.state
+                    this.setAllInputs(this.state.order)
+                    getUsersByCityCategoryDaysApi(cityNameUrl, categoryNameUrl, cyrilicDay)
+                    .then(workers => {
+                        this.setState({ workers: workers }, () =>{
+                            if(order.workerId){
+                                this.onWorkerSelect(order.workerId)
+                            }
+                        })
+                    })
+                })
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+        }
+    }
+    
+
+    handleSubmit(e){     
+        const { getFieldValue, setFieldsValue } = this.props.form
+        const { dateString, id } = this.props.match.params 
+        const { order, selectedWorker } = this.state
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                //console.log('VALUES ', values)
+                console.log('VALUES', values)
+                const initialStatus = order.status
+                if(!order.workerId && values.worker){
+                    if(values.status == 'new'){
+                        values.status = 'working'
+                    }
+                }
+                if(!this.userCityNameUrl){
+                    this.userCityNameUrl = getCookie('userCityNameUrl')
+                }                
                 try {
-                    //TODO 
-                    if(getFieldValue('worker')){
+                    editOrderApi(this.userCityNameUrl, dateString, id, values)
+                    .then(editedOrder => {
+                        console.log('EDITED ORDER: ', order)
                         this.setState({
-                            isWorkerSelected: true,
-                            status:           values.status,
+                            order:     editedOrder,
+                            status:    editedOrder.status,
+                            smsStatus: editedOrder.smsStatus,
                         }, () => {
-                            if(this.state.isWorkerSelected){
-                                if(this.state.status == 'new'){
-                                    this.setState({ status: 'working' }, () => {                                        
-                                        setFieldsValue({ status: 'working' })   
-                                        values.status = this.state.status
-                                        console.log('VALUES ', values)
-                                    })
+                            setFieldsValue({ status: values.status })
+                            message.success('Изменения сохранены.')
+                            if(initialStatus == 'new'){
+                                if(editedOrder.smsStatus == 'sended'){
+                                    message.success(`Смс отправлена работнику ${ selectedWorker.fio }.`)
+                                } else if(editedOrder.smsStatus == 'not sended'){
+                                    message.error(`Смс не отправлена работнику ${ selectedWorker.fio }.`)
+                                } else if(editedOrder.smsStatus == 'error'){
+                                    message.error('Ошибка отправки смс')
                                 }
-                            } else {
-                                values.status = this.state.status
-                                console.log('VALUES ', values)
                             }
-                        })    
-                    } else {
-                        if(values.status == 'trash'){
-                            this.setState({ status: values.status })
-                            console.log('VALUES ', values)
-                        }
-                    }      
+                        })
+                    })  
                 } catch(err) {
                     message.error('Изменения не сохранены.')
                     console.log(`ERROR ${err.stack}`)
@@ -179,8 +205,8 @@ class Edit extends React.Component {
         if(order.name){
             this.onNameChange(order.name)
         }
-        if(order.worker){
-            this.onWorkerSelect(order.worker)
+        if(order.workerId){
+            this.onWorkerSelect(order.workerId)
         }
         if(order.status){
             this.onStatusSelect(order.status)
@@ -219,46 +245,37 @@ class Edit extends React.Component {
         this.props.form.setFieldsValue({ name: val })
     }
     onWorkerSelect(_id){
-        this.props.form.setFieldsValue({ worker: _id })
+        const { setFieldsValue, getFieldValue, getFieldDecorator } = this.props.form
+        const { order, workers } = this.state
+        const selectedWorker = workers[_.findIndex(workers, worker => {                
+            return worker._id == _id || worker._id == order.workerId
+        })]
+        if(selectedWorker){
+            this.setState({ selectedWorker: selectedWorker }, () => {
+                setFieldsValue({ 
+                    worker: selectedWorker,
+                    workerId: _id 
+                })
+            })
+        }        
     }
     onStatusSelect(val){
-        this.props.form.setFieldsValue({ status: val })
+        this.setState({ status: val }, () => {
+            this.props.form.setFieldsValue({ status: val })    
+        })        
     }
 
-    workersLoad(cityNameUrl, categoryNameUrl, cyrilicDay){
-        try {
-            const workers = getUsersByCityCategoryDaysApi(cityNameUrl, categoryNameUrl, cyrilicDay)
-            .then(workers => {
-                console.log('workers',workers)  
-                this.setState({ workers: workers }, () => {
-                    this.setAllInputs(this.state.order)        
-                })                            
-            })
-        } catch(err) {
-            message.error(`Работники не загружены.`)
-            console.log(`ERROR ${err.stack}`)
-        }
-    }
-
-    getSelectedWorker(){
-        const { getFieldValue }  = this.props.form
-        const { order, workers } = this.state
-        const selectedWorkerId = getFieldValue('worker')
-
-            const selectedWorker = _.filter(workers, worker => {                
-                return worker._id == selectedWorkerId || worker._id == order.worker
-            })
-            console.log('selectedWorker',selectedWorker[0])
-        return selectedWorker[0]
-    }
-
-    renderWorkersSelect(workers){
-        const { getFieldDecorator, getFieldValue }  = this.props.form
-        const { isWorkerSelected, order } = this.state   
-        let element = null
-        const isTrashStatus = getFieldValue('status') == 'trash'
-        if(!isWorkerSelected){
-            if(workers && workers.length){
+    renderWorkersSelect(order, workers, selectedWorker){
+        const { status } = this.state
+        const { getFieldDecorator }  = this.props.form
+        let element = ( <span></span> )
+        if(workers){            
+            if(order.workerId && selectedWorker){
+                console.log(2)
+                element = (
+                    <span>{ selectedWorker.fio }</span>
+                )
+            } else {
                 element = (
                     <Select onChange={ val => this.onWorkerSelect(val) }>
                     {   
@@ -271,42 +288,31 @@ class Edit extends React.Component {
                     }
                     </Select>
                 )
-            } else {
-                element = ( <span></span> )
             }
-        } else {
-            const selectedWorker = this.getSelectedWorker()
-            element = (
-                <div className={ l.textItem }>
-                    <label>Работник: </label>
-                    <span>{ selectedWorker.fio }</span>
-                </div>
-            )
-        }   
+        }
         return (
-            <FormItem label='Выберите работника' className={ l.formItem }>
-                {getFieldDecorator('worker', { rules: [
+            <FormItem 
+                label={ !order.workerId ? 'Выберите работника' : 'Работник' } 
+                className={ l.formItem }>
+                {getFieldDecorator('workerId', { rules: [
                     { 
-                        required: !isTrashStatus, 
+                        required: status != 'trash', 
                         message: 'Обязательное поле' 
                     }
-                ] })(
-                    element
-                )}
+                ] })( element )}
             </FormItem>
-        )     
-    }    
+        )
+    }
 
-    renderStatusRadio(){
-        const { isWorkerSelected, order, status } = this.state
-        const { getFieldDecorator, getFieldValue }  = this.props.form
+    renderStatusRadio(order){
+        const { getFieldDecorator } = this.props.form
         let statuses = [
             { value: 'new',      text: 'Новая' },
             { value: 'working',  text: 'В работе' },
             { value: 'complete', text: 'Завершена' },
             { value: 'trash',    text: 'Удалена' },
         ]
-        if(status == 'trash'){
+        if(order.status == 'trash'){
             getFieldDecorator('status',   { initialValue: 'trash' })
             return (
                 <Alert  
@@ -315,13 +321,13 @@ class Edit extends React.Component {
                 />
             )
         }
-        if(isWorkerSelected){
-            if(status == 'working'){
+        if(order.workerId){
+            if(order.status == 'working'){
                 statuses = [
                     { value: 'working',  text: 'В работе' },
-                    { value: 'complete', text: 'Завершена' },                                     
+                    { value: 'complete', text: 'Завершена' },
                 ]
-            } else if(status == 'complete'){
+            } else if(order.status == 'complete'){
                 getFieldDecorator('status',   { initialValue: 'complete' })
                 return (
                     <Alert  
@@ -329,8 +335,8 @@ class Edit extends React.Component {
                         message='Заявка Выполнена'
                     />
                 )
-            } 
-        }
+            }
+        } 
         return (
             <FormItem label='Статус заявки' className={ l.formItem }>
                 {getFieldDecorator('status', { rules: [
@@ -348,80 +354,80 @@ class Edit extends React.Component {
         )
     }
 
-    renderFormSubmit(isWorkerSelected, status){
-        const { getFieldValue } = this.props.form
-        const selectedWorker = this.getSelectedWorker()
-
-        console.log('renderFormSubmit STATUS', status)
-        console.log('renderFormSubmit isWorkerSelected', isWorkerSelected)
-        console.log('renderFormSubmit selectedWorker', selectedWorker)
-
-        //todo
-        if(status == 'trash'){
+    renderFormSubmit(order, selectedWorker, status, smsStatus){
+        if(order.status == 'trash'){
             return (
                 <Alert  
                     type='warning'
                     message='Заявка Удалена'
                 />
             )
-        } else if(getFieldValue('status') == 'trash'){
+        }
+        if(order.status == 'new' && status == 'trash'){
             return (
-                <Button
-                    type='primary'
-                    htmlType='submit'
-                >Удалить заявку</Button>
+                <FormItem>
+                    <Button
+                        type='primary'
+                        htmlType='submit'
+                    >Удалить заявку</Button>
+                </FormItem>
             )
         }
-        if(!isWorkerSelected){
-            if(!selectedWorker){
-                return (
-                    <Alert 
-                        type='warning' 
-                        message='Выберите работника' 
-                    />
-                ) 
-            } else if(selectedWorker){
+        if(!selectedWorker){
+            return (
+                <Alert 
+                    type='warning' 
+                    message='Выберите работника' 
+                />
+            )
+        }
+        if(selectedWorker){
+            if(order.status == 'new'){
+                if(status == 'new' || status == 'working'){
+                    if(smsStatus != 'sended'){
+                        return (
+                            <FormItem>
+                                <Button
+                                    type='primary'
+                                    htmlType='submit'
+                                >{ `Отправить смс с данными заказа работнику ${ selectedWorker.fio }` }</Button>
+                            </FormItem>
+                        )
+                    }
+                }
+            } else if(order.status == 'working'){
                 return (
                     <FormItem>
-                        <Button
-                            type='primary'
-                            htmlType='submit'
-                        >{ `Отправить смс с данными заказа работнику ${ selectedWorker.fio }` }</Button>
-                    </FormItem>
-                )
-            }
-        } else if(isWorkerSelected && selectedWorker){
-            if(status == 'working'){
-                return (
-                    <div>
                         <Button
                             type='primary'
                             htmlType='submit'
                         >Сохранить заявку</Button>
                         <Alert 
                             type='info'
-                            message={ `Заявка в работе: ${ selectedWorker.fio }` }
+                            message={ `Заявка в работе: ${ selectedWorker.fio }: ${ selectedWorker.phone }` }
                         />
-                    </div>
+                    </FormItem>
                 )
-            } else if(status == 'complete'){
+            } else if(order.status == 'complete'){
                 return (
                     <Alert  
                         type='success'
-                        message={ `Заявка Выполнена: ${ selectedWorker.fio }` }
+                        message={ `Заявка Выполнена: ${ selectedWorker.fio }: ${ selectedWorker.phone }` }
                     />
                 )
             }
         }
-    }    
+    }
+
 
     render(){
         const { getFieldDecorator }  = this.props.form
         const { 
-            order, 
-            isWorkerSelected, 
-            workers, 
-            status 
+            order,             
+            workers,
+            selectedWorker, 
+            status,
+            smsStatus,
         } = this.state
         const { dateString, id } = this.props.match.params
         const dateFromUrl = new Date(dateString)        
@@ -431,6 +437,7 @@ class Edit extends React.Component {
             { url: `/orders/date/${ dateString }`, text: dateToView },
             { url: `/orders/date/${ dateString }/id/${ id }`, text: `№${ id }` },
         ]
+        console.log('STATE', this.state)
         if(order){
             return (
                 <Row className={ l.root }>
@@ -439,130 +446,144 @@ class Edit extends React.Component {
                         backButton={ true }
                         links={ breadcrumbsLinks }
                     />
-                    <Form onSubmit = { e => this.handleSave(e) }>                        
-                            { this.renderFormSubmit(isWorkerSelected, status) }
-                                                    
-                            <FormItem 
-                                label='Когда нужен мастер'
-                                className={ `${ l.formItem } ${ l.inline }` }
-                                key={ order.dateToLink }
-                            >
-                                {getFieldDecorator('date', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <DateInput
-                                        onDataToForm={ date => this.onDateChange(date) }
-                                        disablePrevDates={ true }
-                                        defaultDate={ moment(dateFromUrl) }
-                                    /> 
-                                )}
-                            </FormItem>
-                            
-                            <FormItem 
-                                label='В какое время' 
-                                className={ `${ l.formItem } ${ l.inline }` }
-                                key={ order.time }
-                            >
-                                {getFieldDecorator('time', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <TimeInput 
-                                        onDataToForm={ val => this.onTimeChange(val) } 
-                                        defaultValue={ order.time ? parseInt(order.time) : null }
-                                    />
-                                )}
-                            </FormItem>
-                            
-                            <div className={ l.textItem }>
-                                <label>Категория: </label>
-                                <span>{ order.categoryShortName }</span>
-                            </div>
-                            
-                            { 
-                                order.firm &&
-                                <div className={ l.textItem }>
-                                    <label>Фирма производитель: </label>
-                                    <span>{ order.firm }</span>
-                                </div>
-                            }    
-
-                            { 
-                                order.howOld &&
-                                <div className={ l.textItem }>
-                                    <label>Лет технике: </label>
-                                    <span>{ order.howOld }</span>
-                                </div>
-                            }     
-
-                            { 
-                                (order.problems && order.problems.length) 
-                                ?
-                                <div className={ l.textItem }>
-                                    <label>Неисправности: </label>
-                                    <ul>
-                                    {
-                                        order.problems.map(problem => (
-                                            <li key={ Math.random() }>{ problem }</li>
-                                        ))
-                                    }   
-                                    </ul>                                 
-                                </div>
-                                : null
-                            }                       
-                            {        
-                                order.description &&
-                                <FormItem label='Описание проблемы:' className={ l.formItem }>
-                                    {getFieldDecorator('description', { rules: [] })(                                        
-                                        <TextArea 
-                                            rows={4}
-                                            onChange={ e => this.onDescriptionChange(e.target.value) }
-                                        />
-                                    )}
-                                </FormItem>
-                            }
-
-                            <FormItem label='Адрес' className={ l.formItem }>
-                                {getFieldDecorator('address', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input 
-                                        onChange={ val => this.onAddressChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-
-                            <FormItem label='Квартира' className={ l.formItem }>
-                                {getFieldDecorator('apartment', { rules: [] })(
-                                    <Input 
-                                        onChange={ val => this.onApartmentChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-
-                            <FormItem label='Телефон' className={ l.formItem }>
-                                {getFieldDecorator('phone', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input 
-                                        onChange={ val => this.onPhoneChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-
-                            <FormItem label='Имя' className={ l.formItem }>
-                                {getFieldDecorator('name', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input 
-                                        onChange={ val => this.onNameChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-                            <div key={ status }>
-                                { this.renderWorkersSelect(workers) }
-                                { this.renderStatusRadio() }
-                            </div>
+                    <Form onSubmit = { e => this.handleSubmit(e) }>                        
                         
+                        { this.renderFormSubmit(order, selectedWorker, status, smsStatus) }
+                                                
+                        <FormItem 
+                            label='Когда нужен мастер'
+                            className={ `${ l.formItem } ${ l.inline }` }
+                            key={ order.dateToLink }
+                        >
+                            {getFieldDecorator('date', { rules: [
+                                { 
+                                    required: status != 'trash', 
+                                    message: 'Обязательное поле' 
+                                }
+                            ] })(
+                                <DateInput
+                                    onDataToForm={ date => this.onDateChange(date) }
+                                    disablePrevDates={ true }
+                                    defaultDate={ moment(dateFromUrl) }
+                                /> 
+                            )}
+                        </FormItem>
+                        
+                        <FormItem 
+                            label='В какое время' 
+                            className={ `${ l.formItem } ${ l.inline }` }
+                            key={ order.time }
+                        >
+                            {getFieldDecorator('time', { rules: [
+                                { 
+                                    required: status != 'trash', 
+                                    message: 'Обязательное поле' 
+                                }
+                            ] })(
+                                <TimeInput 
+                                    onDataToForm={ val => this.onTimeChange(val) } 
+                                    defaultValue={ order.time ? parseInt(order.time) : null }
+                                />
+                            )}
+                        </FormItem>
+                        
+                        <div className={ l.textItem }>
+                            <label>Категория: </label>
+                            <span>{ order.categoryShortName }</span>
+                        </div>
+                        
+                        { 
+                            order.firm &&
+                            <div className={ l.textItem }>
+                                <label>Фирма производитель: </label>
+                                <span>{ order.firm }</span>
+                            </div>
+                        }    
+
+                        { 
+                            order.howOld &&
+                            <div className={ l.textItem }>
+                                <label>Лет технике: </label>
+                                <span>{ order.howOld }</span>
+                            </div>
+                        }     
+
+                        { 
+                            (order.problems && order.problems.length) 
+                            ?
+                            <div className={ l.textItem }>
+                                <label>Неисправности: </label>
+                                <ul>
+                                {
+                                    order.problems.map(problem => (
+                                        <li key={ Math.random() }>{ problem }</li>
+                                    ))
+                                }   
+                                </ul>                                 
+                            </div>
+                            : null
+                        }                       
+                        {        
+                            order.description &&
+                            <FormItem label='Описание проблемы:' className={ l.formItem }>
+                                {getFieldDecorator('description', { rules: [] })(                                        
+                                    <TextArea 
+                                        rows={4}
+                                        onChange={ e => this.onDescriptionChange(e.target.value) }
+                                    />
+                                )}
+                            </FormItem>
+                        }
+
+                        <FormItem label='Адрес' className={ l.formItem }>
+                            {getFieldDecorator('address', { rules: [
+                                { 
+                                    required: status != 'trash', 
+                                    message: 'Обязательное поле' 
+                                }
+                            ] })(
+                                <Input 
+                                    onChange={ val => this.onAddressChange(val) }
+                                />
+                            )}
+                        </FormItem>
+
+                        <FormItem label='Квартира' className={ l.formItem }>
+                            {getFieldDecorator('apartment', { rules: [] })(
+                                <Input 
+                                    onChange={ val => this.onApartmentChange(val) }
+                                />
+                            )}
+                        </FormItem>
+
+                        <FormItem label='Телефон' className={ l.formItem }>
+                            {getFieldDecorator('phone', { rules: [
+                                { 
+                                    required: status != 'trash', 
+                                    message: 'Обязательное поле' 
+                                }
+                            ] })(
+                                <Input 
+                                    onChange={ val => this.onPhoneChange(val) }
+                                />
+                            )}
+                        </FormItem>
+
+                        <FormItem label='Имя' className={ l.formItem }>
+                            {getFieldDecorator('name', { rules: [
+                                { 
+                                    required: status != 'trash', 
+                                    message: 'Обязательное поле' 
+                                }
+                            ] })(
+                                <Input 
+                                    onChange={ val => this.onNameChange(val) }
+                                />
+                            )}
+                        </FormItem>
+
+                        { this.renderWorkersSelect(order, workers, selectedWorker) }                        
+                        { this.renderStatusRadio(order) }
                     </Form>
                 </Row>
             )
