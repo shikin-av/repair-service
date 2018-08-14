@@ -120,7 +120,7 @@ export default () => {
                             return await order.save(err => {
                                 if(!err) {
                                     console.log(`order "${ order.id }" updated`)
-                                    return res.status(202).json(order)
+                                    return res.json(order)
                                 } else {
                                     return next(err)
                                 }
@@ -141,25 +141,71 @@ export default () => {
                                                 
                         if(order.smsStatus != 'sended'){
                             const smsMessage = sms.makeSmsOrderMessage(order)                        
-                            sms.send_sms({
+                            try {
+                                sms.send_sms({
                                 phones: worker.phone,
                                 mes: smsMessage,
                                 sender: smsConfig.companyNameForSms,
                                 charset: 'utf-8',
-                            }, (data, raw, err, code) => {
-                                if(err){
-                                    console.log('sms send:', err, 'code: ' + code)  
-                                    order.smsStatus = 'error'
-                                    return saveToDb(order)
-                                } 
-                                console.log(data)
-                                order.smsStatus = 'sended'
-                                return saveToDb(order)                                
-                            })
-                        }
-                        return saveToDb(order)
-                    }
-                    
+                                }, (data, raw, err, code) => {
+                                    if(err){
+                                        console.log('sms ERROR:', err, 'code: ' + code)  
+                                        order.workerId  = null                                        
+                                        order.status    = 'new'                                      
+                                        switch(code){
+                                            case 1: 
+                                                order.smsError = 'Ошибка в параметрах отправки смс'
+                                                break
+                                            case 2: 
+                                                order.smsError = 'Ошибка авторизации в смс-сервисе'
+                                                break
+                                            case 3: 
+                                                order.smsError = 'Недостаточно средств для отправки смс'
+                                                break
+                                            case 4: 
+                                                order.smsError = 'IP-адрес временно заблокирован из-за частых ошибок в запросах'
+                                                break
+                                            case 5: 
+                                                order.smsError = 'Неверный формат даты'
+                                                break
+                                            case 6: 
+                                                order.smsError = 'Сообщение запрещено (по тексту или по имени отправителя)'
+                                                break
+                                            case 7:
+                                                order.smsError = 'Неверный формат номера телефона'
+                                                console.log('CASE 7: order.smsError', order.smsError)
+                                                break
+                                            case 8: 
+                                                order.smsError = 'Сообщение на указанный номер не может быть доставлено'
+                                                break
+                                            case 9: 
+                                                order.smsError = 'Повторите отправку смс через минуту'
+                                                break
+                                            default: 
+                                                order.smsError = 'Неизвестная ошибка отправки смс'                                                
+                                        }
+                                        console.log(`SMS error: ORDER 
+                                        ${order}`
+                                        )                                        
+                                        return res.json(order)
+                                        
+                                    } else {
+                                        console.log('sms DATA: ', data)
+                                        order.smsStatus = 'sended'
+                                        return saveToDb(order)
+                                    }
+                                })    
+                            } catch(err){
+                                console.log('ERROR', err)
+                                order.smsStatus = 'error'
+                                order.status    = 'new'
+                                order.workerId  = null
+                                return res.json(order)                           
+                            }                        
+                        } else {
+                            return saveToDb(order)    
+                        }                        
+                    }                    
                 } else {
                     return next(err)
                 }

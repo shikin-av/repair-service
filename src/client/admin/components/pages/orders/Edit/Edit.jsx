@@ -117,6 +117,7 @@ class Edit extends React.Component {
                     cyrilicDay:              moment(getFieldValue('date')).format('dddd'),
                     status:                  order.status,
                     smsStatus:               order.smsStatus,
+                    selectedWorker:          null,
                 }, () => {
                     const { order, categoryNameUrl, cyrilicDay } = this.state
                     this.setAllInputs(this.state.order)
@@ -163,15 +164,17 @@ class Edit extends React.Component {
                             smsStatus: editedOrder.smsStatus,
                         }, () => {
                             setFieldsValue({ status: values.status })
-                            message.success('Изменения сохранены.')
+                            console.log('editedOrder.smsStatus', editedOrder.smsStatus)
                             if(initialStatus == 'new'){
                                 if(editedOrder.smsStatus == 'sended'){
+                                    message.success('Изменения сохранены.')
                                     message.success(`Смс отправлена работнику ${ selectedWorker.fio }.`)
-                                } else if(editedOrder.smsStatus == 'not sended'){
-                                    message.error(`Смс не отправлена работнику ${ selectedWorker.fio }.`)
-                                } else if(editedOrder.smsStatus == 'error'){
-                                    message.error('Ошибка отправки смс')
+                                } else if(editedOrder.smsError){
+                                    message.error('Изменения не сохранены.')
+                                    message.error(editedOrder.smsError)
                                 }
+                            } else {
+                                message.success('Изменения сохранены.')
                             }
                         })
                     })  

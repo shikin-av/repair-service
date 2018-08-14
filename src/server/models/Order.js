@@ -86,7 +86,11 @@ const  OrderSchema = new mongoose.Schema({
         enum: ['not sended', 'sended', 'error'],
         default: 'not sended',
         required: false,
-    }
+    },
+    smsError: {
+        type: String,
+        required: false
+    },
 }, {
     timestamps: true
 })
