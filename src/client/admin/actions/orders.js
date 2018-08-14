@@ -35,6 +35,40 @@ export const getOrdersByCityDate = (city, dateString) => async dispatch => {
     }
 }
 
+export const getOrdersByCityDateStatus = (city, dateString, status) => async dispatch => {
+    dispatch({ type: types.GET_ORDERS_BY_CITY_DATE_STATUS_START })
+    try {
+        const orders = await api.getOrdersByCityDateStatus(city, dateString, status)
+        dispatch({
+            type:    types.GET_ORDERS_BY_CITY_DATE_STATUS_SUCCESS,
+            payload: orders || []
+        })
+    } catch(err) {
+        dispatch({
+            type:    types.GET_ORDERS_BY_CITY_DATE_STATUS_FAIL,
+            payload: err,
+            error:   true
+        })
+    }
+}
+
+export const getOrdersByCityId = (city, id) => async dispatch => {
+    dispatch({ type: types.GET_ORDERS_BY_CITY_ID_START })
+    try {
+        const orders = await api.getOrdersByCityId(city, id)
+        dispatch({
+            type:    types.GET_ORDERS_BY_CITY_ID_SUCCESS,
+            payload: orders || []
+        })
+    } catch(err) {
+        dispatch({
+            type:    types.GET_ORDERS_BY_CITY_ID_FAIL,
+            payload: err,
+            error:   true
+        })
+    }
+}
+
 export const appendOrder = order => async dispatch => {
     dispatch({ 
         type: types.APPEND_ORDER,

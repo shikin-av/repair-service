@@ -16,6 +16,8 @@ import UserCreate from 'client/admin/components/pages/users/Create/Create.jsx'
 import OrderEdit from 'client/admin/components/pages/orders/Edit/Edit.jsx'
 import OrdersByCity from 'client/admin/components/pages/orders/GetAll/ByCity.jsx'
 import OrdersByCityDate from 'client/admin/components/pages/orders/GetAll/ByCityDate.jsx'
+import OrdersByCityDateStatus from 'client/admin/components/pages/orders/GetAll/ByCityDateStatus.jsx'
+import OrdersById from 'client/admin/components/pages/orders/GetAll/ById.jsx'
 
 import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
@@ -72,6 +74,14 @@ const Router = () => (
         <Route
             exact path='/orders/date/:dateString'
             component={ OrdersByCityDate }
+        />
+        <Route
+            exact path='/orders/date/:dateString/status/:status'
+            component={ OrdersByCityDateStatus }
+        />
+        <Route
+            exact path='/orders/serch-id/:id'
+            component={ OrdersById }
         />
         <Route
             exact path='/orders/date/:dateString/id/:id'

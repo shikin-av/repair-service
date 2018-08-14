@@ -10,6 +10,11 @@ const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
+const Select = require('antd/lib/select')
+require('antd/lib/select/style/css')
+const Option = Select.Option
+const Input = require('antd/lib/input')
+require('antd/lib/input/style/css')
 
 /*import {
     getOrdersOptions as getOrdersOptionsSelector
@@ -24,7 +29,14 @@ import config from 'config/client'
 
 class OrderFilter extends React.Component {
     constructor(props){
-        super(props)
+        super(props)        
+        this.statuses = [
+            { value: 'all',      text: 'Все заявки' },
+            { value: 'new',      text: 'Новые' },
+            { value: 'working',  text: 'В работе' },
+            { value: 'complete', text: 'Завершены' },
+            { value: 'trash',    text: 'Удалены' },
+        ]
     }
 
     handleSubmit(e){
@@ -33,25 +45,59 @@ class OrderFilter extends React.Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log('Filter values ', values)
-                const link = `/admin#/orders/date/${ values.dateString }`
-                setOrdersOptionsAction({
+                
+                let link = `/admin#/orders/date/${ values.dateString }`
+                let ordersOptions = {
                     cityNameUrl: cityNameUrl,
                     dateToLink: values.dateString
-                }).then(() => {
+                }
+
+                if(values.status){
+                    link += `/status/${ values.status }`
+                    ordersOptions.status = values.status
+                } else {
+                    link += `/status/all`
+                }
+                if(values.id){
+                    link = `/admin#/orders/serch-id/${ values.id }`
+                    ordersOptions.id = values.id
+                }
+
+                setOrdersOptionsAction(ordersOptions).then(() => {
                     window.location.replace(link)
-                })
+                })    
+                                
             }
         })
     }
 
     componentDidMount(){
-        const { cityNameUrl, dateString } = this.props        
+        const { setFieldsValue } = this.props.form
+        const { cityNameUrl, dateString, status, id } = this.props        
+        if(status){            
+            setFieldsValue({ status: status })  
+        } else {
+            setFieldsValue({ status: 'all' })
+        }
+        if(id){
+            setFieldsValue({ id: id })      
+        }
     }
 
     onDateChange(date){
         const { getFieldDecorator } = this.props.form
         const dateString = moment(date).format(config.date.dateLinkFormat)
         getFieldDecorator('dateString',   { initialValue: dateString })
+    }
+
+    onStatusSelect(val){
+        const { getFieldDecorator } = this.props.form
+        getFieldDecorator('status',   { initialValue: val })
+    }
+
+    onIdChange(val){
+        const { getFieldDecorator } = this.props.form        
+        getFieldDecorator('id',   { initialValue: val })
     }
 
     render(){
@@ -66,10 +112,10 @@ class OrderFilter extends React.Component {
             }
         }
 
-        return(
+        return(            
             <div>
                 <Form onSubmit = { e => this.handleSubmit(e) }>
-                    <FormItem>
+                    <FormItem className='inline'>
                         {getFieldDecorator('dateString', { rules: [] })(
                             <DateInput
                                 onDataToForm={ date => this.onDateChange(date) }
@@ -77,8 +123,37 @@ class OrderFilter extends React.Component {
                             />
                         )}
                     </FormItem>
+                    
+                    <FormItem className='inline'>
+                        {getFieldDecorator('status', { rules: [] })(
+                            <Select 
+                                onChange={ val => this.onStatusSelect(val) }
+                                style={{ width: 150 }}
+                                placeholder='Статус заявки'                 
+                            >
+                            {
+                                this.statuses.map(status => (
+                                    <Option
+                                        value={ status.value }
+                                        key={ status.value }
+                                    >{ status.text }</Option>
+                                ))
+                            }
+                            </Select>
+                        )}
+                    </FormItem>
+                    
+                    <FormItem className='inline'>
+                        {getFieldDecorator('id', { rules: [] })(
+                            <Input
+                                onChange={ e => this.onIdChange(e.target.value) }
+                                addonBefore='Заявка №'
+                                style={{ maxWidth: 140 }}
+                            />
+                        )}
+                    </FormItem>
 
-                    <FormItem>
+                    <FormItem className='inline'>
                         <Button
                             type='primary'
                             htmlType='submit'

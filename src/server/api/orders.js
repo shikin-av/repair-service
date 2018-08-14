@@ -50,6 +50,50 @@ export default () => {
         }
     })
 
+    api.get('/city/:cityNameUrl/date/:dateString/status/:status', async (req, res, next) => {
+        const { cityNameUrl, dateString, status } = req.params
+        const date = new Date(dateString)
+        if(date == 'Invalid Date'){
+            return res.json({ error: 'Invalid Date' })
+        } else {
+            const beginDay    = moment(date).startOf('day')
+            const endDay      = moment(beginDay).endOf('day')
+
+            return await Order.find({
+                cityNameUrl: cityNameUrl,
+                date: {
+                    $gte: beginDay.toDate(),
+                    $lt:  endDay.toDate()
+                },
+                status: status == 'all' ? { $in: ['new', 'working', 'complite', 'trash'] } : status
+            })
+            .sort({ date: -1 })
+            .exec((err, orders) => {
+                if(!err){
+                    return res.json(orders)
+                } else {
+                    return next(err)
+                }
+            })
+        }
+    })
+
+    api.get('/city/:cityNameUrl/serch-id/:id', async (req, res, next) => {
+        return await Order.find({
+            cityNameUrl: req.params.cityNameUrl,
+            id: req.params.id
+        })
+        .sort({ date: -1 })
+        .exec((err, orders) => {
+            if(!err){
+                return res.json(orders)
+            } else {
+                return next(err)
+            }
+        })
+    })
+
+    // one order
     api.get('/city/:cityNameUrl/date/:dateString/id/:id', async (req, res, next) => {
         const { cityNameUrl, dateString, id } = req.params
         const orderDate = new Date(dateString)

@@ -18,3 +18,7 @@ button {
 .ant-list-pagination {
     text-align: center !important;
 }
+.inline {
+    display: inline-block;
+    padding-right: 8px;
+}
