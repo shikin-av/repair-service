@@ -3,6 +3,11 @@ import { array, string } from 'prop-types'
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 
+const Row = require('antd/lib/row')
+require('antd/lib/row/style/css')
+const Col = require('antd/lib/col')
+require('antd/lib/col/style/css')
+
 import l from  'client/admin/components/style/GetAll.less'
 
 class GetAll extends React.Component {
@@ -10,23 +15,67 @@ class GetAll extends React.Component {
         super(props)
     }
 
+    deleteOrder(identificator){
+        console.log(identificator)
+    }
+
     render(){
         const { orders, cityNameUrl, dateString } = this.props
         return (
             <div className={ l.root }>
                 <ContentList
-                    items={ orders }
-                    apiName='orders'
-                    type='orders'
-                    viewProperties={[
-                        { value: 'categoryShortName', type: 'string' },
-                        { value: 'status', type: 'string' },
-                        { value: 'city', type: 'string' },
-                        { value: 'dateToView', type: 'string' },
-                        { value: 'id', type: 'string' },
-                    ]}
-                    nameUrl='id'
-                />
+                    onDelete={ identificator => this.deleteOrder(identificator) }
+                >
+                {
+                    orders.map(order =>{
+                        let statusElement = null
+                        if(order.status == 'new'){
+                            statusElement = (
+                                <span style={{ color: '#1890ff' }}>Новая</span>
+                            )
+                        } else if(order.status == 'working'){
+                            statusElement = (
+                                <span style={{ color: 'orange' }}>Выполняется</span>
+                            )
+                        } else if(order.status == 'complete'){
+                            statusElement = (
+                                <span style={{ color: 'green' }}>Завершена</span>
+                            )
+                        } else if(order.status == 'trash'){
+                            statusElement = (
+                                <span style={{ color: 'grey' }}>Удалена</span>
+                            )
+                        }
+                        return {
+                            element: ( 
+                                <Row key={ Math.random() } className={ l.row }>
+                                    <Col sm={24} md={4}>    
+                                        <span>{ order.categoryShortName }</span>
+                                    </Col>
+                                    <Col sm={24} md={4}>
+                                        { statusElement }
+                                    </Col>
+                                    <Col sm={24} md={4}>    
+                                        <span>{ order.id }</span>
+                                    </Col>
+                                    <Col sm={24} md={4}>    
+                                        <span>{ order.dateToView }</span>
+                                    </Col>
+                                    <Col sm={24} md={4}>    
+                                        <span>{ order.city }</span>
+                                    </Col>
+                                </Row>
+                            ),
+                            editLink: `/orders/date/${ dateString }/id/${ order.id }`,
+                            identificator: { 
+                                id: order.id,
+                                dateString: order.dateToLink
+                            },
+                            deleteText: `Удалить заявку №${ order.id }`
+                        }    
+                    })
+                }
+                </ContentList>
             </div>
         )
     }

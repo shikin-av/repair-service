@@ -1,10 +1,6 @@
 import React from 'react'
-import { array, string, func } from 'prop-types'
 import { Link } from 'react-router-dom'
-
-import config from 'config/client'
-
-import l from './ContentList.less'
+import { func } from 'prop-types'
 
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
@@ -15,135 +11,73 @@ require('antd/lib/popconfirm/style/css')
 const Tooltip = require('antd/lib/tooltip')
 require('antd/lib/tooltip/style/css')
 
+import l from './ContentList.less'
+
 class ContentList extends React.Component {
     constructor(props){
         super(props)
     }
 
-    deleteItem(nameUrl){
-        this.props.onDelete(nameUrl)
-    }
-
-    itemRender(item){
-        const { viewProperties, apiName, nameUrl, type } = this.props
-        let link = `/${ apiName }/${ item[nameUrl] }`
-        if(type == 'orders'){
-            link = `/${ apiName }/date/${ item.dateToLink }/id/${ item.id }`
-        }
-        return(
-            <List.Item
-                key={ Math.random() }
-                className={ l.listItem }
-                actions={
-                    [
-                        <Tooltip title='Открыть в новом окне'>
-                            <Link to={ link } target='_blank'>
-                                <Icon type='edit' />
-                            </Link>
-                        </Tooltip>
-                        ,
-                        <Tooltip title='Удалить'>
-                            <Popconfirm
-                                title={ `Удалить ${ item['shortName'] || item['name'] || item['fio'] || '' } ?` }
-                                onConfirm={ e => this.deleteItem(item[nameUrl]) }
-                                onCancel={ null }
-                                okText="Да"
-                                cancelText="Нет"
-                            >
-                                <Icon type='delete' />
-                            </Popconfirm>
-                        </Tooltip>
-                    ]
-                }
-            >
-                <Link to={ link }>
-                {
-                    viewProperties.map(prop => {
-                        switch(prop.type){
-                            case 'string':
-                                if(prop.value == 'status'){
-                                    const status = item[prop.value]
-                                    let statusText = 'Новая'
-                                    let statusColor = '#1890ff'
-                                    if(status == 'working'){
-                                        statusText = 'Выполняется'
-                                        statusColor = 'orange'
-                                    } else if(status == 'complete'){
-                                        statusText = 'Завершена'
-                                        statusColor = 'green'
-                                    } else if(status == 'trash'){
-                                        statusText = 'Удалена'
-                                        statusColor = 'grey'
-                                    }
-                                    return (
-                                        <span
-                                            key={ Math.random() }
-                                            className={ l.property }
-                                            style={{
-                                                color: statusColor,
-                                                fontWeight: 'bold'
-                                            }}
-                                        >{ statusText }</span>
-                                    )
-                                }
-                                return (
-                                    <span
-                                        key={ Math.random() }
-                                        className={ l.property }
-                                    >{ item[prop.value] }</span>
-                                )
-                            case 'image':
-                                return( <img key={ Math.random() } src={ `${ config.assetsPath }/imgs/${ item[prop.value] }` }/> )
-                            default: return null
-                        }
-                    })
-                }
-                </Link>
-            </List.Item>
-        )
+    deleteItem(identificator){
+        this.props.onDelete(identificator)
     }
 
     render(){
-        const { items } = this.props
         return (
             <List
                 className={ l.root }
                 itemLayout='horizontal'
                 pagination={{
-                    onChange: (page) => {
-                        console.log(page)
-                    },
                     pageSize: 8,
                 }}
-                dataSource={ items }
-                renderItem={ item => this.itemRender(item) }
-            />
+            >
+            {
+                this.props.children.map(item => {
+                    return (
+                        <List.Item
+                            key={ Math.random() }
+                            className={ l.listItem }
+                            actions={[
+                                ( 
+                                    item.editLink &&
+                                    <Tooltip title='Открыть в новом окне'>
+                                        <Link to={ item.editLink } target='_blank'>
+                                            <Icon type='edit' />
+                                        </Link>
+                                    </Tooltip>
+                                )
+                                ,
+                                (
+                                    item.deleteText &&
+                                    <Tooltip title='Удалить'>
+                                        <Popconfirm
+                                            title={ item.deleteText }
+                                            onConfirm={ () => this.deleteItem(item.identificator) }
+                                            onCancel={ null }
+                                            okText="Да"
+                                            cancelText="Нет"
+                                        >
+                                            <Icon type='delete' />
+                                        </Popconfirm>
+                                    </Tooltip>
+                                )
+                            ]}
+                        >
+                        {   item.editLink ?
+                            <Link to={ item.editLink }>{ item.element }</Link>
+                            : item.element
+                        }
+                        </List.Item>
+                    )
+                })
+            }
+            </List>
         )
-    }
+    }	
 }
 
 ContentList.propTypes = {
-    items:          array.isRequired,
-    apiName:        string.isRequired,
-    viewProperties: array.isRequired,
-    nameUrl:        string.isRequired,
-    onDelete:       func.isRequired,
-    type:           string
+    onDelete: func.isRequired
 }
 
 export default ContentList
-
-/*
-Use:
-
-<ContentList
-    items={ categories }
-    apiName='categories'
-    viewProperties={[
-        { value: 'image', type: 'image' },
-        { value: 'shortName', type: 'string' }
-    ]}
-    nameUrl='nameUrl'
-    type='categories'
-/>
-*/

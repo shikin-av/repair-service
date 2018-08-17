@@ -14,10 +14,15 @@ const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Row = require('antd/lib/row')
+require('antd/lib/row/style/css')
+const Col = require('antd/lib/col')
+require('antd/lib/col/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
+import config from 'config/client'
 
 import l from  'client/admin/components/style/GetAll.less'
 
@@ -92,15 +97,28 @@ class GetAll extends React.Component {
                     message='Добавьте первую категорию техники'
                 >
                     <ContentList
-                        items={ categories }
-                        apiName='categories'
-                        viewProperties={[
-                            { value: 'image', type: 'image' },
-                            { value: 'shortName', type: 'string' }
-                        ]}
-                        nameUrl='nameUrl'
-                        onDelete={ nameUrl => this.deleteCategory(nameUrl) }
-                    />
+                        onDelete={ identificator => this.deleteCategory(identificator) }
+                    >
+                    {
+                        categories.map(category => {
+                            return {
+                                element: (
+                                    <Row key={ Math.random() } className={ l.row }>
+                                        <Col sm={24} md={4}> 
+                                            <img src={ `${ config.assetsPath }/imgs/${ category.image }` }/>
+                                        </Col>
+                                        <Col sm={24} md={4}> 
+                                            <span>{ category.shortName }</span>
+                                        </Col>
+                                    </Row>
+                                ),
+                                editLink: `/categories/${ category.nameUrl }`,
+                                identificator: category.nameUrl,
+                                deleteText: `Удалить категорию ${ category.shortName }`
+                            }    
+                        })
+                    }
+                    </ContentList>
                 </LoadedContentView>
             </div>
         )    

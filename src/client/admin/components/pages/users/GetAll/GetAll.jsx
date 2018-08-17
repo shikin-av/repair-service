@@ -13,6 +13,10 @@ const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 const Checkbox = require('antd/lib/checkbox')
 require('antd/lib/checkbox/style/css')
+const Row = require('antd/lib/row')
+require('antd/lib/row/style/css')
+const Col = require('antd/lib/col')
+require('antd/lib/col/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 import getCookie from 'client/admin/resources/getCookie'
@@ -106,22 +110,31 @@ class GetAll extends React.Component {
                     message='Добавьте первого работника'
                 >
                     <ContentList
-                        items={
-                            (this.userCityNameUrl && usersOnlyCity)
-                            ? users.filter(user => {
-                                return user.cityNameUrl == this.userCityNameUrl
-                            })
-                            :users
-                        }
-                        apiName='users'
-                        viewProperties={[
-                            { value: 'fio', type: 'string' },
-                            { value: 'city', type: 'string' },
-                            { value: 'role', type: 'string' }
-                        ]}
-                        nameUrl='login'
-                        onDelete={ login => this.deleteUser(login) }
-                    />
+                        onDelete={ identificator => this.deleteUser(identificator) }
+                    >
+                    {
+                        users.map(user => {
+                            return {
+                                element: (
+                                    <Row key={ Math.random() } className={ l.row }>
+                                        <Col sm={24} md={4}>
+                                            <span>{ user.fio }</span>
+                                        </Col>
+                                        <Col sm={24} md={4}>
+                                            <span>{ user.city }</span>
+                                        </Col>
+                                        <Col sm={24} md={4}>
+                                            <span>{ user.role }</span>
+                                        </Col>
+                                    </Row>
+                                ),
+                                editLink: `/users/${ user.login }`,
+                                identificator: user.login,
+                                deleteText: `Удалить работника ${ user.fio }`
+                            }    
+                        })
+                    }
+                    </ContentList>
                 </LoadedContentView>
             </div>
         )        

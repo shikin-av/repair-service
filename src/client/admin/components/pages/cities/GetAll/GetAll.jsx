@@ -14,6 +14,10 @@ const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Row = require('antd/lib/row')
+require('antd/lib/row/style/css')
+const Col = require('antd/lib/col')
+require('antd/lib/col/style/css')
 
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
@@ -92,16 +96,31 @@ class GetAll extends React.Component {
                     message='Добавьте первый офис'
                 >
                     <ContentList
-                        items={ cities }
-                        apiName='cities'
-                        viewProperties={[
-                            { value: 'name', type: 'string' },
-                            { value: 'phone', type: 'string' },
-                            { value: 'officeAddress', type: 'string' }
-                        ]}
-                        nameUrl='nameUrl'
-                        onDelete={ nameUrl => this.deleteCity(nameUrl) }
-                    />
+                        onDelete={ identificator => this.deleteCity(identificator) }
+                    >
+                    {
+                        cities.map(city => {
+                            return {
+                                element: (
+                                    <Row key={ Math.random() } className={ l.row }>
+                                        <Col sm={24} md={4}>
+                                            <span>{ city.name }</span>
+                                        </Col>
+                                        <Col sm={24} md={4}>
+                                            <span>{ city.phone }</span>
+                                        </Col>
+                                        <Col sm={24} md={4}>
+                                            <span>{ city.officeAddress }</span>
+                                        </Col>
+                                    </Row>
+                                ),
+                                editLink: `/cities/${ city.nameUrl }`,
+                                identificator: city.nameUrl,
+                                deleteText: `Удалить офис ${ city.name }`
+                            }    
+                        })
+                    }
+                    </ContentList>
                 </LoadedContentView>
             </div>
         )
