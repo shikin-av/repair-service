@@ -5,6 +5,7 @@ import moment from 'moment'
 import City from '../models/City'
 import Category from '../models/Category'
 import Order from '../models/Order'
+import Text from '../models/Text'
 import getRandomInt from '../resources/getRandomInt'
 
 export default () => {
@@ -148,5 +149,22 @@ export default () => {
             })
         })
     })
+
+    api.get('/texts/:nameUrl', async (req, res, next) => {
+        return await Text.findOne({
+            nameUrl: req.params.nameUrl
+        }, (err, text) => {
+            if(!err){
+                if(text){
+                    return res.json(text)
+                } else {
+                    return next()
+                }
+            } else {
+                return next(err)
+            }
+        })
+    })
+
     return api
 }

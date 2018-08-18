@@ -32,3 +32,10 @@ export const createOrder = async params => {
     })
     .then(res => res.json())
 }
+
+export const getText = async nameUrl => {
+    return fetch(`${ apiPath }/texts/${ nameUrl }`, {
+        method: 'GET'
+    })
+    .then(res => res.json())
+}

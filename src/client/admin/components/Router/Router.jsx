@@ -19,6 +19,10 @@ import OrdersByCityDate from 'client/admin/components/pages/orders/GetAll/ByCity
 import OrdersByCityDateStatus from 'client/admin/components/pages/orders/GetAll/ByCityDateStatus.jsx'
 import OrdersById from 'client/admin/components/pages/orders/GetAll/ById.jsx'
 
+import Texts from 'client/admin/components/pages/texts/GetAll/GetAll.jsx'
+import TextEdit from 'client/admin/components/pages/texts/Edit/Edit.jsx'
+import TextCreate from 'client/admin/components/pages/texts/Create/Create.jsx'
+
 import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 
 const Router = () => (
@@ -90,6 +94,18 @@ const Router = () => (
         <Route
             exact path='/gallery'
             component={ Gallery }
+        />
+        <Route
+            exact path='/texts'
+            component={ Texts }
+        />
+        <Route
+            exact path='/texts/create'
+            component={ TextCreate }
+        />
+        <Route
+            exact path='/texts/:nameUrl'
+            component={ TextEdit }
         />
     </Switch>
 )

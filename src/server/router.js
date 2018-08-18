@@ -1,10 +1,10 @@
 import layouts from '../client/layouts'
-import resources from './resources'
+import getAuth from './resources/auth'
 import getApi from './api'
 import getPublicApi from './api/publicApi'
 
 export default (app) => {
-    const auth = resources.auth()
+    const auth = getAuth()
     const config = app.get('config')
     app.use('/admin/', auth.verifyAdmin)
     

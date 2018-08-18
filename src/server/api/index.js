@@ -4,6 +4,7 @@ import getUsersApi from './users'
 import getCitiesApi from './cities'
 import getGalleryApi from './gallery'
 import getOrdersApi from './orders'
+import getTextsApi from './texts'
 
 export default () => {
     const api = Router()
@@ -14,6 +15,7 @@ export default () => {
     api.use('/cities', getCitiesApi())
     api.use('/gallery', getGalleryApi())
     api.use('/orders', getOrdersApi())
+    api.use('/texts', getTextsApi())
 
     return api
 }

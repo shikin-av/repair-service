@@ -6,7 +6,6 @@ import http from 'http'
 import socket from 'socket.io'
 
 import errorHandlers from './errorHandlers'
-import resources from './resources'
 import router from './router'
 import socketsHandler from './resources/socketsHandler'
 

@@ -81,23 +81,23 @@ class Edit extends React.Component {
                         return createCityApi(values)
                         .then(city => {
                             this.setState({ isCreated: true }, () => {
-                                message.success(`Офис ${city.name} создан.`)
+                                message.success(`Офис ${ city.name } создан.`)
                             })
                         })
                     } catch(err) {
                         message.error(`Офис ${city.name} не создан.`)
-                        console.log(`ERROR ${err.stack}`)
+                        console.log(`ERROR ${ err.stack }`)
                     }
                 } else {
                     const { nameUrl } = this.props.match.params
                     try {
                         return editCityApi(nameUrl, values)
                         .then(city => {
-                            message.success(`Офис ${city.name} отредактирован.`)
+                            message.success(`Офис ${ city.name } отредактирован.`)
                         })
                     } catch(err) {
-                        message.error(`Офис ${city.name} не отредактирован.`)
-                        console.log(`ERROR ${err.stack}`)
+                        message.error(`Офис ${ city.name } не отредактирован.`)
+                        console.log(`ERROR ${ err.stack }`)
                     }
                 }
 

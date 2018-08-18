@@ -42,5 +42,10 @@ export default [     //TODO from api
         url: '/gallery',
         text: 'Галерея изображений',
         icon: 'picture'
+    },
+    {
+        url: '/texts',
+        text: 'Контент сайта',
+        icon: 'file-text'
     }
 ]
