@@ -69,7 +69,7 @@ class Gallery extends React.Component {
 
     deleteImage(fileName){        
         try {
-            return deleteImageApi(fileName)
+            deleteImageApi(fileName)
             .then(res => {
                 if(res.error){
                     message.error(`Не удалось удалить файл ${ fileName }`)

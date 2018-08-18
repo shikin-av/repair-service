@@ -63,7 +63,7 @@ class GetAll extends React.Component {
     deleteUser(login){
         const { users } = this.state
         try {
-            return deleteUserApi(login)
+            deleteUserApi(login)
             .then(data => {
                 if(data.status == 'OK'){
                     const user = users[_.findIndex(users, user => {

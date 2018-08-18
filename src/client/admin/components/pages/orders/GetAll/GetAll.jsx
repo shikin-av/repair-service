@@ -1,12 +1,17 @@
 import React from 'react'
 import { array, string } from 'prop-types'
 
+import {
+    editOrder as editOrderApi
+} from 'client/admin/api/orders'
 import ContentList from 'client/admin/components/content/ContentList/ContentList.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
 const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
+const message = require('antd/lib/message')
+require('antd/lib/message/style/css')
 
 import l from  'client/admin/components/style/GetAll.less'
 
@@ -15,17 +20,11 @@ class GetAll extends React.Component {
         super(props)
     }
 
-    deleteOrder(identificator){
-        console.log(identificator)
-    }
-
     render(){
         const { orders, cityNameUrl, dateString } = this.props
         return (
             <div className={ l.root }>
-                <ContentList
-                    onDelete={ identificator => this.deleteOrder(identificator) }
-                >
+                <ContentList>
                 {
                     orders.map(order =>{
                         let statusElement = null
@@ -66,12 +65,7 @@ class GetAll extends React.Component {
                                     </Col>
                                 </Row>
                             ),
-                            editLink: `/orders/date/${ dateString }/id/${ order.id }`,
-                            identificator: { 
-                                id: order.id,
-                                dateString: order.dateToLink
-                            },
-                            deleteText: `Удалить заявку №${ order.id }`
+                            editLink: `/orders/date/${ dateString }/id/${ order.id }`
                         }    
                     })
                 }

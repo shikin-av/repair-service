@@ -61,7 +61,7 @@ class GetAll extends React.Component {
     deleteCategory(nameUrl){
         const { categories } = this.state
         try {
-            return deleteCategoryApi(nameUrl)
+            deleteCategoryApi(nameUrl)
             .then(data => {
                 if(data.status == 'OK'){
                     const category = categories[_.findIndex(categories, category => {

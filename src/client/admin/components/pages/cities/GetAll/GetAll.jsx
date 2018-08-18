@@ -60,7 +60,7 @@ class GetAll extends React.Component {
     deleteCity(nameUrl){
         const { cities } = this.state
         try {
-            return deleteCityApi(nameUrl)
+            deleteCityApi(nameUrl)
             .then(data => {
                 if(data.status == 'OK'){
                     const city = cities[_.findIndex(cities, city => {

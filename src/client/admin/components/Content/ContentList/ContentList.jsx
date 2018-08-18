@@ -19,10 +19,14 @@ class ContentList extends React.Component {
     }
 
     deleteItem(identificator){
-        this.props.onDelete(identificator)
+        const { onDelete } = this.props
+        if(onDelete){
+            onDelete(identificator)    
+        }        
     }
 
     render(){
+        const { children, onDelete } = this.props
         return (
             <List
                 className={ l.root }
@@ -32,7 +36,7 @@ class ContentList extends React.Component {
                 }}
             >
             {
-                this.props.children.map(item => {
+                children.map(item => {
                     return (
                         <List.Item
                             key={ Math.random() }
@@ -48,7 +52,7 @@ class ContentList extends React.Component {
                                 )
                                 ,
                                 (
-                                    item.deleteText &&
+                                    onDelete && item.deleteText &&
                                     <Tooltip title='Удалить'>
                                         <Popconfirm
                                             title={ item.deleteText }
@@ -77,7 +81,7 @@ class ContentList extends React.Component {
 }
 
 ContentList.propTypes = {
-    onDelete: func.isRequired
+    onDelete: func
 }
 
 export default ContentList
