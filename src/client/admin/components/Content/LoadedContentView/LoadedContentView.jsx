@@ -1,4 +1,5 @@
 import React from 'react'
+import { string, object } from 'prop-types'
 
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
@@ -18,7 +19,7 @@ const LoadedContentView = props => (
 			<Spin/> 
 		}
 		{ 
-			props.loadStatus == 'empty' &&
+			props.loadStatus == 'empty' && props.message &&
             <Alert
                 type='info'
                 message={ props.message }
@@ -26,5 +27,11 @@ const LoadedContentView = props => (
         }
 	</div>
 )
+
+LoadedContentView.propTypes = {
+	loadStatus: string.isRequired,
+	children:   object.isRequired,
+	message:	string
+}
 
 export default LoadedContentView

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Editor, getEventRange, getEventTransfer } from 'slate-react'
 import { Value, Block } from 'slate'
+import Plain from 'slate-plain-serializer'
 import imageExtensions from 'image-extensions'
 import isUrl from 'is-url'
 
@@ -13,6 +14,7 @@ require('antd/lib/modal/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 
+import { renderNode, renderMark } from 'client/admin/components/content/TextEditor/renderElements'
 import Gallery from 'client/admin/components/content/Gallery/Gallery.jsx'
 
 import l from './TextEditor.less'
@@ -28,7 +30,6 @@ const insertImage = (change, src, target) => {
     if(target){
         change.select(target)
     }
-
     change.insertBlock({
         type: 'image',
         isVoid: true,
@@ -36,32 +37,11 @@ const insertImage = (change, src, target) => {
     })
 }
 
-const initialValue = Value.fromJSON({
-    document: {
-        nodes: [
-            {
-                object: 'block',
-                type: 'paragraph',
-                nodes: [
-                    {
-                        object: 'text',
-                        leaves: [
-                            {
-                                text: '',
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],
-    },
-})
-
 class TextEditor extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            value: initialValue,
+            value: Plain.deserialize(''),
             showGallery: false,
             selectedImage: null,
             preSelectedImage: null,
@@ -119,55 +99,12 @@ class TextEditor extends React.Component {
 
         return (
             <Button
-                //type={ isActive ? 'primary' : '' }
                 onMouseDown={ event => this.onClickBlock(event, type) }
                 className={ isActive ? l.activeButton : l.button }
             >
                 <IconEditor>{ icon }</IconEditor>
             </Button>
         )
-    }
-
-    renderNode(props){
-        const { attributes, children, node, isFocused } = props
-
-        switch(node.type){
-            case 'block-quote':
-                return <blockquote { ...attributes }>{ children }</blockquote>
-            case 'bulleted-list':
-                return <ul { ...attributes }>{ children }</ul>
-            case 'heading-one':
-                return <h1 { ...attributes }>{ children }</h1>
-            case 'heading-two':
-                return <h2 { ...attributes }>{ children }</h2>
-            case 'list-item':
-                return <li { ...attributes }>{ children }</li>
-            case 'numbered-list':
-                return <ol { ...attributes }>{ children }</ol>
-            case 'image':
-                const src = node.data.get('src')
-                return <img 
-                    src={ src } 
-                    className={ isFocused ? l.selectedImg : '' }
-                    selected={ isFocused } 
-                    {...attributes} 
-                />
-        }
-    }
-
-    renderMark(props){
-        const { children, mark, attributes } = props
-
-        switch(mark.type){
-            case 'bold':
-                return <strong { ...attributes }>{ children }</strong>
-            case 'code':
-                return <code { ...attributes }>{ children }</code>
-            case 'italic':
-                return <em { ...attributes }>{ children }</em>
-            case 'underlined':
-                return <u { ...attributes }>{ children }</u>
-        }
     }
 
     onClickMark(event, type){
@@ -281,9 +218,8 @@ class TextEditor extends React.Component {
                         value={ this.state.value } 
                         onChange={ obj => this.onChange(obj) }
                         className={ `ant-input ${ l.editor }` }
-                        spellCheck
-                        renderNode={ props => this.renderNode(props) }
-                        renderMark={ props => this.renderMark(props) }
+                        renderNode={ props => renderNode(props) }
+                        renderMark={ props => renderMark(props) }
                         placeholder='Начните печатать...'
                     />
                 </Row>
