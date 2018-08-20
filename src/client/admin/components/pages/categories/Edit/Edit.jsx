@@ -11,6 +11,7 @@ import {
 import config from 'config/server'
 import Gallery from 'client/admin/components/content/Gallery/Gallery.jsx'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -25,8 +26,8 @@ require('antd/lib/input/style/css')
 const FormItem = Form.Item
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
-const Spin = require('antd/lib/spin')
-require('antd/lib/spin/style/css')
+/*const Spin = require('antd/lib/spin')
+require('antd/lib/spin/style/css')*/
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 const Modal = require('antd/lib/modal')
@@ -44,29 +45,26 @@ class Edit extends React.Component {
             selectedImage: null,
             preSelectedImage: null,
             isCreated: false,
-            problemsCounter: 0
+            problemsCounter: 0,
+            loadStatus: 'load',
+            breadcrumbsLinks: [{ url: '/categories', text:'Категории' }]
         }
     }
 
-    componentWillMount(){
-        if(this.props.type == 'create'){
-            const empty = {
-                name: '',
-                singularName: '',
-                nameUrl: '',
-                shortName: '',
-                problems: []
-            }
-            this.setState({
-                categoryInitial: empty,
-                category: empty
-            })
-        } else {
-            const { nameUrl } = this.props.match.params
-            console.log('props ', this.props.match);
-            try {
-                return getCategoryApi(nameUrl)
-                .then(category => {
+    emptyCategory(){
+        this.setState({
+            loadStatus: 'empty',
+            breadcrumbsLinks: [
+                { url: '/categories', text:'Категории' },
+            ]
+        })
+    }
+
+    getCategory(nameUrl){        
+        try {
+            return getCategoryApi(nameUrl)
+            .then(category => {
+                if(!category.error){
                     let maxCount = 0
                     if(category.problems.length > 0 && category.problems[0].id){
                         let maxProblemOnId = _.maxBy(category.problems, problem => {
@@ -77,15 +75,57 @@ class Edit extends React.Component {
                     this.setState({
                         categoryInitial: category,
                         category: category,
-                        problemsCounter: maxCount
+                        problemsCounter: maxCount,
+                        loadStatus: 'complete',
+                        breadcrumbsLinks: [
+                            { url: '/categories', text:'Категории' }, 
+                            { url: category.nameUrl, text: category.shortName }
+                        ]
                     }, () => {
                         this.setAllInputs(this.state.category)
                     })
-                })
-            } catch(err) {
-                console.log(`ERROR ${err.stack}`)
-            }
+                } else {
+                    this.emptyCategory()
+                }                    
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+            this.emptyCategory()
         }
+    }
+
+    componentWillMount(){
+        if(this.props.type == 'create'){
+            const empty = {
+                name: '',
+                singularName: '',
+                nameUrl: '',
+                shortName: '',
+                problems: []                
+            }
+            this.setState({
+                categoryInitial: empty,
+                category: empty,
+                loadStatus: 'complete',
+                breadcrumbsLinks: [
+                    { url: '/categories', text:'Категории' }, 
+                    { url: 'create', text: 'Новая категория' }
+                ]
+            })
+        } else {
+            const { nameUrl } = this.props.match.params
+            this.getCategory(nameUrl)
+        }
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.match && this.props.match.params){
+            const oldNameUrl = this.props.match.params.nameUrl
+            const newNameUrl = nextProps.match.params.nameUrl
+            if(newNameUrl != oldNameUrl){
+                this.getCategory(newNameUrl)
+            }
+        }        
     }
 
     componentDidMount(){
@@ -230,7 +270,7 @@ class Edit extends React.Component {
                 return problem.id
             })
             if(maxCount <= maxProblemOnId.id){
-                ++maxCount
+                maxCount = maxProblemOnId.id + 1
             }
         }
         this.setState({
@@ -276,24 +316,24 @@ class Edit extends React.Component {
             category,
             showGallery,
             selectedImage,
-            isCreated
+            isCreated,
+            loadStatus,
+            breadcrumbsLinks
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreateType = this.props.type == 'create'
-        if(category){
-            const breadcrumbsLinks = [{ url: '/categories', text:'Категории' }]
-            if(this.props.type == 'create'){
-                breadcrumbsLinks.push({ url: 'create', text: 'Новая категория' })
-            } else {
-                breadcrumbsLinks.push({ url: category.nameUrl, text: category.shortName })
-            }
-            return (
-                <Row className={ l.root }>
-                    <BreadcrumbsPanel
-                        history={ this.props.history }
-                        backButton={ true }
-                        links={ breadcrumbsLinks }
-                    />
+        
+        return (            
+            <Row className={ l.root }>
+                <BreadcrumbsPanel
+                    history={ this.props.history }
+                    backButton={ true }
+                    links={ breadcrumbsLinks }
+                />
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Данной категории не существует'
+                >
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             {   (selectedImage || getFieldValue('image')) &&
@@ -374,7 +414,8 @@ class Edit extends React.Component {
 
                             <FormItem label='Возможные неисправности'  className={ l.formItem }>
                             {
-                                category.problems.map(problem => {
+                                (category && category.hasOwnProperty('problems')) 
+                                && category.problems.map(problem => {
                                     return (
                                         <div key={ problem.id }>
                                             <Input
@@ -398,20 +439,20 @@ class Edit extends React.Component {
                             </FormItem>
                         </Col>
                     </Form>
-                    <Modal
-                        title='Выберите изображение'
-                        visible={ showGallery }
-                        onOk={ e => this.handleModalGalleryOk() }
-                        onCancel={ e => this.handleModalGalleryCancel() }
-                    >
-                        <Gallery
-                            onClickToImage={ fileName => this.handleSelectImage(fileName) }
-                            inModal={ true }
-                        />
-                    </Modal>
-                </Row>
-            )
-        } else return ( <Spin/> )
+                </LoadedContentView>
+                <Modal
+                    title='Выберите изображение'
+                    visible={ showGallery }
+                    onOk={ e => this.handleModalGalleryOk() }
+                    onCancel={ e => this.handleModalGalleryCancel() }
+                >
+                    <Gallery
+                        onClickToImage={ fileName => this.handleSelectImage(fileName) }
+                        inModal={ true }
+                    />
+                </Modal>
+            </Row>            
+        )
     }
 }
 

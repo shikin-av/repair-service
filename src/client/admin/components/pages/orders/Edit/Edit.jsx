@@ -45,6 +45,7 @@ import DateInput from 'client/site/components/content/OrderForm/formItems/DateIn
 import TimeInput from 'client/site/components/content/OrderForm/formItems/TimeInput/TimeInput.jsx'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 import Radio from 'client/site/components/content/Radio/Radio.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 import l from 'client/admin/components/style/Edit.less'
 
@@ -59,13 +60,15 @@ class Edit extends React.Component {
             cyrilicDay:              null,
             status:                  null,
             smsStatus:               null,
+            loadStatus:              'load',
+            breadcrumbsLinks:        [{ url: '/orders', text:'Заявки' }]
         }
         this.userCityNameUrl = null
     }
 
     componentWillMount(){
         moment.locale('ru')   
-    }    
+    }
 
     componentDidMount(){
         const { dateString, id } = this.props.match.params
@@ -99,40 +102,55 @@ class Edit extends React.Component {
         }
     }
 
+    emptyOrder(){
+        this.setState({
+            loadStatus: 'empty',
+            breadcrumbsLinks: [
+                { url: '/orders', text:'Заявки' }
+            ]
+        })
+    }
+
     initialOrder(cityNameUrl, dateString, id){
         const { getFieldValue } = this.props.form
         try {
             getOrderApi(cityNameUrl, dateString, id)
             .then(order => {
-                console.log('get Order', order)
-
-                if(order.error == '404 - Not found'){
-                    window.location.replace('admin/404')
-                }
-
-                const dateFromUrl = new Date(dateString)                
-                this.setState({
-                    order:                   order,
-                    categoryNameUrl:         order.categoryNameUrl,
-                    cyrilicDay:              moment(getFieldValue('date')).format('dddd'),
-                    status:                  order.status,
-                    smsStatus:               order.smsStatus,
-                    selectedWorker:          null,
-                }, () => {
-                    const { order, categoryNameUrl, cyrilicDay } = this.state
-                    this.setAllInputs(this.state.order)
-                    getUsersByCityCategoryDaysApi(cityNameUrl, categoryNameUrl, cyrilicDay)
-                    .then(workers => {
-                        this.setState({ workers: workers }, () =>{
-                            if(order.workerId){
-                                this.onWorkerSelect(order.workerId)
-                            }
+                if(!order.error){
+                    const dateFromUrl = new Date(dateString)
+                    const dateToView = dateFromUrl.toLocaleDateString('ru-RU', config.date.dateViewOptions)                
+                    this.setState({
+                        order:                   order,
+                        categoryNameUrl:         order.categoryNameUrl,
+                        cyrilicDay:              moment(getFieldValue('date')).format('dddd'),
+                        status:                  order.status,
+                        smsStatus:               order.smsStatus,
+                        selectedWorker:          null,
+                        loadStatus:              'complete',
+                        breadcrumbsLinks:       [
+                            { url: '/orders', text:'Заявки' },
+                            { url: `/orders/date/${ dateString }`, text: dateToView },
+                            { url: `/orders/date/${ dateString }/id/${ id }`, text: `№${ id }` },
+                        ]
+                    }, () => {
+                        const { order, categoryNameUrl, cyrilicDay } = this.state
+                        this.setAllInputs(this.state.order)
+                        getUsersByCityCategoryDaysApi(cityNameUrl, categoryNameUrl, cyrilicDay)
+                        .then(workers => {
+                            this.setState({ workers: workers }, () =>{
+                                if(order.workerId){
+                                    this.onWorkerSelect(order.workerId)
+                                }
+                            })
                         })
                     })
-                })
+                } else {
+                    this.emptyOrder()
+                }                
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
+            this.emptyOrder()
         }
     }
     
@@ -431,24 +449,25 @@ class Edit extends React.Component {
             selectedWorker, 
             status,
             smsStatus,
+            loadStatus,
+            breadcrumbsLinks,
         } = this.state
         const { dateString, id } = this.props.match.params
-        const dateFromUrl = new Date(dateString)        
-        const dateToView = dateFromUrl.toLocaleDateString('ru-RU', config.date.dateViewOptions)
-        const breadcrumbsLinks = [
-            { url: '/orders', text:'Заявки' },
-            { url: `/orders/date/${ dateString }`, text: dateToView },
-            { url: `/orders/date/${ dateString }/id/${ id }`, text: `№${ id }` },
-        ]
+        const dateFromUrl = new Date(dateString)
         console.log('STATE', this.state)
-        if(order){
-            return (
-                <Row className={ l.root }>
-                    <BreadcrumbsPanel
-                        history={ this.props.history }
-                        backButton={ true }
-                        links={ breadcrumbsLinks }
-                    />
+        
+        return (
+            <Row className={ l.root }>
+                <BreadcrumbsPanel
+                    history={ this.props.history }
+                    backButton={ true }
+                    links={ breadcrumbsLinks }
+                />
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Данной заявки не существует'
+                >
+                {   order ?
                     <Form onSubmit = { e => this.handleSubmit(e) }>                        
                         
                         { this.renderFormSubmit(order, selectedWorker, status, smsStatus) }
@@ -588,9 +607,11 @@ class Edit extends React.Component {
                         { this.renderWorkersSelect(order, workers, selectedWorker) }                        
                         { this.renderStatusRadio(order) }
                     </Form>
-                </Row>
-            )
-        } else return null      
+                    : <span></span>
+                }
+                </LoadedContentView>
+            </Row>
+        )           
     }
 }
 

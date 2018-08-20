@@ -25,7 +25,7 @@ class TextContent extends React.Component {
 		try {
 			getTextApi(nameUrl)
 			.then(text => {
-				if(text){
+				if(!text.error){
 					const content = Value.fromJSON(text.content)
 					this.setState({ 
 						content,

@@ -9,6 +9,7 @@ import {
 } from 'client/admin/api/texts'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 import TextEditor from 'client/admin/components/content/TextEditor/TextEditor.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -23,8 +24,6 @@ require('antd/lib/input/style/css')
 const FormItem = Form.Item
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
-const Spin = require('antd/lib/spin')
-require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 
@@ -34,9 +33,46 @@ class Edit extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            textInitial: null,
-            text: null,
-            isCreated: false,
+            textInitial:      null,
+            text:             null,
+            isCreated:        false,
+            loadStatus:       'load',
+            breadcrumbsLinks: [{ url: '/texts', text:'Контент' }]
+        }
+    }
+
+    emptyText(){
+        this.setState({
+            loadStatus: 'empty',
+            breadcrumbsLinks: [
+                { url: '/texts', text:'Контент' },
+            ]
+        })
+    }
+
+    getText(nameUrl){
+        try {
+            return getTextApi(nameUrl)
+            .then(text => {
+                if(!text.error){
+                    this.setState({
+                        textInitial:      text,
+                        text:             text,
+                        loadStatus:       'complete',
+                        breadcrumbsLinks: [
+                            { url: '/texts', text:'Контент' },  
+                            { url: text.nameUrl, text: text.title }
+                        ]
+                    }, () => {
+                        this.setAllInputs(this.state.text)
+                    })    
+                } else {
+                    this.emptyText()
+                }                
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+            this.emptyText()
         }
     }
 
@@ -49,29 +85,31 @@ class Edit extends React.Component {
             }
             this.setState({
                 textInitial: empty,
-                text: empty
+                text: empty,
+                loadStatus: 'complete',
+                breadcrumbsLinks: [
+                    { url: '/texts', text:'Контент' },
+                    { url: 'create', text: 'Новый текст' }
+                ]
             })
         } else {
             const { nameUrl } = this.props.match.params
-            try {
-                return getTextApi(nameUrl)
-                .then(text => {
-                    this.setState({
-                        textInitial: text,
-                        text: text
-                    }, () => {
-                        this.setAllInputs(this.state.text)
-                    })
-                })
-            } catch(err) {
-                console.log(`ERROR ${err.stack}`)
-            }
+            this.getText(nameUrl)
         }
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.match && this.props.match.params){
+            const oldNameUrl = this.props.match.params.nameUrl
+            const newNameUrl = nextProps.match.params.nameUrl
+            if(newNameUrl != oldNameUrl){
+                this.getText(newNameUrl)
+            }
+        }  
     }
 
     async handleSave(e){
         const isCreateType = this.props.type == 'create'
-
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
@@ -146,25 +184,26 @@ class Edit extends React.Component {
     render(){
     	const {
             text,
-            isCreated
+            isCreated,
+            loadStatus,
+            breadcrumbsLinks,
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
-        const isCreateType = this.props.type == 'create'
-        if(text){
-            const breadcrumbsLinks = [{ url: '/texts', text:'Контент' }]
-            if(this.props.type == 'create'){
-                breadcrumbsLinks.push({ url: 'create', text: 'Новый текст' })
-            } else {
-                breadcrumbsLinks.push({ url: text.nameUrl, text: text.title })
-            }
+        const isCreateType = this.props.type == 'create'        
 
-	        return (
-	        	<Row className={ l.root }>
-                    <BreadcrumbsPanel
-                        history={ this.props.history }
-                        backButton={ true }
-                        links={ breadcrumbsLinks }
-                    />
+        return (
+        	<Row className={ l.root }>
+                <BreadcrumbsPanel
+                    history={ this.props.history }
+                    backButton={ true }
+                    links={ breadcrumbsLinks }
+                />
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Данного текста не существует'
+                >
+                { 
+                    text &&
                     <Form onSubmit = { e => this.handleSave(e) }>
                     	<FormItem>
                             { !isCreated &&
@@ -205,15 +244,16 @@ class Edit extends React.Component {
                                 { required: true, message: 'Обязательное поле' }
                             ] })(                                
                                 <TextEditor
-									onDataToForm={ obj => this.onContentChange(obj) }
-									defaultValue={ text.content }
+    								onDataToForm={ obj => this.onContentChange(obj) }
+    								defaultValue={ text.content }
                                 />
                             )}
                         </FormItem>
                     </Form>
-                </Row>
-	    	)
-        }  else return ( <Spin/> )
+                }
+                </LoadedContentView>
+            </Row>
+    	)        
     }
 }
 

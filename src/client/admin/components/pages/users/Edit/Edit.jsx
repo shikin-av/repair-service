@@ -15,6 +15,7 @@ import {
 } from 'client/admin/api/categories'
 import config from 'config/client'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -29,8 +30,6 @@ require('antd/lib/input/style/css')
 const FormItem = Form.Item
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
-const Spin = require('antd/lib/spin')
-require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 const Select = require('antd/lib/select')
@@ -46,49 +45,88 @@ class Edit extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            userInitial:   null,
-            user:          null,
-            isCreated:     false,
-            cities:        [],
-            workingDays:   config.defaultWorkingDays,
-            categories:    [],
-            allCategories: []
+            userInitial:      null,
+            user:             null,
+            isCreated:        false,
+            cities:           [],
+            workingDays:      config.defaultWorkingDays,
+            categories:       [],
+            allCategories:    [],
+            loadStatus:       'load',
+            breadcrumbsLinks: [{ url: '/users', text:'Работники' }]
+        }
+    }
+
+    emptyUser(){
+        this.setState({
+            loadStatus: 'empty',
+            breadcrumbsLinks: [
+                { url: '/users', text:'Работники' },
+            ]
+        })
+    }
+
+    getUser(login){
+        try {
+            return getUserApi(login)
+            .then(user => {
+                if(!user.error){
+                    this.setState({
+                        userInitial:      user,
+                        user:             user,
+                        loadStatus:       'complete',
+                        breadcrumbsLinks: [
+                            { url: '/users', text:'Работники' },
+                            { url: user.login, text: user.fio }
+                        ]
+                    }, () => {
+                        this.setAllInputs(this.state.user)
+                    })
+                } else {
+                    this.emptyUser()
+                }                
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+            this.emptyUser()
         }
     }
 
     componentWillMount(){
         if(this.props.type == 'create'){
             const empty = {
-                login:       '',
-                password:    '',
-                fio:         '',
-                phone:       '',
-                role:        null,
-                city:        null,
-                workingDays: config.defaultWorkingDays,
-                categories:  []
+                login:            '',
+                password:         '',
+                fio:              '',
+                phone:            '',
+                role:             null,
+                city:             null,
+                workingDays:      config.defaultWorkingDays,
+                categories:       []
             }
             this.setState({
                 userInitial: empty,
-                user: empty
+                user: empty,
+                loadStatus:       'complete',
+                breadcrumbsLinks: [
+                    { url: '/users', text:'Работники' },
+                    { url: 'create', text: 'Новый работник' }
+                ]
             })
         } else {
             const { login } = this.props.match.params
-            try {
-                return getUserApi(login)
-                .then(user => {
-                    this.setState({
-                        userInitial: user,
-                        user: user
-                    }, () => {
-                        this.setAllInputs(this.state.user)
-                    })
-                })
-            } catch(err) {
-                console.log(`ERROR ${err.stack}`)
-            }
+            this.getUser(login)
         }
+    }
 
+    componentWillReceiveProps(nextProps){
+        if(this.props.match && this.props.match.params){
+            const oldLogin = this.props.match.params.login
+            const newLogin = nextProps.match.params.login
+            if(newLogin != oldLogin){
+                this.getUser(newLogin)
+            }
+        }        
     }
 
     getCategories(){
@@ -249,24 +287,26 @@ class Edit extends React.Component {
             user,
             isCreated,
             cities,
-            allCategories
+            allCategories,
+            loadStatus,
+            breadcrumbsLinks
         } = this.state
         const { getFieldDecorator }  = this.props.form
         const isCreateType = this.props.type == 'create'
-        if(user){
-            const breadcrumbsLinks = [{ url: '/users', text:'Работники' }]
-            if(this.props.type == 'create'){
-                breadcrumbsLinks.push({ url: 'create', text: 'Новый работник' })
-            } else {
-                breadcrumbsLinks.push({ url: user.login, text: user.fio })
-            }
-            return (
-                <Row className={ l.root }>
-                    <BreadcrumbsPanel
-                        history={ this.props.history }
-                        backButton={ true }
-                        links={ breadcrumbsLinks }
-                    />
+
+        return (
+            <Row className={ l.root }>
+                <BreadcrumbsPanel
+                    history={ this.props.history }
+                    backButton={ true }
+                    links={ breadcrumbsLinks }
+                />
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Данного работника не существует'
+                >
+                {
+                    user ?
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             <FormItem>
@@ -390,9 +430,11 @@ class Edit extends React.Component {
                             }
                         </Col>
                     </Form>
-                </Row>
-            )
-        } else return ( <Spin/> )
+                    : <span></span>
+                }
+                </LoadedContentView>
+            </Row>
+        )        
     }
 }
 

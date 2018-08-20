@@ -8,6 +8,7 @@ import {
     editCity as editCityApi
 } from 'client/admin/api/cities'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -21,8 +22,6 @@ const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
 const FormItem = Form.Item
 const Icon = require('antd/lib/icon')
-require('antd/lib/icon/style/css')
-const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
@@ -36,6 +35,43 @@ class Edit extends React.Component {
             cityInitial: null,
             city: null,
             isCreated: false,
+            loadStatus: 'load',
+            breadcrumbsLinks: [{ url: '/cities', text: 'Офисы' }]
+        }
+    }
+
+    emptyCity(){
+        this.setState({
+            loadStatus: 'empty',
+            breadcrumbsLinks: [
+                { url: '/cities', text: 'Офисы' },
+            ]
+        })
+    }
+
+    getCity(nameUrl){
+        try {
+            return getCityApi(nameUrl)
+            .then(city => {
+                if(!city.error){
+                    this.setState({
+                        cityInitial: city,
+                        city: city,
+                        loadStatus: 'complete',
+                        breadcrumbsLinks: [
+                            { url: '/cities', text: 'Офисы' },
+                            { url: city.nameUrl, text: city.name }
+                        ]
+                    }, () => {
+                        this.setAllInputs(this.state.city)
+                    })    
+                } else {
+                    this.emptyCity()
+                }                
+            })
+        } catch(err) {
+            console.log(`ERROR ${err.stack}`)
+            this.emptyCity()
         }
     }
 
@@ -49,22 +85,25 @@ class Edit extends React.Component {
             }
             this.setState({
                 cityInitial: empty,
-                city: empty
+                city: empty,
+                loadStatus: 'complete',
+                breadcrumbsLinks: [
+                    { url: '/cities', text: 'Офисы' },
+                    { url: 'create', text: 'Новый офис' }
+                ]
             })
         } else {
             const { nameUrl } = this.props.match.params
-            try {
-                return getCityApi(nameUrl)
-                .then(city => {
-                    this.setState({
-                        cityInitial: city,
-                        city: city
-                    }, () => {
-                        this.setAllInputs(this.state.city)
-                    })
-                })
-            } catch(err) {
-                console.log(`ERROR ${err.stack}`)
+            this.getCity(nameUrl)
+        }
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.match && this.props.match.params){
+            const oldNameUrl = this.props.match.params.nameUrl
+            const newNameUrl = nextProps.match.params.nameUrl
+            if(newNameUrl != oldNameUrl){
+                this.getCity(newNameUrl)
             }
         }
     }
@@ -142,24 +181,24 @@ class Edit extends React.Component {
     render(){
         const {
             city,
-            isCreated
+            isCreated,
+            loadStatus,
+            breadcrumbsLinks
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreateType = this.props.type == 'create'
-        if(city){
-            const breadcrumbsLinks = [{ url: '/cities', text:'Офисы' }]
-            if(this.props.type == 'create'){
-                breadcrumbsLinks.push({ url: 'create', text: 'Новый офис' })
-            } else {
-                breadcrumbsLinks.push({ url: city.nameUrl, text: city.name })
-            }
-            return (
-                <Row className={ l.root }>
-                    <BreadcrumbsPanel
-                        history={ this.props.history }
-                        backButton={ true }
-                        links={ breadcrumbsLinks }
-                    />
+        
+        return (
+            <Row className={ l.root }>
+                <BreadcrumbsPanel
+                    history={ this.props.history }
+                    backButton={ true }
+                    links={ breadcrumbsLinks }
+                />
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Данного офиса не существует'
+                >
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             <FormItem>
@@ -219,9 +258,9 @@ class Edit extends React.Component {
                             </FormItem>
                         </Col>
                     </Form>
-                </Row>
-            )
-        } else return ( <Spin/> )
+                </LoadedContentView>
+            </Row>
+        )        
     }
 }
 

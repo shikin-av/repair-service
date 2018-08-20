@@ -24,6 +24,7 @@ import TextEdit from 'client/admin/components/pages/texts/Edit/Edit.jsx'
 import TextCreate from 'client/admin/components/pages/texts/Create/Create.jsx'
 
 import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
+import Page404 from 'client/site/components/pages/Page404/Page404.jsx'
 
 const Router = () => (
     <Switch>
@@ -107,6 +108,7 @@ const Router = () => (
             exact path='/texts/:nameUrl'
             component={ TextEdit }
         />
+        <Route component={ Page404 } />
     </Switch>
 )
 
