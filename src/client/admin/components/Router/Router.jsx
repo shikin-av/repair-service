@@ -17,6 +17,7 @@ import OrderEdit from 'client/admin/components/pages/orders/Edit/Edit.jsx'
 import OrdersByCity from 'client/admin/components/pages/orders/GetAll/ByCity.jsx'
 import OrdersByCityDate from 'client/admin/components/pages/orders/GetAll/ByCityDate.jsx'
 import OrdersByCityDateStatus from 'client/admin/components/pages/orders/GetAll/ByCityDateStatus.jsx'
+import OrdersByCityDateStatusWorker from 'client/admin/components/pages/orders/GetAll/ByCityDateStatusWorker.jsx'
 import OrdersById from 'client/admin/components/pages/orders/GetAll/ById.jsx'
 
 import Texts from 'client/admin/components/pages/texts/GetAll/GetAll.jsx'
@@ -83,6 +84,10 @@ const Router = () => (
         <Route
             exact path='/orders/date/:dateString/status/:status'
             component={ OrdersByCityDateStatus }
+        />
+        <Route
+            exact path='/orders/date/:dateString/status/:status/worker/:workerLogin'
+            component={ OrdersByCityDateStatusWorker }
         />
         <Route
             exact path='/orders/serch-id/:id'

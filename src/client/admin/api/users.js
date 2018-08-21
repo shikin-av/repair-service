@@ -18,8 +18,18 @@ export const getUsersByCityCategoryDays = async (cityNameUrl, categoryNameUrl, d
     .then(res => res.json())
 }
 
-export const getUser = async nameUrl => {
-    return fetch(`${ apiPath }/users/${ nameUrl }`, {
+// for OrdersFilter
+export const getUsersByCityDays = async (cityNameUrl, dayCyrilic) => {
+    const encodedDay = encodeURI(dayCyrilic)
+    return fetch(`${ apiPath }/users/city/${ cityNameUrl }/day/${ encodedDay }`, {
+        method: 'GET',
+        credentials: 'include',
+    })
+    .then(res => res.json())
+}
+
+export const getUser = async login => {
+    return fetch(`${ apiPath }/users/${ login }`, {
         method: 'GET',
         credentials: 'include',
     })

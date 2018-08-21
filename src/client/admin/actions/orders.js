@@ -52,6 +52,23 @@ export const getOrdersByCityDateStatus = (city, dateString, status) => async dis
     }
 }
 
+export const getOrdersByCityDateStatusWorker = (city, dateString, status, workerLogin) => async dispatch => {
+    dispatch({ type: types.GET_ORDERS_BY_CITY_DATE_STATUS_WORKER_START })
+    try {
+        const orders = await api.getOrdersByCityDateStatusWorker(city, dateString, status, workerLogin)
+        dispatch({
+            type:    types.GET_ORDERS_BY_CITY_DATE_STATUS_WORKER_SUCCESS,
+            payload: orders || []
+        })
+    } catch(err) {
+        dispatch({
+            type:    types.GET_ORDERS_BY_CITY_DATE_STATUS_WORKER_FAIL,
+            payload: err,
+            error:   true
+        })
+    }
+}
+
 export const getOrdersByCityId = (city, id) => async dispatch => {
     dispatch({ type: types.GET_ORDERS_BY_CITY_ID_START })
     try {

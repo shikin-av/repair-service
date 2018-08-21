@@ -24,13 +24,15 @@ class ByCityDateStatus extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            loadStatus: 'load'
+            loadStatus: 'load',
+            breadcrumbsLinks: [{ url: '/orders', text:'Заявки' }],
+            dateToView: null
         }
         this.statuses = [
             { value: 'all',        text: 'Все заявки' },
             { value: 'new',        text: 'Новые' },
             { value: 'working',    text: 'В работе' },
-            { value: 'complite',   text: 'Выполненные' },
+            { value: 'complete',   text: 'Выполненные' },
             { value: 'trash',      text: 'Удалены' },
         ]
     }
@@ -40,6 +42,7 @@ class ByCityDateStatus extends React.Component {
     }
 
     componentDidMount(){
+        console.log('DID MOUNT')
         const { dateString, status } = this.props.match.params
         const {
             orders,
@@ -47,19 +50,46 @@ class ByCityDateStatus extends React.Component {
             setOrdersOptionsAction
         } = this.props
         const dateToLink = dateString || this.todayToLinkString()
-
+        const date = new Date(dateToLink)
+        const dateToView = date.toLocaleDateString('ru-RU', config.date.dateViewOptions)
+        const statusObj = this.statuses[_.findIndex(this.statuses, item => {
+            return item.value == status
+        })]
+                
         setOrdersOptionsAction({
             cityNameUrl:          this.userCityNameUrl,
-            dateToLink:           dateString,
+            dateToLink:           dateToLink,
             status: status,
         })
 
         getOrdersByCityDateStatusAction(this.userCityNameUrl, dateToLink, status)
         .then(() => {            
             if(this.props.orders.length){
-                this.setState({ loadStatus: 'complete' })
+                this.setState({ 
+                    loadStatus: 'complete',
+                    dateToView: dateToView,
+                    breadcrumbsLinks: [
+                        { url: '/orders', text:'Заявки' },
+                        { url: `/orders/date/${ dateToLink }`, text: dateToView },
+                        { 
+                            url: `/orders/date/${ dateToLink }/status/${ status }`, 
+                            text: statusObj.text
+                        },
+                    ]
+                })
             } else {
-                this.setState({ loadStatus: 'empty' })
+                this.setState({ 
+                    loadStatus: 'empty',
+                    dateToView: dateToView,
+                    breadcrumbsLinks: [
+                        { url: '/orders', text:'Заявки' },
+                        { url: `/orders/date/${ dateToLink }`, text: dateToView },
+                        { 
+                            url: `/orders/date/${ dateToLink }/status/${ status }`, 
+                            text: statusObj.text
+                        },
+                    ]
+                })
             }
         })
     }
@@ -71,9 +101,14 @@ class ByCityDateStatus extends React.Component {
         const newDateString = nextProps.match.params.dateString  || this.todayToLinkString()
         const oldStatus     = this.props.match.params.status
         const newStatus     = nextProps.match.params.status
-
-        //console.log(`old dateString ${ oldDateString }    |   new dateString ${ newDateString }`)
+        
         if(newDateString != oldDateString || newStatus != oldStatus){
+            const date = new Date(newDateString)
+            const dateToView = date.toLocaleDateString('ru-RU', config.date.dateViewOptions)
+            const statusObj = this.statuses[_.findIndex(this.statuses, item => {
+                return item.value == newStatus
+            })]
+
             setOrdersOptionsAction({
                 cityNameUrl: this.userCityNameUrl,
                 dateToLink:  newDateString,
@@ -82,11 +117,32 @@ class ByCityDateStatus extends React.Component {
             .then(() => {
                 getOrdersByCityDateStatusAction(this.userCityNameUrl, newDateString, newStatus)
                 .then(() => {
-                    //console.log('заявки ', this.props.orders)
                     if(this.props.orders.length){
-                        this.setState({ loadStatus: 'complete' })
+                        this.setState({ 
+                            loadStatus: 'complete',
+                            dateToView: dateToView,
+                            breadcrumbsLinks: [
+                                { url: '/orders', text:'Заявки' },
+                                { url: `/orders/date/${ newDateString }`, text: dateToView },
+                                { 
+                                    url: `/orders/date/${ newDateString }/status/${ newStatus }`, 
+                                    text: statusObj.text
+                                },
+                            ]
+                        })
                     } else {
-                        this.setState({ loadStatus: 'empty' })
+                        this.setState({ 
+                            loadStatus: 'empty',
+                            dateToView: dateToView,
+                            breadcrumbsLinks: [
+                                { url: '/orders', text:'Заявки' },
+                                { url: `/orders/date/${ dateToLink }`, text: dateToView },
+                                { 
+                                    url: `/orders/date/${ dateToLink }/status/${ status }`, 
+                                    text: statusObj.text
+                                },
+                            ]
+                        })
                     }
                 })
             })
@@ -101,22 +157,9 @@ class ByCityDateStatus extends React.Component {
 
     render(){
         const { orders } = this.props
-        const { loadStatus } = this.state
-        const dateString = this.props.match.params.dateString || this.todayToLinkString()
-        const date = new Date(dateString)
-        const dateToView = date.toLocaleDateString('ru-RU', config.date.dateViewOptions)
         const { status } = this.props.match.params
-
-        const breadcrumbsLinks = [
-            { url: '/orders', text:'Заявки' },
-            { url: `/orders/date/${ dateString }`, text: dateToView },
-            { 
-                url: `/orders/date/${ dateString }/status/${ status }`, 
-                text: this.statuses[_.findIndex(this.statuses, status => {
-                    return status.value == status
-                })] 
-            },
-        ]
+        const { loadStatus, breadcrumbsLinks, dateToView } = this.state
+        const dateString = this.props.match.params.dateString || this.todayToLinkString()
         return (
             <div>
                 <BreadcrumbsPanel

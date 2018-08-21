@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import moment from 'moment'
+import _ from 'lodash'
 
 const Form = require('antd/lib/form')
 require('antd/lib/form/style/css')
@@ -16,13 +17,12 @@ const Option = Select.Option
 const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
 
-/*import {
-    getOrdersOptions as getOrdersOptionsSelector
-} from 'client/admin/selectors/ordersOptions'
-*/
 import {
     setOrdersOptions as setOrdersOptionsAction
 } from 'client/admin/actions/ordersOptions'
+import {
+    getUsersByCityDays as getUsersByCityDaysApi
+} from 'client/admin/api/users'
 
 import DateInput from 'client/site/components/content/OrderForm/formItems/DateInput/DateInput.jsx'
 import config from 'config/client'
@@ -37,6 +37,40 @@ class OrderFilter extends React.Component {
             { value: 'complete', text: 'Завершены' },
             { value: 'trash',    text: 'Удалены' },
         ]
+        this.state = {
+            currentStatus: { value: 'all',      text: 'Все заявки' },
+            workers: null,
+            selectedWorker: null
+        }
+    }
+
+    componentDidMount(){
+        const { setFieldsValue } = this.props.form
+        const { 
+            cityNameUrl, 
+            dateString, 
+            status, 
+            id,
+            workerLogin
+        } = this.props   
+
+        if(status){
+            this.onStatusSelect(status)
+        } else {
+            this.onStatusSelect('all')
+        }
+        if(id){
+            this.onIdChange(id)   
+        }  
+
+        this.getWorkersByDay()
+        .then(workers => {
+            if(!workers.error){
+                this.setState({ workers }, () => {
+                    this.onWorkerSelect(workerLogin)
+                })
+            }    
+        })                
     }
 
     handleSubmit(e){
@@ -52,12 +86,18 @@ class OrderFilter extends React.Component {
                     dateToLink: values.dateString
                 }
 
-                if(values.status){
+                if(values.status){                    
                     link += `/status/${ values.status }`
-                    ordersOptions.status = values.status
+                    if(values.status != 'all'){                        
+                        ordersOptions.status = values.status    
+                    }                    
                 } else {
                     link += `/status/all`
                 }
+                if(values.workerLogin){
+                    link += `/worker/${ values.workerLogin }`   
+                }
+                
                 if(values.id){
                     link = `/admin#/orders/serch-id/${ values.id }`
                     ordersOptions.id = values.id
@@ -71,38 +111,70 @@ class OrderFilter extends React.Component {
         })
     }
 
-    componentDidMount(){
-        const { setFieldsValue } = this.props.form
-        const { cityNameUrl, dateString, status, id } = this.props        
-        if(status){            
-            setFieldsValue({ status: status })  
-        } else {
-            setFieldsValue({ status: 'all' })
-        }
-        if(id){
-            setFieldsValue({ id: id })      
-        }
+    getWorkersByDay(){
+        const { cityNameUrl } = this.props
+        const { getFieldValue } = this.props.form
+        const cyrilicDay = moment(getFieldValue('dateString')).format('dddd')//TODO
+        console.log('cyrilicDay',cyrilicDay)
+        return getUsersByCityDaysApi(cityNameUrl, cyrilicDay)
+        .then(users => {
+            if(!users.error){
+                return users
+            }    
+        })
     }
 
     onDateChange(date){
-        const { getFieldDecorator } = this.props.form
+        const { setFieldsValue } = this.props.form
         const dateString = moment(date).format(config.date.dateLinkFormat)
-        getFieldDecorator('dateString',   { initialValue: dateString })
+        //getFieldDecorator('dateString',   { initialValue: dateString })
+        setFieldsValue({ dateString: dateString })
     }
 
     onStatusSelect(val){
-        const { getFieldDecorator } = this.props.form
-        getFieldDecorator('status',   { initialValue: val })
+        const { setFieldsValue } = this.props.form
+        const statusObj = this.statuses[_.findIndex(this.statuses, item => {
+            return item.value == val
+        })]
+        console.log('statusObj',statusObj)
+        this.setState({
+            currentStatus: statusObj
+        }, () => {
+            setFieldsValue({ status: val })
+        })        
     }
 
     onIdChange(val){
-        const { getFieldDecorator } = this.props.form        
-        getFieldDecorator('id',   { initialValue: val })
+        const { setFieldsValue } = this.props.form
+        setFieldsValue({ id: val })
+    }
+
+    onWorkerSelect(val){
+        const { setFieldsValue } = this.props.form
+        const { workers } = this.state
+
+        let selectedWorker = null
+        if(workers){
+            selectedWorker = workers[_.findIndex(workers, worker => {
+                return worker.login == val
+            })]
+            this.setState({ selectedWorker }, () => {
+                if(selectedWorker && selectedWorker.login){
+                    setFieldsValue({ workerLogin: selectedWorker.login })    
+                }
+            })
+        }        
     }
 
     render(){
         const { dateString } = this.props
         const { getFieldDecorator }  = this.props.form
+        const { 
+            currentStatus,
+            workers,
+            selectedWorker,
+        } = this.state
+        
         const today = moment().add(0, 'day')
         let currentDate = today
         if(dateString){
@@ -111,7 +183,6 @@ class OrderFilter extends React.Component {
                 currentDate = moment(dateFromUrl)
             }
         }
-
         return(            
             <div>
                 <Form onSubmit = { e => this.handleSubmit(e) }>
@@ -124,9 +195,10 @@ class OrderFilter extends React.Component {
                         )}
                     </FormItem>
                     
-                    <FormItem className='inline'>
+                    <FormItem className='inline' key={ currentStatus.value }>
                         {getFieldDecorator('status', { rules: [] })(
                             <Select 
+                                defaultValue={ currentStatus.value }
                                 onChange={ val => this.onStatusSelect(val) }
                                 style={{ width: 150 }}
                                 placeholder='Статус заявки'                 
@@ -142,6 +214,34 @@ class OrderFilter extends React.Component {
                             </Select>
                         )}
                     </FormItem>
+                    {
+                        workers &&
+                        <FormItem className='inline' key={ 
+                            (selectedWorker && selectedWorker.hasOwnProperty('login')) 
+                            ? selectedWorker.login : Math.random()
+                        }>
+                            {getFieldDecorator('workerLogin', { rules: [] })(
+                                <Select 
+                                    defaultValue={ 
+                                        (selectedWorker && selectedWorker.hasOwnProperty('login'))
+                                        ? selectedWorker.login : null
+                                    }
+                                    onChange={ val => this.onWorkerSelect(val) }
+                                    style={{ width: 150 }}
+                                    placeholder='Работник'                 
+                                >
+                                {
+                                    workers.map(worker => (
+                                        <Option
+                                            value={ worker.login }
+                                            key={ worker.login }
+                                        >{ worker.fio }</Option>
+                                    ))
+                                }
+                                </Select>
+                            )}
+                        </FormItem>
+                    }
                     
                     <FormItem className='inline'>
                         {getFieldDecorator('id', { rules: [] })(

@@ -25,6 +25,14 @@ export const getOrdersByCityDateStatus = async (city, dateString, status) => {
     .then(res => res.json())
 }
 
+export const getOrdersByCityDateStatusWorker = async (city, dateString, status, workerLogin) => {
+    return fetch(`${ apiPath }/orders/city/${ city }/date/${ dateString }/status/${ status }/worker/${ workerLogin }`, {
+        method: 'GET',
+        credentials: 'include',
+    })
+    .then(res => res.json())
+}
+
 export const getOrdersByCityId = async (city, id) => {
     return fetch(`${ apiPath }/orders/city/${ city }/serch-id/${ id }`, {
         method: 'GET',

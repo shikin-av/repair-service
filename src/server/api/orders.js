@@ -2,6 +2,7 @@ import { Router } from 'express'
 import moment from 'moment'
 
 import Order from  '../models/Order'
+import User from '../models/User'
 import sms from '../resources/sms'
 import smsConfig from '../../config/smsc.ru'
 
@@ -65,12 +66,54 @@ export default () => {
                     $gte: beginDay.toDate(),
                     $lt:  endDay.toDate()
                 },
-                status: status == 'all' ? { $in: ['new', 'working', 'complite', 'trash'] } : status
+                status: status == 'all' ? { $in: ['new', 'working', 'complete', 'trash'] } : status
             })
             .sort({ date: -1 })
             .exec((err, orders) => {
                 if(!err){
                     return res.json(orders)
+                } else {
+                    return next(err)
+                }
+            })
+        }
+    })
+
+    api.get('/city/:cityNameUrl/date/:dateString/status/:status/worker/:workerLogin', async (req, res, next) => {
+        const { cityNameUrl, dateString, status, workerLogin } = req.params
+        const date = new Date(dateString)
+        if(date == 'Invalid Date'){
+            return res.json({ error: 'Invalid Date' })
+        } else {
+            const beginDay    = moment(date).startOf('day')
+            const endDay      = moment(beginDay).endOf('day')
+
+            return await User.findOne({
+                login: workerLogin
+            })
+            .exec((err, user) => {
+                if(!err){
+                    if(user){
+                        return Order.find({
+                            cityNameUrl: cityNameUrl,
+                            date: {
+                                $gte: beginDay.toDate(),
+                                $lt:  endDay.toDate()
+                            },
+                            status:   status == 'all' ? { $in: ['new', 'working', 'complete', 'trash'] } : status,
+                            workerId: user._id
+                        })
+                        .sort({ date: -1 })
+                        .exec((err, orders) => {
+                            if(!err){
+                                return res.json(orders)
+                            } else {
+                                return next(err)
+                            }
+                        })
+                    } else {
+                        return res.json({ error: 'not found user' })
+                    }
                 } else {
                     return next(err)
                 }
