@@ -94,9 +94,10 @@ class GetAll extends React.Component {
                     loadStatus={ loadStatus }
                     message='Добавьте первый текст для сайта'
                 >
+                    <h1>Контент сайта</h1>
                     <ContentList
                         onDelete={ identificator => this.deleteText(identificator) }
-                    >
+                    >                    
                     {
                         texts.map(text => {
                             return {

@@ -95,6 +95,7 @@ class GetAll extends React.Component {
                     loadStatus={ loadStatus }
                     message='Добавьте первый офис'
                 >
+                    <h1>Офисы</h1>
                     <ContentList
                         onDelete={ identificator => this.deleteCity(identificator) }
                     >

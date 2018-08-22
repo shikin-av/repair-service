@@ -96,6 +96,7 @@ class GetAll extends React.Component {
                     loadStatus={ loadStatus }
                     message='Добавьте первую категорию техники'
                 >
+                    <h1>Категории техники</h1>
                     <ContentList
                         onDelete={ identificator => this.deleteCategory(identificator) }
                     >

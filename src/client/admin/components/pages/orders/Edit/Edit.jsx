@@ -61,7 +61,8 @@ class Edit extends React.Component {
             status:                  null,
             smsStatus:               null,
             loadStatus:              'load',
-            breadcrumbsLinks:        [{ url: '/orders', text:'Заявки' }]
+            breadcrumbsLinks:        [{ url: '/orders', text:'Заявки' }],
+            title: null
         }
         this.userCityNameUrl = null
     }
@@ -90,8 +91,6 @@ class Edit extends React.Component {
         const newDateString = nextProps.match.params.dateString
         const oldId         = this.props.match.params.id
         const newId         = nextProps.match.params.id
-
-        //console.log(`${oldDateString} и ${newDateString}  |  ${oldId} и ${newId}`)
 
         if(newDateString != oldDateString || newId != oldId){
             this.setState({
@@ -131,7 +130,8 @@ class Edit extends React.Component {
                             { url: '/orders', text:'Заявки' },
                             { url: `/orders/date/${ dateString }`, text: dateToView },
                             { url: `/orders/date/${ dateString }/id/${ id }`, text: `№${ id }` },
-                        ]
+                        ],
+                        title: `Заявка №${ id }`
                     }, () => {
                         const { order, categoryNameUrl, cyrilicDay } = this.state
                         this.setAllInputs(this.state.order)
@@ -451,6 +451,7 @@ class Edit extends React.Component {
             smsStatus,
             loadStatus,
             breadcrumbsLinks,
+            title,
         } = this.state
         const { dateString, id } = this.props.match.params
         const dateFromUrl = new Date(dateString)
@@ -467,6 +468,7 @@ class Edit extends React.Component {
                     loadStatus={ loadStatus }
                     message='Данной заявки не существует'
                 >
+                <h1>{ title }</h1>
                 {   order ?
                     <Form onSubmit = { e => this.handleSubmit(e) }>                        
                         

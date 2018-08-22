@@ -115,6 +115,7 @@ class GetAll extends React.Component {
                     loadStatus={ loadStatus }
                     message='Добавьте первого работника'
                 >
+                    <h1>Работники</h1>
                     <ContentList
                         onDelete={ identificator => this.deleteUser(identificator) }
                     >

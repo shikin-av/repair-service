@@ -30,7 +30,7 @@ export default [     //TODO from api
     },
     {
         url: '/categories',
-        text: 'Виды техники',
+        text: 'Категории техники',
         icon: 'laptop'
     },
     {

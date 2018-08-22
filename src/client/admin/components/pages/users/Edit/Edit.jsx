@@ -53,7 +53,8 @@ class Edit extends React.Component {
             categories:       [],
             allCategories:    [],
             loadStatus:       'load',
-            breadcrumbsLinks: [{ url: '/users', text:'Работники' }]
+            breadcrumbsLinks: [{ url: '/users', text:'Работники' }],
+            title: null,
         }
     }
 
@@ -78,7 +79,8 @@ class Edit extends React.Component {
                         breadcrumbsLinks: [
                             { url: '/users', text:'Работники' },
                             { url: user.login, text: user.fio }
-                        ]
+                        ],
+                        title: user.fio
                     }, () => {
                         this.setAllInputs(this.state.user)
                     })
@@ -289,7 +291,8 @@ class Edit extends React.Component {
             cities,
             allCategories,
             loadStatus,
-            breadcrumbsLinks
+            breadcrumbsLinks,
+            title
         } = this.state
         const { getFieldDecorator }  = this.props.form
         const isCreateType = this.props.type == 'create'
@@ -305,133 +308,134 @@ class Edit extends React.Component {
                     loadStatus={ loadStatus }
                     message='Данного работника не существует'
                 >
-                {
-                    user ?
-                    <Form onSubmit = { e => this.handleSave(e) }>
-                        <Col sm={24} md={4}>
-                            <FormItem>
-                                { !isCreated &&
-                                    <Button
-                                        type='primary'
-                                        htmlType='submit'
-                                    >Сохранить</Button>
+                    <h1>{ title }</h1>
+                    {
+                        user ?
+                        <Form onSubmit = { e => this.handleSave(e) }>
+                            <Col sm={24} md={4}>
+                                <FormItem>
+                                    { !isCreated &&
+                                        <Button
+                                            type='primary'
+                                            htmlType='submit'
+                                        >Сохранить</Button>
+                                    }
+                                    { !isCreateType &&
+                                        <Button
+                                            onClick={ e => this.cancelChanges() }
+                                        >Отменить изменения</Button>
+                                    }
+                                </FormItem>
+                            </Col>
+                            <Col sm={24} md={20}>
+                                <FormItem label='Фамилия Имя Отчество' className={ l.formItem }>
+                                    {getFieldDecorator('fio', { rules: [
+                                        { required: true, message: 'Обязательное поле' }
+                                    ] })(
+                                        <Input
+                                            onChange={ val => this.onFioChange(val) }
+                                        />
+                                    )}
+                                </FormItem>
+
+                                <FormItem label='Логин'  className={ l.formItem }>
+                                    {getFieldDecorator('login', { rules: [
+                                        { required: true, message: 'Обязательное поле' }
+                                    ] })(
+                                        <Input
+                                            onChange={ val => this.onLoginChange(val) }
+                                        />
+                                    )}
+                                </FormItem>
+
+                                <FormItem label='Пароль'  className={ l.formItem }>
+                                    {getFieldDecorator('password', { rules: [
+                                        { required: false, message: 'Обязательное поле' }
+                                    ] })(
+                                        <Input
+                                            onChange={ val => this.onPasswordChange(val) }
+                                        />
+                                    )}
+                                </FormItem>
+
+                                <FormItem label='Роль'  className={ l.formItem }>
+                                    {getFieldDecorator('role', { rules: [
+                                        { required: true, message: 'Обязательное поле' }
+                                    ] })(
+                                        <Select onChange={ val => this.onRoleChange(val) }>
+                                            {
+                                                config.userRoles.map(role => (
+                                                    <Option
+                                                        value={ role }
+                                                        key={ role }
+                                                    >{ role }</Option>
+                                                ))
+                                            }
+                                        </Select>
+                                    )}
+                                </FormItem>
+                                <FormItem label='Город'  className={ l.formItem }>
+                                    {getFieldDecorator('city', { rules: [
+                                        { required: true, message: 'Обязательное поле' }
+                                    ] })(
+                                        <Select onChange={ val => this.onCityChange(val) }>
+                                            {
+                                                cities && cities.map(city => (
+                                                    <Option
+                                                        value={ city.name }
+                                                        key={ city.name }
+                                                    >{ city.name }</Option>
+                                                ))
+                                            }
+                                        </Select>
+                                    )}
+                                </FormItem>
+                                <FormItem label='Телефон'  className={ l.formItem }>
+                                    {getFieldDecorator('phone', { rules: [
+                                        { required: true, message: 'Обязательное поле' }
+                                    ] })(
+                                        <Input
+                                            addonBefore='+7'
+                                            onChange={ val => this.onPhoneChange(val) }
+                                        />
+                                    )}
+                                </FormItem>
+                                { allCategories && user.role == 'работник' &&
+                                <FormItem label='Виды техники'  className={ l.formItem }>
+                                    {getFieldDecorator('categories', { rules: [{
+                                            required: user.role == 'работник' ? true : false,
+                                            message: 'Обязательное поле'
+                                    }]})(
+                                        <CheckboxGroup
+                                            options={ allCategories }
+                                        />
+                                    )}
+                                </FormItem>
                                 }
-                                { !isCreateType &&
-                                    <Button
-                                        onClick={ e => this.cancelChanges() }
-                                    >Отменить изменения</Button>
+                                { user.role == 'работник' &&
+                                <FormItem label='Рабочие дни'  className={ l.formItem }>
+                                    {getFieldDecorator('workingDays', { rules: [{
+                                            required: user.role == 'работник' ? true : false,
+                                            message: 'Обязательное поле'
+                                    }]})(
+                                        <CheckboxGroup
+                                            options={[
+                                                { label: 'понедельник', value: 'понедельник' },
+                                                { label: 'вторник',     value: 'вторник'     },
+                                                { label: 'среда',       value: 'среда'       },
+                                                { label: 'четверг',     value: 'четверг'     },
+                                                { label: 'пятница',     value: 'пятница'     },
+                                                { label: 'суббота',     value: 'суббота'     },
+                                                { label: 'воскресенье', value: 'воскресенье' }
+                                            ]}
+                                        />
+                                    )}
+                                </FormItem>
                                 }
-                            </FormItem>
-                        </Col>
-                        <Col sm={24} md={20}>
-                            <FormItem label='Фамилия Имя Отчество' className={ l.formItem }>
-                                {getFieldDecorator('fio', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input
-                                        onChange={ val => this.onFioChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-
-                            <FormItem label='Логин'  className={ l.formItem }>
-                                {getFieldDecorator('login', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input
-                                        onChange={ val => this.onLoginChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-
-                            <FormItem label='Пароль'  className={ l.formItem }>
-                                {getFieldDecorator('password', { rules: [
-                                    { required: false, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input
-                                        onChange={ val => this.onPasswordChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-
-                            <FormItem label='Роль'  className={ l.formItem }>
-                                {getFieldDecorator('role', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Select onChange={ val => this.onRoleChange(val) }>
-                                        {
-                                            config.userRoles.map(role => (
-                                                <Option
-                                                    value={ role }
-                                                    key={ role }
-                                                >{ role }</Option>
-                                            ))
-                                        }
-                                    </Select>
-                                )}
-                            </FormItem>
-                            <FormItem label='Город'  className={ l.formItem }>
-                                {getFieldDecorator('city', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Select onChange={ val => this.onCityChange(val) }>
-                                        {
-                                            cities && cities.map(city => (
-                                                <Option
-                                                    value={ city.name }
-                                                    key={ city.name }
-                                                >{ city.name }</Option>
-                                            ))
-                                        }
-                                    </Select>
-                                )}
-                            </FormItem>
-                            <FormItem label='Телефон'  className={ l.formItem }>
-                                {getFieldDecorator('phone', { rules: [
-                                    { required: true, message: 'Обязательное поле' }
-                                ] })(
-                                    <Input
-                                        addonBefore='+7'
-                                        onChange={ val => this.onPhoneChange(val) }
-                                    />
-                                )}
-                            </FormItem>
-                            { allCategories && user.role == 'работник' &&
-                            <FormItem label='Виды техники'  className={ l.formItem }>
-                                {getFieldDecorator('categories', { rules: [{
-                                        required: user.role == 'работник' ? true : false,
-                                        message: 'Обязательное поле'
-                                }]})(
-                                    <CheckboxGroup
-                                        options={ allCategories }
-                                    />
-                                )}
-                            </FormItem>
-                            }
-                            { user.role == 'работник' &&
-                            <FormItem label='Рабочие дни'  className={ l.formItem }>
-                                {getFieldDecorator('workingDays', { rules: [{
-                                        required: user.role == 'работник' ? true : false,
-                                        message: 'Обязательное поле'
-                                }]})(
-                                    <CheckboxGroup
-                                        options={[
-                                            { label: 'понедельник', value: 'понедельник' },
-                                            { label: 'вторник',     value: 'вторник'     },
-                                            { label: 'среда',       value: 'среда'       },
-                                            { label: 'четверг',     value: 'четверг'     },
-                                            { label: 'пятница',     value: 'пятница'     },
-                                            { label: 'суббота',     value: 'суббота'     },
-                                            { label: 'воскресенье', value: 'воскресенье' }
-                                        ]}
-                                    />
-                                )}
-                            </FormItem>
-                            }
-                        </Col>
-                    </Form>
-                    : <span></span>
-                }
+                            </Col>
+                        </Form>
+                        : <span></span>
+                    }
                 </LoadedContentView>
             </Row>
         )        

@@ -47,7 +47,8 @@ class Edit extends React.Component {
             isCreated: false,
             problemsCounter: 0,
             loadStatus: 'load',
-            breadcrumbsLinks: [{ url: '/categories', text:'Категории' }]
+            breadcrumbsLinks: [{ url: '/categories', text:'Категории' }],
+            title: null
         }
     }
 
@@ -80,7 +81,8 @@ class Edit extends React.Component {
                         breadcrumbsLinks: [
                             { url: '/categories', text:'Категории' }, 
                             { url: category.nameUrl, text: category.shortName }
-                        ]
+                        ],
+                        title: category.shortName
                     }, () => {
                         this.setAllInputs(this.state.category)
                     })
@@ -318,7 +320,8 @@ class Edit extends React.Component {
             selectedImage,
             isCreated,
             loadStatus,
-            breadcrumbsLinks
+            breadcrumbsLinks,
+            title
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreateType = this.props.type == 'create'
@@ -334,6 +337,7 @@ class Edit extends React.Component {
                     loadStatus={ loadStatus }
                     message='Данной категории не существует'
                 >
+                    <h1>{ title }</h1>
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             {   (selectedImage || getFieldValue('image')) &&

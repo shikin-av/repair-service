@@ -14,6 +14,7 @@ const GalleryPage = props => (
                 { url: '/gallery', text:'Галерея изображений' }
             ]}
         />
+        <h1>Галерея изображений</h1>
         <Gallery/>
     </div>
 )

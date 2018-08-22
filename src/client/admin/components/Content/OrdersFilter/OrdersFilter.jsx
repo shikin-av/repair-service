@@ -66,7 +66,13 @@ class OrderFilter extends React.Component {
         this.getWorkersByDay()
         .then(workers => {
             if(!workers.error){
-                this.setState({ workers }, () => {
+                this.setState({ 
+                    workers: [{ 
+                        login: null, 
+                        fio: 'Все работники' 
+                    }, ...workers]
+                }, () => {
+                    console.log(this.state.workers)
                     this.onWorkerSelect(workerLogin)
                 })
             }    

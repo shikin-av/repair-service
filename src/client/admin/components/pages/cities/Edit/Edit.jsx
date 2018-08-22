@@ -36,7 +36,8 @@ class Edit extends React.Component {
             city: null,
             isCreated: false,
             loadStatus: 'load',
-            breadcrumbsLinks: [{ url: '/cities', text: 'Офисы' }]
+            breadcrumbsLinks: [{ url: '/cities', text: 'Офисы' }],
+            title: null
         }
     }
 
@@ -61,7 +62,8 @@ class Edit extends React.Component {
                         breadcrumbsLinks: [
                             { url: '/cities', text: 'Офисы' },
                             { url: city.nameUrl, text: city.name }
-                        ]
+                        ],
+                        title: `Офис в г.${ city.name }`
                     }, () => {
                         this.setAllInputs(this.state.city)
                     })    
@@ -183,7 +185,8 @@ class Edit extends React.Component {
             city,
             isCreated,
             loadStatus,
-            breadcrumbsLinks
+            breadcrumbsLinks,
+            title
         } = this.state
         const { getFieldDecorator, getFieldValue }  = this.props.form
         const isCreateType = this.props.type == 'create'
@@ -199,6 +202,7 @@ class Edit extends React.Component {
                     loadStatus={ loadStatus }
                     message='Данного офиса не существует'
                 >
+                    <h1>{ title }</h1>
                     <Form onSubmit = { e => this.handleSave(e) }>
                         <Col sm={24} md={4}>
                             <FormItem>

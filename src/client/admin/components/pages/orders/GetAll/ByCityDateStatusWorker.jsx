@@ -29,7 +29,7 @@ class ByCityDateStatusWorker extends React.Component {
         this.state = {
             loadStatus: 'load',
             breadcrumbsLinks: [{ url: '/orders', text:'Заявки' }],
-            dateToView: null
+            title: null
         }
         this.statuses = [
             { value: 'all',        text: 'Все заявки' },
@@ -89,15 +89,37 @@ class ByCityDateStatusWorker extends React.Component {
             workerLogin: workerLogin
         })
         
+        
+
         getUserApi(workerLogin)
         .then(user => {
             if(user && !user.error){
                 getOrdersByCityDateStatusWorkerAction(this.userCityNameUrl, dateToLink, status, workerLogin)
                 .then(() => {            
+                    let title = dateToView
+                    switch(status){
+                        case 'all':
+                            title = `${ dateToView }: заявки у: ${ user.fio }`
+                            break
+                        case 'new':
+                            title = `${ dateToView }: новые заявки`
+                            break
+                        case 'working':
+                            title = `${ dateToView }: в работе у: ${ user.fio }`
+                            break
+                        case 'complete':
+                            title = `${ dateToView }: заявки, выполненные: ${ user.fio }`
+                            break
+                        case 'trash':
+                            title = `${ dateToView }: заявки, удаленные у: ${ user.fio }`
+                        default:
+                            title = dateToView
+                    }
+                    
                     if(this.props.orders.length){
                         this.setState({ 
                             loadStatus: 'complete',
-                            dateToView: dateToView,
+                            title,
                             breadcrumbsLinks: this.makeBreadcrumbs(
                                 dateToLink, 
                                 dateToView, 
@@ -110,7 +132,7 @@ class ByCityDateStatusWorker extends React.Component {
                     } else {
                         this.setState({ 
                             loadStatus: 'empty',
-                            dateToView: dateToView,
+                            title,
                             breadcrumbsLinks: this.makeBreadcrumbs(
                                 dateToLink, 
                                 dateToView, 
@@ -123,9 +145,28 @@ class ByCityDateStatusWorker extends React.Component {
                     }
                 })
             } else {
+                let title = dateToView
+                switch(status){
+                    case 'all':
+                        title = `${ dateToView }`
+                        break
+                    case 'new':
+                        title = `${ dateToView }: новые заявки`
+                        break
+                    case 'working':
+                        title = `${ dateToView }: в работе`
+                        break
+                    case 'complete':
+                        title = `${ dateToView }: выполненные заявки`
+                        break
+                    case 'trash':
+                        title = `${ dateToView }: удаленные заявки`
+                    default:
+                        title = dateToView
+                }
                 this.setState({ 
                     loadStatus: 'empty',
-                    dateToView: dateToView,
+                    title,
                     breadcrumbsLinks: this.makeBreadcrumbs(
                         dateToLink, 
                         dateToView, 
@@ -164,7 +205,7 @@ class ByCityDateStatusWorker extends React.Component {
     render(){
         const { orders } = this.props
         const { status, workerLogin } = this.props.match.params
-        const { loadStatus, breadcrumbsLinks, dateToView } = this.state
+        const { loadStatus, breadcrumbsLinks, title } = this.state
         const dateString = this.props.match.params.dateString || this.todayToLinkString()
                
         return (
@@ -180,7 +221,7 @@ class ByCityDateStatusWorker extends React.Component {
                     status={ status }
                     workerLogin={ workerLogin }
                 />
-                <h1>{ dateToView }</h1>
+                <h1>{ title }</h1>
                 
                 <LoadedContentView
                     loadStatus={ loadStatus }
