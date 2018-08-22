@@ -38,7 +38,6 @@ import {
 import {
     setOrdersOptions as setOrdersOptionsAction
 } from 'client/admin/actions/ordersOptions'
-//import sms from 'client/admin/resources/sms'
 
 import config from 'config/client'
 import DateInput from 'client/site/components/content/OrderForm/formItems/DateInput/DateInput.jsx'
@@ -137,11 +136,13 @@ class Edit extends React.Component {
                         this.setAllInputs(this.state.order)
                         getUsersByCityCategoryDaysApi(cityNameUrl, categoryNameUrl, cyrilicDay)
                         .then(workers => {
-                            this.setState({ workers: workers }, () =>{
-                                if(order.workerId){
-                                    this.onWorkerSelect(order.workerId)
-                                }
-                            })
+                            if(!workers.error){
+                                this.setState({ workers }, () =>{
+                                    if(order.workerId){
+                                        this.onWorkerSelect(order.workerId)
+                                    }
+                                })    
+                            }                            
                         })
                     })
                 } else {
@@ -246,8 +247,7 @@ class Edit extends React.Component {
         getFieldDecorator('dateToLink',   { initialValue: dateToLink })
 
     }
-    onTimeChange(val){
-        //this.props.form.getFieldDecorator('time',   { initialValue: val })
+    onTimeChange(val){        
         this.props.form.setFieldsValue({ time: val })
     }
     onDescriptionChange(val){
@@ -272,13 +272,24 @@ class Edit extends React.Component {
             return worker._id == _id || worker._id == order.workerId
         })]
         if(selectedWorker){
-            this.setState({ selectedWorker: selectedWorker }, () => {
+            this.setState({ selectedWorker }, () => {
                 setFieldsValue({ 
                     worker: selectedWorker,
                     workerId: _id 
                 })
             })
-        }        
+        } else if(order.workerFio){ // worker deleted from db
+            this.setState({ 
+                selectedWorker: { 
+                    fio: order.workerFio,
+                    phone: '',
+                    _id: 'empty'
+                } 
+            }, () => {
+                setFieldsValue({ worker: this.state.selectedWorker })
+                setFieldsValue({ workerId: 'empty' })
+            })
+        }
     }
     onStatusSelect(val){
         this.setState({ status: val }, () => {

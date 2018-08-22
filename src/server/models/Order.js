@@ -75,17 +75,21 @@ const  OrderSchema = new mongoose.Schema({
         ref: 'User',
         required: false
     },
+    workerFio: {
+        type: String,
+        required: false
+    },
     status: {
         type: String,
         enum: ['new', 'working', 'complete', 'trash'],
         default: 'new',
-        required: true,
+        required: true
     },
     smsStatus: {
         type: String,
         enum: ['not sended', 'sended', 'error'],
         default: 'not sended',
-        required: false,
+        required: false
     },
     smsError: {
         type: String,

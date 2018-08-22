@@ -224,7 +224,10 @@ export default () => {
                         order.phone           = phone       || order.phone
                         order.name            = name        || order.name
                         order.status          = status      || order.status
-                        order.workerId        = worker._id  || order.workerId                    
+                        if(worker._id && worker._id != 'empty'){    // if worker deleted from db
+                            order.workerId = worker._id
+                        }
+                        order.workerFio       = worker.fio  || order.workerFio                   
                                                 
                         if(order.smsStatus != 'sended'){
                             const smsMessage = sms.makeSmsOrderMessage(order)                        
