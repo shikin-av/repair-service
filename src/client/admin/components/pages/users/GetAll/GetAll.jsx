@@ -30,7 +30,7 @@ class GetAll extends React.Component {
         super(props)
         this.state = {
             users: [],
-            usersOnlyCity: true,
+            usersByOnlyCity: true,
             loadStatus: 'load'
         }
     }
@@ -80,11 +80,17 @@ class GetAll extends React.Component {
     }
 
     checkOnlyCity(e){
-        this.setState({ usersOnlyCity: e.target.checked })
+        this.setState({ usersByOnlyCity: e.target.checked })
     }
 
     render(){
-        const { users, usersOnlyCity, loadStatus } = this.state        
+        const { users, usersByOnlyCity, loadStatus } = this.state 
+        let resultUsers = users    
+        if(usersByOnlyCity){
+            resultUsers = users.filter(user => {
+                return user.cityNameUrl == this.userCityNameUrl
+            })
+        }
         return (
             <div className={ l.root }>
                 <BreadcrumbsPanel
@@ -102,7 +108,7 @@ class GetAll extends React.Component {
                     this.userCityNameUrl &&
                     <Checkbox
                         onChange={ e => this.checkOnlyCity(e) }
-                        checked={ usersOnlyCity }
+                        checked={ usersByOnlyCity }
                     >Работники только Вашего города</Checkbox>
                 }
                 <LoadedContentView
@@ -113,7 +119,7 @@ class GetAll extends React.Component {
                         onDelete={ identificator => this.deleteUser(identificator) }
                     >
                     {
-                        users.map(user => {
+                        resultUsers.map(user => {
                             return {
                                 element: (
                                     <Row key={ Math.random() } className={ l.row }>

@@ -42,7 +42,6 @@ class ByCity extends React.Component {
 
         getOrdersByCityAction(this.userCityNameUrl)
         .then(() => {
-            //console.log('заявки ', this.props.orders)
             if(this.props.orders.length){
                 this.setState({ loadStatus: 'complete' })
             } else {

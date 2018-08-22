@@ -83,7 +83,6 @@ class ByCityDate extends React.Component {
     todayToLinkString(){
         const date = new Date()
         const today = moment().add(0, 'day')
-        //console.log('today', today.format(config.date.dateLinkFormat))
         return today.format(config.date.dateLinkFormat)
     }
 

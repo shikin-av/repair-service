@@ -65,7 +65,7 @@ class GetAll extends React.Component {
                                     </Col>
                                 </Row>
                             ),
-                            editLink: `/orders/date/${ dateString }/id/${ order.id }`
+                            editLink: `/orders/date/${ order.dateToLink }/id/${ order.id }`
                         }    
                     })
                 }
