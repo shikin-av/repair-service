@@ -1,5 +1,5 @@
 import React from 'react'
-import { string, object } from 'prop-types'
+import { string, node } from 'prop-types'
 
 const Spin = require('antd/lib/spin')
 require('antd/lib/spin/style/css')
@@ -30,7 +30,7 @@ const LoadedContentView = props => (
 
 LoadedContentView.propTypes = {
 	loadStatus: string.isRequired,
-	children:   object.isRequired,
+	children:   node.isRequired,
 	message:	string
 }
 

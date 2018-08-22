@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 import {
     getText as getTextApi,
     createText as createTextApi,
-    editText as editTextApi
+    editText as editTextApi,
+    deleteText as deleteTextApi
 } from 'client/admin/api/texts'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 import TextEditor from 'client/admin/components/content/TextEditor/TextEditor.jsx'
@@ -26,6 +27,10 @@ const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Popconfirm = require('antd/lib/popconfirm')
+require('antd/lib/popconfirm/style/css')
+const Alert = require('antd/lib/alert')
+require('antd/lib/alert/style/css')
 
 import l from 'client/admin/components/style/Edit.less'
 
@@ -36,6 +41,7 @@ class Edit extends React.Component {
             textInitial:      null,
             text:             null,
             isCreated:        false,
+            isDeleted:        false,
             loadStatus:       'load',
             breadcrumbsLinks: [{ url: '/texts', text:'Контент' }],
             title: null
@@ -168,9 +174,11 @@ class Edit extends React.Component {
     onTitleChange(val){
         this.props.form.setFieldsValue({ title: val })
     }
+
     onNameUrlChange(val){
         this.props.form.setFieldsValue({ nameUrl: val })
     }
+
     onContentChange(obj){
     	const { text } = this.state
     	this.setState({
@@ -183,10 +191,28 @@ class Edit extends React.Component {
         this.props.form.setFieldsValue({ content: obj })
     }
 
+    deleteText(){
+        const { text } = this.state
+        if(text){
+            try {
+                deleteTextApi(text.nameUrl)
+                .then(data => {
+                    if(data.status == 'OK'){
+                        this.setState({ isDeleted: true })
+                    }
+                })
+            } catch(err) {
+                console.log(`ERROR ${err.stack}`)
+                message.error(`Текст ${ text.title } не удален.`)
+            }    
+        }
+    }
+
     render(){
     	const {
             text,
             isCreated,
+            isDeleted,
             loadStatus,
             breadcrumbsLinks,
             title,
@@ -207,7 +233,7 @@ class Edit extends React.Component {
                 >
                 <h1>{ title }</h1>
                 { 
-                    text &&
+                    (!isDeleted && text) ?
                     <Form onSubmit = { e => this.handleSave(e) }>
                     	<FormItem>
                             { !isCreated &&
@@ -220,6 +246,21 @@ class Edit extends React.Component {
                                 <Button
                                     onClick={ e => this.cancelChanges() }
                                 >Отменить изменения</Button>
+                            }
+                            { 
+                                text && !isCreateType && !isDeleted &&
+                                <Popconfirm
+                                    title={ `Удалить текст ${ text.title }?` }
+                                    onConfirm={ () => this.deleteText() }
+                                    onCancel={ null }
+                                    okText="Да"
+                                    cancelText="Нет"
+                                >   
+                                    <Button>
+                                        <Icon type='delete' />
+                                        Удалить текст
+                                    </Button>                                    
+                                </Popconfirm>                                    
                             }
                         </FormItem>
 
@@ -254,6 +295,11 @@ class Edit extends React.Component {
                             )}
                         </FormItem>
                     </Form>
+                    : text &&
+                        <Alert
+                            type='info'
+                            message={ `Текст ${ text.title } успешно удален.` }
+                        />
                 }
                 </LoadedContentView>
             </Row>

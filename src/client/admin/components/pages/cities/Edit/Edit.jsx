@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 import {
     getCity as getCityApi,
     createCity as createCityApi,
-    editCity as editCityApi
+    editCity as editCityApi,
+    deleteCity as deleteCityApi
 } from 'client/admin/api/cities'
 import BreadcrumbsPanel from 'client/admin/components/content/BreadcrumbsPanel/BreadcrumbsPanel.jsx'
 import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
@@ -25,6 +26,10 @@ const Icon = require('antd/lib/icon')
 require('antd/lib/spin/style/css')
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
+const Popconfirm = require('antd/lib/popconfirm')
+require('antd/lib/popconfirm/style/css')
+const Alert = require('antd/lib/alert')
+require('antd/lib/alert/style/css')
 
 import l from 'client/admin/components/style/Edit.less'
 
@@ -35,6 +40,7 @@ class Edit extends React.Component {
             cityInitial: null,
             city: null,
             isCreated: false,
+            isDeleted: false,
             loadStatus: 'load',
             breadcrumbsLinks: [{ url: '/cities', text: 'Офисы' }],
             title: null
@@ -180,10 +186,28 @@ class Edit extends React.Component {
         this.props.form.setFieldsValue({ officeAddress: val })
     }
 
+    deleteCity(){
+        const { city } = this.state
+        if(city){
+            try {
+                deleteCityApi(city.nameUrl)
+                .then(data => {
+                    if(data.status == 'OK'){
+                        this.setState({ isDeleted: true })
+                    }
+                })
+            } catch(err) {
+                console.log(`ERROR ${err.stack}`)
+                message.error(`Офис ${ city.name } не удален.`)
+            }    
+        } 
+    }
+
     render(){
         const {
             city,
             isCreated,
+            isDeleted,
             loadStatus,
             breadcrumbsLinks,
             title
@@ -203,8 +227,9 @@ class Edit extends React.Component {
                     message='Данного офиса не существует'
                 >
                     <h1>{ title }</h1>
-                    <Form onSubmit = { e => this.handleSave(e) }>
-                        <Col sm={24} md={4}>
+                    {
+                        !isDeleted ?                    
+                        <Form onSubmit = { e => this.handleSave(e) }>                        
                             <FormItem>
                                 { !isCreated &&
                                     <Button
@@ -217,9 +242,23 @@ class Edit extends React.Component {
                                         onClick={ e => this.cancelChanges() }
                                     >Отменить изменения</Button>
                                 }
+                                { 
+                                    city && !isCreateType && !isDeleted &&
+                                    <Popconfirm
+                                        title={ `Удалить офис ${ city.name }?` }
+                                        onConfirm={ () => this.deleteCity() }
+                                        onCancel={ null }
+                                        okText="Да"
+                                        cancelText="Нет"
+                                    >   
+                                        <Button>
+                                            <Icon type='delete' />
+                                            Удалить офис
+                                        </Button>                                    
+                                    </Popconfirm>                                    
+                                }
                             </FormItem>
-                        </Col>
-                        <Col sm={24} md={20}>
+                        
                             <FormItem label='Город' className={ l.formItem }>
                                 {getFieldDecorator('name', { rules: [
                                     { required: true, message: 'Обязательное поле' }
@@ -260,8 +299,13 @@ class Edit extends React.Component {
                                     />
                                 )}
                             </FormItem>
-                        </Col>
-                    </Form>
+                        </Form>
+                        : city &&
+                        <Alert
+                            type='info'
+                            message={ `Офис ${ city.name } успешно удален.` }
+                        />
+                    }
                 </LoadedContentView>
             </Row>
         )        

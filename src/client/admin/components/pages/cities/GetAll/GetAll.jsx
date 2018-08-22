@@ -73,6 +73,7 @@ class GetAll extends React.Component {
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
+            message.error(`Офис ${ city.name } не удален`)
         }
     }
 

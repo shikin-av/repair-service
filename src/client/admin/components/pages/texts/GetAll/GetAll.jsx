@@ -72,6 +72,7 @@ class GetAll extends React.Component {
             })
         } catch(err) {
             console.log(`ERROR ${err.stack}`)
+            message.error(`Текст ${ text.title } не удален`)
         }
     }
 

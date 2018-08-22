@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 import {
     getCategory as getCategoryApi,
     createCategory as createCategoryApi,
-    editCategory as editCategoryApi
+    editCategory as editCategoryApi,
+    deleteCategory as deleteCategoryApi
 } from 'client/admin/api/categories'
 
 import config from 'config/server'
@@ -26,12 +27,14 @@ require('antd/lib/input/style/css')
 const FormItem = Form.Item
 const Icon = require('antd/lib/icon')
 require('antd/lib/icon/style/css')
-/*const Spin = require('antd/lib/spin')
-require('antd/lib/spin/style/css')*/
 const message = require('antd/lib/message')
 require('antd/lib/message/style/css')
 const Modal = require('antd/lib/modal')
 require('antd/lib/modal/style/css')
+const Popconfirm = require('antd/lib/popconfirm')
+require('antd/lib/popconfirm/style/css')
+const Alert = require('antd/lib/alert')
+require('antd/lib/alert/style/css')
 
 import l from 'client/admin/components/style/Edit.less'
 
@@ -45,6 +48,7 @@ class Edit extends React.Component {
             selectedImage: null,
             preSelectedImage: null,
             isCreated: false,
+            isDeleted: false,
             problemsCounter: 0,
             loadStatus: 'load',
             breadcrumbsLinks: [{ url: '/categories', text:'Категории' }],
@@ -289,9 +293,11 @@ class Edit extends React.Component {
             }
         })
     }
+
     setProblems(){
         this.props.form.setFieldsValue({ problems: this.state.category.problems })
     }
+
     onProblemChange(id, value){
         const { category } = this.state
         const newProblems = category.problems.map(problem => {
@@ -313,12 +319,30 @@ class Edit extends React.Component {
         })
     }
 
+    deleteCategory(){
+        const { category } = this.state
+        if(category){
+            try {
+                deleteCategoryApi(category.nameUrl)
+                .then(data => {
+                    if(data.status == 'OK'){
+                        this.setState({ isDeleted: true })
+                    }
+                })
+            } catch(err) {
+                console.log(`ERROR ${err.stack}`)
+                message.error(`Категория ${ category.shortName } не удалена.`)
+            }    
+        }                
+    }
+
     render(){
         const {
             category,
             showGallery,
             selectedImage,
             isCreated,
+            isDeleted,
             loadStatus,
             breadcrumbsLinks,
             title
@@ -338,8 +362,40 @@ class Edit extends React.Component {
                     message='Данной категории не существует'
                 >
                     <h1>{ title }</h1>
-                    <Form onSubmit = { e => this.handleSave(e) }>
-                        <Col sm={24} md={4}>
+                    {
+                       !isDeleted ?
+                        <Form onSubmit = { e => this.handleSave(e) }>  
+                            <FormItem>
+                                { 
+                                    !isCreated &&
+                                    <Button
+                                        type='primary'
+                                        htmlType='submit'
+                                    >Сохранить</Button>
+                                }
+                                { 
+                                    !isCreateType &&
+                                    <Button
+                                        onClick={ e => this.cancelChanges() }
+                                    >Отменить изменения</Button>
+                                }
+                                { 
+                                    category && !isCreateType && !isDeleted &&
+                                    <Popconfirm
+                                        title={ `Удалить категорию ${ category.shortName }?` }
+                                        onConfirm={ () => this.deleteCategory() }
+                                        onCancel={ null }
+                                        okText="Да"
+                                        cancelText="Нет"
+                                    >   
+                                        <Button>
+                                            <Icon type='delete' />
+                                            Удалить категорию
+                                        </Button>                                    
+                                    </Popconfirm>                                    
+                                }
+                            </FormItem>
+
                             {   (selectedImage || getFieldValue('image')) &&
                                 <img src={ `${ config.assetsPath }/imgs/${ selectedImage || getFieldValue('image') }` }/>
                             }
@@ -357,28 +413,13 @@ class Edit extends React.Component {
                                 )}
                             </FormItem>
 
-                            <FormItem>
-                                { !isCreated &&
-                                    <Button
-                                        type='primary'
-                                        htmlType='submit'
-                                    >Сохранить</Button>
-                                }
-                                { !isCreateType &&
-                                    <Button
-                                        onClick={ e => this.cancelChanges() }
-                                    >Отменить изменения</Button>
-                                }
-                            </FormItem>
-                        </Col>
-                        <Col sm={24} md={20}>
-
                             <FormItem label='Название' className={ l.formItem }>
                                 {getFieldDecorator('name', { rules: [
                                     { required: true, message: 'Обязательное поле' }
                                 ] })(
                                     <Input
                                         onChange={ val => this.onNameChange(val) }
+                                        placeholder='Например: Ремонт холодильников'
                                     />
                                 )}
                             </FormItem>
@@ -390,6 +431,7 @@ class Edit extends React.Component {
                                 ] })(
                                     <Input
                                         onChange={ val => this.onSingularNameChange(val) }
+                                        placeholder='Например: Ремонт холодильника'
                                     />
                                 )}
                             </FormItem>
@@ -412,6 +454,7 @@ class Edit extends React.Component {
                                 ] })(
                                     <Input
                                         onChange={ val => this.onShortNameChange(val) }
+                                        placeholder='Например: Холодильник'
                                     />
                                 )}
                             </FormItem>
@@ -440,9 +483,14 @@ class Edit extends React.Component {
                                 <Button type='dashed' onClick={ () => this.addProblemInput() }>
                                     <Icon type='plus' /> Добавить неисправность
                                 </Button>
-                            </FormItem>
-                        </Col>
-                    </Form>
+                            </FormItem>                        
+                        </Form>
+                        : category &&
+                        <Alert
+                            type='info'
+                            message={ `Категория ${ category.shortName } успешно удалена.` }
+                        />
+                    }
                 </LoadedContentView>
                 <Modal
                     title='Выберите изображение'
