@@ -7,6 +7,7 @@ import { ConnectedRouter as Router, routerMiddleware } from 'react-router-redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
+import moment from 'moment'
 
 import reducers from 'client/admin/reducers'
 import ContentRouter from 'client/admin/components/Router/Router.jsx'
@@ -28,6 +29,10 @@ import l from 'client/admin/components/style/content.less'
 class App extends React.Component {
     constructor(props){
         super(props)
+    }
+
+    componentWillMount(){
+        moment.locale('ru')   
     }
 
     render(){

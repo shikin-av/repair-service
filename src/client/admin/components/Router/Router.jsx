@@ -26,6 +26,7 @@ import TextCreate from 'client/admin/components/pages/texts/Create/Create.jsx'
 
 import Gallery from 'client/admin/components/pages/GalleryPage/GalleryPage.jsx'
 import Page404 from 'client/site/components/pages/Page404/Page404.jsx'
+import Calendar from 'client/admin/components/pages/orders/CalendarPage/CalendarPage.jsx'
 
 const Router = () => (
     <Switch>
@@ -76,6 +77,10 @@ const Router = () => (
         <Route
             exact path='/orders/all'
             component={ OrdersByCity }
+        />
+        <Route
+            exact path='/orders/calendar'
+            component={ Calendar }
         />
         <Route
             exact path='/orders/date/:dateString'

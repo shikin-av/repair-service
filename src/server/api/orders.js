@@ -167,6 +167,35 @@ export default () => {
         }
     })
 
+    api.get('/city/:cityNameUrl/date/:dateString/per-month', async (req, res, next) => {
+        const { cityNameUrl, dateString } = req.params
+        // :date    'yyyy-mm-dd' || 'yyyy-m-d'
+        const date = new Date(dateString)
+        if(date == 'Invalid Date'){
+            return res.json({ error: 'Invalid Date' })
+        } else {
+            const beginDay    = moment(date).startOf('month')
+            const endDay      = moment(beginDay).endOf('month')
+            console.log('beginDay:', beginDay, ' | endDay:', endDay)
+
+            return await Order.find({
+                cityNameUrl: cityNameUrl,
+                date: {
+                    $gte: beginDay.toDate(),
+                    $lt:  endDay.toDate()
+                }
+            })
+            .sort({ date: -1 })
+            .exec((err, orders) => {
+                if(!err){
+                    return res.json(orders)
+                } else {
+                    return next(err)
+                }
+            })
+        }
+    })
+
     // for Edit page
     api.put('/city/:cityNameUrl/date/:dateString/id/:id', async (req, res, next) => {
         const { cityNameUrl, dateString, id } = req.params

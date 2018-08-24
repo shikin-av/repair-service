@@ -66,10 +66,6 @@ class Edit extends React.Component {
         this.userCityNameUrl = null
     }
 
-    componentWillMount(){
-        moment.locale('ru')   
-    }
-
     componentDidMount(){
         const { dateString, id } = this.props.match.params
         const { getFieldDecorator } = this.props.form

@@ -45,3 +45,6 @@ button {
   font-size: 18px;
   vertical-align: text-bottom;
 }
+.ant-fullcalendar-header .ant-radio-group {
+    display: none;
+}

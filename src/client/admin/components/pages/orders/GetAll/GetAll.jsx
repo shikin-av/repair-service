@@ -30,7 +30,7 @@ class GetAll extends React.Component {
                         let statusElement = null
                         if(order.status == 'new'){
                             statusElement = (
-                                <span style={{ color: '#1890ff' }}>Новая</span>
+                                <span style={{ color: 'red' }}>Новая</span>
                             )
                         } else if(order.status == 'working'){
                             statusElement = (
