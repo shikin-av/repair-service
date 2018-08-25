@@ -57,7 +57,7 @@ export const getOrder = async (city, dateString, id) => {
     .then(res => res.json())
 }
 
-export const editOrder = async (city, dateString, id, params) => {  //TODO
+export const editOrder = async (city, dateString, id, params) => {
     return fetch(`${ apiPath }/orders/city/${ city }/date/${ dateString }/id/${ id }`, {
         method: 'PUT',
         headers: {

@@ -13,7 +13,7 @@ const BreadcrumbsPanel = props => (
     <div className={ l.root }>
         { props.backButton &&
             <Button
-                type='primary'
+                type=''
                 onClick={ () => props.history.goBack() }
             >Назад</Button>
         }

@@ -23,7 +23,7 @@ export default class MainMenu extends React.Component {
     renderMenuItem(item){
         return (
             <Menu.Item 
-                key={ Math.random() }
+                key={ item.url }
                 onClick={ e => this.toggleCollapsed(e) }
             >
                 <Link to={ item.url }>

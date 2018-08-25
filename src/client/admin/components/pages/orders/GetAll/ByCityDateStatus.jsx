@@ -42,7 +42,6 @@ class ByCityDateStatus extends React.Component {
     }
 
     componentDidMount(){
-        console.log('DID MOUNT')
         const { dateString, status } = this.props.match.params
         const {
             orders,
@@ -170,7 +169,7 @@ class ByCityDateStatus extends React.Component {
             <div>
                 <BreadcrumbsPanel
                     history={ this.props.history }
-                    backButton={ false }
+                    backButton={ true }
                     links={ breadcrumbsLinks }
                 />
                 <OrdersFilter

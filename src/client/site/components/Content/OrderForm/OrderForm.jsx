@@ -61,16 +61,14 @@ class Order extends React.Component {
         getFieldDecorator('categoryNameUrl',   { initialValue: category.nameUrl })
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                //console.log(values)
                 try {
                     this.setState({ status: 'pending' })
                     createOrderApi(values)
                     .then(res => {
                         if(res.status == 'OK'){
-                            this.setState({ status: 'complite' })
+                            this.setState({ status: 'complete' })
                             const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
                             socket.on('connected', data => {
-                                console.log('i connected')
                                 socket.emit('clientOrder', res.order)
                             })
                         } else {
@@ -78,8 +76,6 @@ class Order extends React.Component {
                         }
                     })
                 } catch(err) {
-                    console.log(`ERROR ${err.stack}`)
-                    //TODO
                     this.setState({ status: 'error' })
                 }
             }
@@ -105,14 +101,11 @@ class Order extends React.Component {
             case 'pending':
                 return showBtn('Заявка отаправляется', true)
 
-            case 'complite':
-                //TODO clear all inputs
+            case 'complete':
                 return (
                     <Alert
                         message='Ваша заявка принята в работу. Наш менеджер свяжется с Вами в ближайшее время'
-                        type='success'
-                        closable
-                        onClose={ () => this.setState({ status: 'new' })}
+                        type='success'                        
                     />
                 )
             case 'error':
@@ -141,7 +134,6 @@ class Order extends React.Component {
         
         const dateToLink = moment(date).format(config.date.dateLinkFormat)
         getFieldDecorator('dateToLink',   { initialValue: dateToLink })
-        //console.log('dateToView ', getFieldValue('dateToView'), ' | dateToLink ', getFieldValue('dateToLink'))
     }
 
     onTimeChange(val){
@@ -187,8 +179,6 @@ class Order extends React.Component {
         const currentCity = cities[_.findIndex(cities, { name: cityName })]
         const cityNameUrl = currentCity.nameUrl
         getFieldDecorator('cityNameUrl',   { initialValue: cityNameUrl })
-
-        console.log('name ', cityName, ' | nameUrl ', cityNameUrl)
 
         setCurrentCityAction(currentCity)
         localStorage.setItem('currentCity', JSON.stringify(currentCity))

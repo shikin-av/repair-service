@@ -36,7 +36,6 @@ class TextContent extends React.Component {
 				}
 			})
 		} catch(err) {
-			console.log(`ERROR ${err.stack}`)
 			this.setState({ loadStatus: 'empty' })
 		}
 	}

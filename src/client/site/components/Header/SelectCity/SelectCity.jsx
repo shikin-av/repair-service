@@ -46,7 +46,6 @@ class SelectCity extends React.Component {
                         currentCity: currentCityLS,
                     })
                 } else {
-                    //let ymCity = window.ymaps.geolocation.city    // ymaps api 2.0
                     let ymCity = null
                     
                     if(ymaps.geolocation){
@@ -100,7 +99,7 @@ class SelectCity extends React.Component {
                     return ( 
                         <Option 
                             value={ city.name }
-                            key={ Math.random() }
+                            key={ city.nameUrl }
                         >{ city.name }</Option> )
                     })
                 }
@@ -151,7 +150,7 @@ class SelectCity extends React.Component {
                             return ( 
                                 <Option 
                                     value={ city.name }
-                                    key={ Math.random() }
+                                    key={ city.nameUrl }
                                 >{ city.name }</Option> )
                             })
                         }

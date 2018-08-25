@@ -25,7 +25,7 @@ const MainMenu = props => (
                 if(item.submenu){
                     return (
                         <SubMenu
-                            key={ Math.random() }
+                            key={ item.url }
                             title={ text }
                         >
                         {
@@ -36,7 +36,7 @@ const MainMenu = props => (
                                 }
                                 return (
                                     <Menu.Item 
-                                        key={ Math.random() }
+                                        key={ item.url }
                                     >
                                         <Link to={ item.url }>
                                             { text }
@@ -49,7 +49,7 @@ const MainMenu = props => (
                     )
                 } else return (
                     <Menu.Item 
-                        key={ Math.random() }
+                        key={ item.url }
                     >
                         <Link to={ item.url }>
                             { text }

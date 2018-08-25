@@ -79,11 +79,6 @@ module.exports = {
                     ]
                 })
             },
-            /*{
-                test: /\.less$/,
-                loader: "style-loader!css-loader!autoprefixer-loader!less-loader",
-                exclude: [/node_modules/, /public/]
-            },*/
             {
                 test: /\.gif$/,
                 loader: "url-loader?limit=10000&mimetype=image/gif"

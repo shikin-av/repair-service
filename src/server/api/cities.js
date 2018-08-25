@@ -46,7 +46,6 @@ export default () => {
         })
         return await city.save((err) => {
             if(!err) {
-                console.log(`city "${ nameUrl }" created`)
                 return res.status(201).json(city)
             } else {
                 return next(err)
@@ -66,7 +65,6 @@ export default () => {
         }, (err, city) => {
             if(!err){
                 if(!city){
-                    console.log(`city "${ req.params.nameUrl }" not found`)
                     return next()
                 }
                 city.name     = name || city.name
@@ -76,7 +74,6 @@ export default () => {
 
                 return city.save((err) => {
                     if(!err) {
-                        console.log(`city "${ nameUrl }" updated`)
                         return res.status(202).json(city)
                     } else {
                         return next(err)
@@ -94,12 +91,10 @@ export default () => {
         }, (err, city) => {
             if(!err){
                 if(!city){
-                    console.log(`city "${ req.params.nameUrl }" not found`)
                     return next()
                 }
                 return city.remove(err => {
                     if(!err){
-                        console.log(`city "${ req.params.nameUrl }" deleted`)
                         return res.json({ status: 'OK' })
                     } else {
                         return next(err)

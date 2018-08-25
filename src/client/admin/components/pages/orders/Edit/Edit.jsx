@@ -146,7 +146,6 @@ class Edit extends React.Component {
                 }                
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             this.emptyOrder()
         }
     }
@@ -159,7 +158,6 @@ class Edit extends React.Component {
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('VALUES', values)
                 const initialStatus = order.status
                 if(!order.workerId && values.worker){
                     if(values.status == 'new'){
@@ -172,30 +170,31 @@ class Edit extends React.Component {
                 try {
                     editOrderApi(this.userCityNameUrl, dateString, id, values)
                     .then(editedOrder => {
-                        console.log('EDITED ORDER: ', order)
-                        this.setState({
-                            order:     editedOrder,
-                            status:    editedOrder.status,
-                            smsStatus: editedOrder.smsStatus,
-                        }, () => {
-                            setFieldsValue({ status: values.status })
-                            console.log('editedOrder.smsStatus', editedOrder.smsStatus)
-                            if(initialStatus == 'new'){
-                                if(editedOrder.smsStatus == 'sended'){
+                        if(!editedOrder.error){
+                            this.setState({
+                                order:     editedOrder,
+                                status:    editedOrder.status,
+                                smsStatus: editedOrder.smsStatus,
+                            }, () => {
+                                setFieldsValue({ status: values.status })
+                                if(initialStatus == 'new'){
+                                    if(editedOrder.smsStatus == 'sended'){
+                                        message.success('Изменения сохранены.')
+                                        message.success(`Смс отправлена работнику ${ selectedWorker.fio }.`)
+                                    } else if(editedOrder.smsError){
+                                        message.error('Изменения не сохранены.')
+                                        message.error(editedOrder.smsError)
+                                    }
+                                } else {
                                     message.success('Изменения сохранены.')
-                                    message.success(`Смс отправлена работнику ${ selectedWorker.fio }.`)
-                                } else if(editedOrder.smsError){
-                                    message.error('Изменения не сохранены.')
-                                    message.error(editedOrder.smsError)
                                 }
-                            } else {
-                                message.success('Изменения сохранены.')
-                            }
-                        })
+                            })
+                        } else {
+                            message.error('Изменения не сохранены.')
+                        }                        
                     })  
                 } catch(err) {
                     message.error('Изменения не сохранены.')
-                    console.log(`ERROR ${err.stack}`)
                 }
             }
         })
@@ -299,7 +298,6 @@ class Edit extends React.Component {
         let element = ( <span></span> )
         if(workers){            
             if(order.workerId && selectedWorker){
-                console.log(2)
                 element = (
                     <span>{ selectedWorker.fio }</span>
                 )
@@ -462,7 +460,6 @@ class Edit extends React.Component {
         } = this.state
         const { dateString, id } = this.props.match.params
         const dateFromUrl = new Date(dateString)
-        console.log('STATE', this.state)
         
         return (
             <Row className={ l.root }>
@@ -546,8 +543,8 @@ class Edit extends React.Component {
                                 <label>Неисправности: </label>
                                 <ul>
                                 {
-                                    order.problems.map(problem => (
-                                        <li key={ Math.random() }>{ problem }</li>
+                                    order.problems.map((problem, id) => (
+                                        <li key={ id }>{ problem }</li>
                                     ))
                                 }   
                                 </ul>                                 

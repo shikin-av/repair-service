@@ -5,7 +5,6 @@ import uniqueValidator from 'mongoose-unique-validator'
 import clearSpecialSymbols from '../resources/clearSpecialSymbols'
 
 const  CategorySchema = new mongoose.Schema({
-    //_id: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
         required: true,
@@ -47,11 +46,6 @@ CategorySchema.pre('save', function(next){
     category.nameUrl = clearSpecialSymbols(category.nameUrl)
     next()
 })
-/*
-CategorySchema.path('name').validate(function(v){
-    return v.length > 0 && v.length < 50
-})
-*/
 
 CategorySchema.methods.toJSON = function(){
     return _.pick(this, ['name', 'singularName', 'nameUrl', 'shortName', 'image', 'problems'])

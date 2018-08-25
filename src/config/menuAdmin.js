@@ -1,4 +1,4 @@
-export default [     //TODO from api
+export default [
     {
         url: '/',
         text: 'Главная',

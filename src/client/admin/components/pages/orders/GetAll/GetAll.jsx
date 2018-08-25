@@ -47,7 +47,7 @@ class GetAll extends React.Component {
                         }
                         return {
                             element: ( 
-                                <Row key={ Math.random() } className={ l.row }>
+                                <Row key={  order.dateToLink + order.id } className={ l.row }>
                                     <Col sm={24} md={4}>    
                                         <span>{ order.categoryShortName }</span>
                                     </Col>
@@ -65,7 +65,8 @@ class GetAll extends React.Component {
                                     </Col>
                                 </Row>
                             ),
-                            editLink: `/orders/date/${ order.dateToLink }/id/${ order.id }`
+                            editLink: `/orders/date/${ order.dateToLink }/id/${ order.id }`,
+                            identificator: order.dateToLink + order.id
                         }    
                     })
                 }

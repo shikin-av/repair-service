@@ -25,11 +25,13 @@ class Categories extends React.Component {
         try {
             getCategoriesApi()
             .then(categories => {
-                this.setState({ categories: categories })
+                if(!categories.error){
+                    this.setState({ categories: categories })
+                }                
             })
 
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
+            message.error('Ошибка загрузки категорий')
         }
     }
 
@@ -44,7 +46,7 @@ class Categories extends React.Component {
                                 xs={24}
                                 sm={12}
                                 md={6}
-                                key={ Math.random() }
+                                key={ category.nameUrl }
                             >
                                 <CategoryItem category={ category } />
                             </Col>

@@ -95,7 +95,6 @@ class Edit extends React.Component {
                 }                
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             this.emptyUser()
         }
     }
@@ -147,11 +146,10 @@ class Edit extends React.Component {
                         value: category.nameUrl
                     }
                 })
-                console.log('checkboxOptions ', checkboxOptions)
                 this.setState({ allCategories: checkboxOptions })
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
+            message.error('Ошибка загрузки категорий')
         }
     }
 
@@ -167,7 +165,7 @@ class Edit extends React.Component {
                 })
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
+            message.error('Ошибка загрузки офисов')
         }
     }
 
@@ -177,7 +175,6 @@ class Edit extends React.Component {
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('VALUES: ', values)
                 if(values.phone[0] == '9'){
                     values.phone = '7' + values.phone
                 }
@@ -185,29 +182,32 @@ class Edit extends React.Component {
                     try {
                         return createUserApi(values)
                         .then(user => {
-                            this.setState({ isCreated: true }, () => {
-                                message.success(`Работник ${user.fio} создан.`)
-                            })
+                            if(!user.error){
+                                this.setState({ isCreated: true }, () => {
+                                    message.success(`Работник ${user.fio} создан.`)
+                                })
+                            } else {
+                                message.error(`Работник ${user.fio} не создан.`)
+                            }                            
                         })
                     } catch(err) {
                         message.error(`Работник ${user.fio} не создан.`)
-                        console.log(`ERROR ${err.stack}`)
                     }
                 } else {
                     const { login } = this.props.match.params
                     try {
                         return editUserApi(login, values)
                         .then(user => {
-                            message.success(`Работник ${user.fio} отредактирован.`)
+                            if(!user.error){
+                                message.success(`Работник ${user.fio} отредактирован.`)
+                            } else {
+                                message.error(`Работник ${user.fio} не отредактирован.`)
+                            }                            
                         })
                     } catch(err) {
                         message.error(`Работник ${user.fio} не отредактирован.`)
-                        console.log(`ERROR ${err.stack}`)
                     }
                 }
-
-            } else {
-                console.log(`ERROR ${err.stack}`)
             }
         })
     }
@@ -263,8 +263,6 @@ class Edit extends React.Component {
         const { cities } = this.state
         const { getFieldDecorator, setFieldsValue } = this.props.form
 
-        console.log('cities ', cities)
-
         this.props.form.setFieldsValue({ city: val })
 
         if(cities.length){
@@ -272,7 +270,6 @@ class Edit extends React.Component {
                 return city.name == val
             })
             const city = cities[cityId]
-            //console.log('city ', city)
             const cityNameUrl = city.nameUrl
 
             getFieldDecorator('cityNameUrl', { initialValue: null })
@@ -303,7 +300,6 @@ class Edit extends React.Component {
                     }
                 })
             } catch(err) {
-                console.log(`ERROR ${err.stack}`)
                 message.error(`Работник ${ user.fio } не удален.`)
             }    
         } 

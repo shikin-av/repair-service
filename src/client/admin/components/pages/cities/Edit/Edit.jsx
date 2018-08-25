@@ -78,7 +78,6 @@ class Edit extends React.Component {
                 }                
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             this.emptyCity()
         }
     }
@@ -122,34 +121,39 @@ class Edit extends React.Component {
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('VALUES: ', values)
                 if(isCreateType){
                     try {
                         return createCityApi(values)
                         .then(city => {
-                            this.setState({ isCreated: true }, () => {
-                                message.success(`Офис ${ city.name } создан.`)
-                            })
+                            if(!city.error){
+                                this.setState({ isCreated: true }, () => {
+                                    message.success(`Офис ${ city.name } создан.`)
+                                })
+                            } else {
+                                message.error(`Офис ${city.name} не создан.`)
+                            }                            
                         })
                     } catch(err) {
                         message.error(`Офис ${city.name} не создан.`)
-                        console.log(`ERROR ${ err.stack }`)
                     }
                 } else {
                     const { nameUrl } = this.props.match.params
                     try {
                         return editCityApi(nameUrl, values)
                         .then(city => {
-                            message.success(`Офис ${ city.name } отредактирован.`)
+                            if(!city.error){
+                                message.success(`Офис ${ city.name } отредактирован.`)
+                            } else {
+                                message.error(`Офис ${ city.name } не отредактирован.`)
+                            }                            
                         })
                     } catch(err) {
                         message.error(`Офис ${ city.name } не отредактирован.`)
-                        console.log(`ERROR ${ err.stack }`)
                     }
                 }
 
             } else {
-                console.log(`ERROR ${err.stack}`)
+                message.error(`Офис не отредактирован.`)
             }
         })
     }
@@ -197,7 +201,6 @@ class Edit extends React.Component {
                     }
                 })
             } catch(err) {
-                console.log(`ERROR ${err.stack}`)
                 message.error(`Офис ${ city.name } не удален.`)
             }    
         } 

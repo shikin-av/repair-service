@@ -48,7 +48,6 @@ class Radio extends React.Component {
     }
 
     onChange(e){
-        //console.log(e.target.value)
         this.setState({ checked: e.target.value }, () => {
             this.props.onData(this.state.checked)
         })
@@ -62,7 +61,7 @@ class Radio extends React.Component {
                     this.formatItems.map((item, index) => {
                         const isChecked = this.state.checked == item.value
                         return (
-                            <label key={ Math.random() } >
+                            <label key={ index } >
                                 <input 
                                     type='radio'
                                     value={ item.value }

@@ -31,7 +31,6 @@ class UploadImage extends React.Component {
 
         } else if (e.file.status == 'error') {
             message.error(`Файл ${ e.file.name } не загружен`)
-            console.log(`ERROR ${err.stack}`)
         }
     }    
 

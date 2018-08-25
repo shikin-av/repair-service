@@ -79,7 +79,6 @@ class Edit extends React.Component {
                 }                
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             this.emptyText()
         }
     }
@@ -121,33 +120,38 @@ class Edit extends React.Component {
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('VALUES: ', values)
                 if(isCreateType){
                 	try {
                 		return createTextApi(values)
                 		.then(text => {
-                			this.setState({ isCreated: true }, () => {
-                                message.success(`Текст ${ text.title } создан.`)
-                            })	
+                            if(!text.error){
+                                this.setState({ isCreated: true }, () => {
+                                    message.success(`Текст ${ text.title } создан.`)
+                                })	
+                            } else {
+                                message.error(`Текст ${ text.title } не создан.`)
+                            }                			
             			})
                 	} catch(err) {
                         message.error(`Текст ${ text.title } не создан.`)
-                        console.log(`ERROR ${ err.stack }`)
                     }
                 } else {
                 	const { nameUrl } = this.props.match.params
                 	try {
                         return editTextApi(nameUrl, values)
                         .then(text => {
-                            message.success(`Текст ${ text.title } отредактирован.`)
+                            if(!text.error){
+                                message.success(`Текст ${ text.title } отредактирован.`)
+                            } else {
+                                message.error(`Текст ${ text.title } не отредактирован.`)
+                            }                            
                         })
                     } catch(err) {
                         message.error(`Текст ${ text.title } не отредактирован.`)
-                        console.log(`ERROR ${ err.stack }`)
                     }
                 }
             }  else {
-                console.log(`ERROR ${err.stack}`)
+                message.error(`Текст не отредактирован.`)
             }	
         })
     }
@@ -202,7 +206,6 @@ class Edit extends React.Component {
                     }
                 })
             } catch(err) {
-                console.log(`ERROR ${err.stack}`)
                 message.error(`Текст ${ text.title } не удален.`)
             }    
         }

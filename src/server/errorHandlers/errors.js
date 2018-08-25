@@ -1,5 +1,4 @@
-export default (err, req, res, next) => {   //TODO check this req: Api or Page (api-send err, page-send error page)
-    console.log({ error: err })
+export default (err, req, res, next) => {
     const isApiRequest = ~req.originalUrl.indexOf('/api')
     let status = 500
     const isNotFound      = ~err.message.indexOf('not found')
@@ -15,11 +14,9 @@ export default (err, req, res, next) => {   //TODO check this req: Api or Page (
         }else if(isValidationErr || isUniqueErr){
             isApiRequest ? res.status(status).json(err.message) : res.redirect('/#/404')
         }else if(isAccessDenied || isJwtExpired){
-            console.log('isAccessDenied || isJwtExpired; isJwtExpired=', isJwtExpired, '   isApiRequest=', isApiRequest)
             isApiRequest ? res.status(status).json(err.message) : res.redirect('/#/login')
         }
     }else{
-        //TODO to handler of 'undefined errors'
         isApiRequest ? res.status(status).json(err) : res.redirect('/#/404')
     }
 }

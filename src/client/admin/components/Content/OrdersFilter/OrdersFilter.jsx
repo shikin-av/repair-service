@@ -72,7 +72,6 @@ class OrderFilter extends React.Component {
                         fio: 'Все работники' 
                     }, ...workers]
                 }, () => {
-                    console.log(this.state.workers)
                     this.onWorkerSelect(workerLogin)
                 })
             }    
@@ -83,9 +82,7 @@ class OrderFilter extends React.Component {
         const { cityNameUrl, setOrdersOptionsAction } = this.props
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log('Filter values ', values)
-                
+            if (!err) {                
                 let link = `/admin#/orders/date/${ values.dateString }`
                 let ordersOptions = {
                     cityNameUrl: cityNameUrl,
@@ -111,8 +108,7 @@ class OrderFilter extends React.Component {
 
                 setOrdersOptionsAction(ordersOptions).then(() => {
                     window.location.replace(link)
-                })    
-                                
+                })              
             }
         })
     }
@@ -120,20 +116,18 @@ class OrderFilter extends React.Component {
     getWorkersByDay(){
         const { cityNameUrl } = this.props
         const { getFieldValue } = this.props.form
-        const cyrilicDay = moment(getFieldValue('dateString')).format('dddd')//TODO
-        console.log('cyrilicDay',cyrilicDay)
+        const cyrilicDay = moment(getFieldValue('dateString')).format('dddd')
         return getUsersByCityDaysApi(cityNameUrl, cyrilicDay)
         .then(users => {
             if(!users.error){
                 return users
-            }    
+            } else return []
         })
     }
 
     onDateChange(date){
         const { setFieldsValue } = this.props.form
         const dateString = moment(date).format(config.date.dateLinkFormat)
-        //getFieldDecorator('dateString',   { initialValue: dateString })
         setFieldsValue({ dateString: dateString })
     }
 
@@ -142,7 +136,6 @@ class OrderFilter extends React.Component {
         const statusObj = this.statuses[_.findIndex(this.statuses, item => {
             return item.value == val
         })]
-        console.log('statusObj',statusObj)
         this.setState({
             currentStatus: statusObj
         }, () => {
@@ -271,9 +264,7 @@ class OrderFilter extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    //ordersOptions: getOrdersOptionsSelector(state)
-})
+const mapStateToProps = state => ({})
 
 const mapDispatchToProps = {
     setOrdersOptionsAction
@@ -281,5 +272,4 @@ const mapDispatchToProps = {
 
 const OrderFilterForm = Form.create()(OrderFilter)
 
-//export default OrderFilterForm
 export default connect(mapStateToProps, mapDispatchToProps)(OrderFilterForm)

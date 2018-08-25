@@ -38,7 +38,6 @@ export default () => {
                 }
                 res.send(images)
             } else {
-                console.log(`ERROR ${err.stack}`)
                 return res.status(500).send(err)
             }
         })
@@ -46,18 +45,6 @@ export default () => {
 
     gallery.delete('/:fileName', async (req, res) => {
         const fileName = req.params.fileName
-        /*fs.readdir(imageDir, (err, items) => {
-            if(!err){
-                const filePath = `${ imageDir }/${ fileName }`
-                if(fs.statSync(filePath).isFile()){
-                    fs.unlinkSync(filePath)
-                    return res.status(200).send('OK')
-                }
-            } else {
-                console.log(`ERROR ${err.stack}`)
-                return res.status(500).send(err)
-            }
-        })*/
         const filePath = `${ imageDir }/${ fileName }`
         if(fs.statSync(filePath).isFile()){
             fs.unlink(filePath , err => {

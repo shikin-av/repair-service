@@ -42,7 +42,7 @@ class Gallery extends React.Component {
         try {
             return getImagesApi()
             .then(images => {
-                if(images.length){
+                if(!images.error && images.length){
                     this.setState({ 
                         images: images,
                         loadStatus: 'complete'
@@ -56,7 +56,7 @@ class Gallery extends React.Component {
                 
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
+            message.error(`Ошибка загрузки изобрежений`)
         }
     }
 
@@ -82,7 +82,7 @@ class Gallery extends React.Component {
                 }
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
+            message.error(`Ошибка удаление изображения`)
         }
     }
 
@@ -113,10 +113,7 @@ class Gallery extends React.Component {
                     >
                         <List
                             grid={ inModal ? modalGrid : grid }
-                            pagination={{
-                                onChange: (page) => {
-                                    console.log(page)
-                                },
+                            pagination={{                                
                                 pageSize: 24,
                             }}
                             dataSource={ images }

@@ -44,7 +44,6 @@ export default () => {
         })
         return await text.save(err => {
             if(!err) {
-                console.log(`text "${ nameUrl }" created`)
                 return res.status(201).json(text)
             } else {
                 return next(err)
@@ -63,7 +62,6 @@ export default () => {
         }, (err, text) => {
             if(!err){
                 if(!text){
-                    console.log(`text "${ req.params.nameUrl }" not found`)
                     return next()
                 }
                 text.title    = title   || text.title
@@ -72,7 +70,6 @@ export default () => {
 
                 return text.save((err) => {
                     if(!err) {
-                        console.log(`text "${ nameUrl }" updated`)
                         return res.status(202).json(text)
                     } else {
                         return next(err)
@@ -90,12 +87,10 @@ export default () => {
         }, (err, text) => {
             if(!err){
                 if(!text){
-                    console.log(`text "${ req.params.nameUrl }" not found`)
                     return next()
                 }
                 return text.remove(err => {
                     if(!err){
-                        console.log(`text "${ req.params.nameUrl }" deleted`)
                         return res.json({ status: 'OK' })
                     } else {
                         return next(err)

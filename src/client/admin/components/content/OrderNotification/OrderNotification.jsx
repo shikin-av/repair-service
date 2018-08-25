@@ -15,6 +15,8 @@ const notification = require('antd/lib/notification')
 require('antd/lib/notification/style/css')
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
+const message = require('antd/lib/message')
+require('antd/lib/message/style/css')
 
 class OrderNotification extends React.Component {
     constructor(props){
@@ -28,16 +30,11 @@ class OrderNotification extends React.Component {
             socket.on('connected', data => {
                 socket.emit('adminAuthToken', authToken)
 
-                socket.on('authorize', data => {
-                    console.log(data)
-                })
+                socket.on('authorize', data => {})
 
-                socket.on('errorMsg', data => {
-                    console.log(data)
-                })
+                socket.on('errorMsg', data => {})
 
                 socket.on('clientOrder', order => {
-                    console.log('clientOrder: ', order)
                     this.openNotification(order)
                 })
             })
@@ -68,10 +65,7 @@ class OrderNotification extends React.Component {
         if(ordersOptions){  // order --> list
             const optionsKeys = Object.keys(ordersOptions)
             let discrepancy = false
-            for(let i in optionsKeys){
-                console.log(`option ${ optionsKeys[i] } = ${ ordersOptions[optionsKeys[i]] }`)
-                console.log(`order  ${ optionsKeys[i] } = ${ order[optionsKeys[i]] }`)
-
+            for(let i in optionsKeys){                
                 const optionVal = ordersOptions[optionsKeys[i]]
                 const orderVal  = order[optionsKeys[i]]
                 if(orderVal != optionVal){
@@ -79,7 +73,6 @@ class OrderNotification extends React.Component {
                 }
             }
             if(discrepancy == false){
-                console.log('order --> list')
                 appendOrderAction(order)
             }
         }

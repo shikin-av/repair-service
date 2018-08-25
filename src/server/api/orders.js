@@ -176,7 +176,6 @@ export default () => {
         } else {
             const beginDay    = moment(date).startOf('month')
             const endDay      = moment(beginDay).endOf('month')
-            console.log('beginDay:', beginDay, ' | endDay:', endDay)
 
             return await Order.find({
                 cityNameUrl: cityNameUrl,
@@ -235,7 +234,6 @@ export default () => {
                         const saveToDb = async order => {                            
                             return await order.save(err => {
                                 if(!err) {
-                                    console.log(`order "${ order.id }" updated`)
                                     return res.json(order)
                                 } else {
                                     return next(err)
@@ -268,7 +266,6 @@ export default () => {
                                 charset: 'utf-8',
                                 }, (data, raw, err, code) => {
                                     if(err){
-                                        console.log('sms ERROR:', err, 'code: ' + code)  
                                         order.workerId  = null                                        
                                         order.status    = 'new'                                      
                                         switch(code){
@@ -292,7 +289,6 @@ export default () => {
                                                 break
                                             case 7:
                                                 order.smsError = 'Неверный формат номера телефона'
-                                                console.log('CASE 7: order.smsError', order.smsError)
                                                 break
                                             case 8: 
                                                 order.smsError = 'Сообщение на указанный номер не может быть доставлено'
@@ -302,20 +298,14 @@ export default () => {
                                                 break
                                             default: 
                                                 order.smsError = 'Неизвестная ошибка отправки смс'                                                
-                                        }
-                                        console.log(`SMS error: ORDER 
-                                        ${order}`
-                                        )                                        
-                                        return res.json(order)
-                                        
+                                        }                                                                                
+                                        return res.json(order)                                        
                                     } else {
-                                        console.log('sms DATA: ', data)
                                         order.smsStatus = 'sended'
                                         return saveToDb(order)
                                     }
                                 })    
                             } catch(err){
-                                console.log('ERROR', err)
                                 order.smsStatus = 'error'
                                 order.status    = 'new'
                                 order.workerId  = null

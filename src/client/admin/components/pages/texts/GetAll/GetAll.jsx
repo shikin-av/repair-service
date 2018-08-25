@@ -52,7 +52,7 @@ class GetAll extends React.Component {
             })
 
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
+            message.error('Ошибка загрузки текстов')
         }
     }
 
@@ -71,7 +71,6 @@ class GetAll extends React.Component {
                 }
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             message.error(`Текст ${ text.title } не удален`)
         }
     }
@@ -82,7 +81,7 @@ class GetAll extends React.Component {
             <div className={ l.root }>
                 <BreadcrumbsPanel
                     history={ this.props.history }
-                    backButton={ false }
+                    backButton={ true }
                     links={[
                         { url: '/texts', text: 'Контент' }
                     ]}
@@ -103,7 +102,7 @@ class GetAll extends React.Component {
                         texts.map(text => {
                             return {
                                 element: (
-                                    <Row key={ Math.random() } className={ l.row }>
+                                    <Row key={ text.nameUrl } className={ l.row }>
                                         <Col sm={24} md={4}>
                                             <span>{ text.nameUrl }</span>
                                         </Col>

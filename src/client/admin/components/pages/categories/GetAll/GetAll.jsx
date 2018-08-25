@@ -36,7 +36,6 @@ class GetAll extends React.Component {
     }
 
     componentWillMount(){
-        { console.log('this.props', this.props) }
         try {
             return getCategoriesApi()
             .then(categories => {
@@ -54,7 +53,7 @@ class GetAll extends React.Component {
             })
 
         } catch(err) {            
-            console.log(`ERROR ${err.stack}`)
+            message.error('Ошибка загрузки категорий')
         }
     }
 
@@ -73,7 +72,6 @@ class GetAll extends React.Component {
                 }
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             message.error(`Категория ${ category.shortName } не удалена.`)
         }
     }
@@ -85,7 +83,7 @@ class GetAll extends React.Component {
             <div className={ l.root }>
                 <BreadcrumbsPanel
                     history={ this.props.history }
-                    backButton={ false }
+                    backButton={ true }
                     links={[
                         { url: '/categories', text: 'Категории' }
                     ]}
@@ -105,7 +103,7 @@ class GetAll extends React.Component {
                         categories.map(category => {
                             return {
                                 element: (
-                                    <Row key={ Math.random() } className={ l.row }>
+                                    <Row key={ category.nameUrl } className={ l.row }>
                                         <Col sm={24} md={4}> 
                                             <img src={ `${ config.assetsPath }/imgs/${ category.image }` }/>
                                         </Col>

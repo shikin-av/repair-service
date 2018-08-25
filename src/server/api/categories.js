@@ -40,7 +40,6 @@ export default () => {
             image,
             problems
         } = req.body
-        console.log('REQ.BODY ', req.body)
         const category = new Category({
             name,
             singularName,
@@ -51,7 +50,6 @@ export default () => {
         })
         return await category.save((err) => {
             if(!err) {
-                console.log(`category "${ nameUrl }" created`)
                 return res.status(201).json(category)
             } else {
                 return next(err)
@@ -73,7 +71,6 @@ export default () => {
         }, (err, category) => {
             if(!err){
                 if(!category){
-                    console.log(`category "${ req.params.nameUrl }" not found`)
                     return next()
                 }
                 category.name             = name || category.name
@@ -85,7 +82,6 @@ export default () => {
 
                 return category.save((err) => {
                     if(!err) {
-                        console.log(`category "${ nameUrl }" updated`)
                         return res.status(202).json(category)
                     } else {
                         return next(err)
@@ -103,12 +99,10 @@ export default () => {
         }, (err, category) => {
             if(!err){
                 if(!category){
-                    console.log(`category "${ req.params.nameUrl }" not found`)
                     return next()
                 }
                 return category.remove(err => {
                     if(!err){
-                        console.log(`category "${ req.params.nameUrl }" deleted`)
                         return res.json({ status: 'OK' })
                     } else {
                         return next(err)

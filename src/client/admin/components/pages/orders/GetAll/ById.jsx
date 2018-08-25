@@ -24,7 +24,8 @@ class ByCityId extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            loadStatus: 'load'
+            loadStatus: 'load',
+            breadcrumbsLinks: [{ url: '/orders', text:'Заявки' }]
         }        
     }
 
@@ -47,9 +48,21 @@ class ByCityId extends React.Component {
         getOrdersByCityIdAction(this.userCityNameUrl, id)
         .then(() => {            
             if(this.props.orders.length){
-                this.setState({ loadStatus: 'complete' })
+                this.setState({ 
+                    loadStatus: 'complete',
+                    breadcrumbsLinks: [
+                        { url: '/orders', text:'Заявки' },
+                        { url: `/orders/serch-id/${ id }`, text: `№${ id }` },            
+                    ]
+                })
             } else {
-                this.setState({ loadStatus: 'empty' })
+                this.setState({ 
+                    loadStatus: 'empty',
+                    breadcrumbsLinks: [
+                        { url: '/orders', text:'Заявки' },
+                        { url: `/orders/serch-id/${ id }`, text: `№${ id }` },            
+                    ] 
+                })
             }
         })
     }
@@ -67,11 +80,22 @@ class ByCityId extends React.Component {
             .then(() => {
                 getOrdersByCityIdAction(this.userCityNameUrl, newId)
                 .then(() => {
-                    console.log('заявки ', this.props.orders)
                     if(this.props.orders.length){
-                        this.setState({ loadStatus: 'complete' })
+                        this.setState({ 
+                            loadStatus: 'complete',
+                            breadcrumbsLinks: [
+                                { url: '/orders', text:'Заявки' },
+                                { url: `/orders/serch-id/${ newId }`, text: `№${ newId }` },            
+                            ]
+                        })
                     } else {
-                        this.setState({ loadStatus: 'empty' })
+                        this.setState({ 
+                            loadStatus: 'empty',
+                            breadcrumbsLinks: [
+                                { url: '/orders', text:'Заявки' },
+                                { url: `/orders/serch-id/${ newId }`, text: `№${ newId }` },            
+                            ]
+                        })
                     }
                 })
             })
@@ -80,19 +104,14 @@ class ByCityId extends React.Component {
 
     render(){
         const { orders } = this.props
-        const { loadStatus } = this.state
-                
+        const { loadStatus, breadcrumbsLinks } = this.state
         const { id } = this.props.match.params
 
-        const breadcrumbsLinks = [
-            { url: '/orders', text:'Заявки' },
-            { url: `/orders/serch-id/${ id }`, text: `№${ id }` },            
-        ]
         return (
             <div>
                 <BreadcrumbsPanel
                     history={ this.props.history }
-                    backButton={ false }
+                    backButton={ true }
                     links={ breadcrumbsLinks }
                 />
                 <OrdersFilter

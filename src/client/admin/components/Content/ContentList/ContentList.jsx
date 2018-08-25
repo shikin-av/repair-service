@@ -39,7 +39,7 @@ class ContentList extends React.Component {
                 children.map(item => {
                     return (
                         <List.Item
-                            key={ Math.random() }
+                            key={ item.identificator }
                             className={ l.listItem }
                             actions={[
                                 ( 

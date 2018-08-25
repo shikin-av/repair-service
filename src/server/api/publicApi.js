@@ -69,7 +69,6 @@ export default () => {
             categoryShortName,
             categoryNameUrl
         } = req.body
-        //console.log('ORDER req.body ', req.body)
 
         const minInt = 0
         const maxInt = 10000
@@ -140,7 +139,6 @@ export default () => {
             })
             return order.save(err => {
                 if(!err){
-                    console.log(`order "${ id }" created`)
                     return res.status(201).json({
                         status: 'OK',
                         order: order

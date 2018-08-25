@@ -57,7 +57,7 @@ class ByCity extends React.Component {
             <div>
                 <BreadcrumbsPanel
                     history={ this.props.history }
-                    backButton={ false }
+                    backButton={ true }
                     links={[
                         { url: '/orders', text:'Заявки' }
                     ]}

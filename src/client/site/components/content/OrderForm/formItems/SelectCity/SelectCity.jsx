@@ -14,24 +14,11 @@ class SelectCity extends React.Component {
     componentDidMount(){
         const { currentCity } = this.props
         if(currentCity){
-            console.log('currentCity ', currentCity)
             this.onChange(currentCity.name)
         }
     }
 
     onChange(cityName){
-        /*const { cities } = this.props
-        console.log('cities ', cities)
-        const selectedCityInd = _.findIndex(cities, city => {
-            return city.name == cityName
-        })
-        console.log('selectedCity index', selectedCityInd)
-        const selectedCity = cities[selectedCityInd]
-        console.log('selectedCity ', selectedCity)
-
-        const nameUrl = selectedCity.nameUrl
-        */
-
         this.props.onDataToForm(cityName)
     }
 

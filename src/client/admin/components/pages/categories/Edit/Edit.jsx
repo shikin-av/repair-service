@@ -95,7 +95,6 @@ class Edit extends React.Component {
                 }                    
             })
         } catch(err) {
-            console.log(`ERROR ${err.stack}`)
             this.emptyCategory()
         }
     }
@@ -136,7 +135,7 @@ class Edit extends React.Component {
 
     componentDidMount(){
         const { getFieldDecorator, getFieldValue }  = this.props.form
-        getFieldDecorator('problems', { initialValue: [] }) //TODO
+        getFieldDecorator('problems', { initialValue: [] })
     }
 
     async handleSave(e){
@@ -145,7 +144,6 @@ class Edit extends React.Component {
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log('VALUES: ', values)
                 if(isCreateType){
                     try {
                         return createCategoryApi(values)
@@ -156,23 +154,24 @@ class Edit extends React.Component {
                         })
                     } catch(err) {
                         message.error(`Категория ${category.shortName} не создана.`)
-                        console.log(`ERROR ${err.stack}`)
                     }
                 } else {
                     const { nameUrl } = this.props.match.params
                     try {
                         return editCategoryApi(nameUrl, values)
                         .then(category => {
-                            message.success(`Категория ${category.shortName} отредактирована.`)
+                            if(!category.error){
+                                message.success(`Категория ${category.shortName} отредактирована.`)
+                            } else {
+                                message.error(`Категория ${category.shortName} не отредактирована.`)
+                            }                            
                         })
                     } catch(err) {
                         message.error(`Категория ${category.shortName} не отредактирована.`)
-                        console.log(`ERROR ${err.stack}`)
                     }
                 }
-
             } else {
-                console.log(`ERROR ${err.stack}`)
+                message.error(`Категория не отредактирована.`)
             }
         })
     }
@@ -330,7 +329,6 @@ class Edit extends React.Component {
                     }
                 })
             } catch(err) {
-                console.log(`ERROR ${err.stack}`)
                 message.error(`Категория ${ category.shortName } не удалена.`)
             }    
         }                

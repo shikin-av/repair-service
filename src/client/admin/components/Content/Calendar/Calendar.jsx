@@ -28,9 +28,7 @@ class Calendar extends React.Component {
     }
 
     async componentWillMount(){
-        this.userCityNameUrl = getCookie('userCityNameUrl')     
-        //const startThisMonth = moment().startOf('month').format('YYYY-MM-DD')
-        //const endThisMonth   = moment().endOf('month').format('YYYY-MM-DD')        
+        this.userCityNameUrl = getCookie('userCityNameUrl')
         const currentDayString = moment().format(config.date.dateLinkFormat)
         const ordersPerMonth = await this.getOrdersPerMonth(currentDayString)
         if(!ordersPerMonth.error){
@@ -44,8 +42,6 @@ class Calendar extends React.Component {
     }    
 
     async onPanelChange(date, mode){
-        //const startCurrentMonth = date.startOf('month').format('YYYY-MM-DD')
-        //const endCurrentMonth = date.endOf('month').format('YYYY-MM-DD')
         const currentDayString = moment(date).format(config.date.dateLinkFormat)
         const ordersPerMonth = await this.getOrdersPerMonth(currentDayString)
         if(!ordersPerMonth.error){
