@@ -8,17 +8,18 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
 import moment from 'moment'
+import device from 'current-device'
 
 import reducers from 'client/admin/reducers'
 import ContentRouter from 'client/admin/components/Router/Router.jsx'
-import MainMenu from 'client/admin/components/MainMenu/MainMenu.jsx'
+
 import 'client/admin/components/style/app.css'
 import OrderNotification from 'client/admin/components/content/OrderNotification/OrderNotification.jsx'
+import Sidebar from 'client/admin/components/content/Sidebar/Sidebar.jsx'
 
 require('antd/lib/icon/style/css')
 const Layout = require('antd/lib/layout')
 require('antd/lib/layout/style/css')
-const { Header, Content, Sider } = Layout
 
 const history = createHistory()
 const historyMiddleware = routerMiddleware(history)
@@ -32,18 +33,16 @@ class App extends React.Component {
     }
 
     componentWillMount(){
-        moment.locale('ru')   
+        moment.locale('ru')
+        this.isMobile = device.mobile()  
     }
 
     render(){
         return (
-            <Layout>
-                <Header/>
+            <Layout>                
                 <OrderNotification/>
                 <Layout>
-                    <Sider id='sider'>
-                        <MainMenu/>
-                    </Sider>
+                    <Sidebar isMobile={ this.isMobile }/>                    
                     <Layout className={ l.root }>
                         <ContentRouter/>
                     </Layout>

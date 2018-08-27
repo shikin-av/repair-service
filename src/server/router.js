@@ -36,14 +36,20 @@ export default (app) => {
                     config.jwt.expiresSec
                 )
                 res.cookie('auth_token', token)
-                res.cookie('userCityNameUrl', userResult.user.cityNameUrl)                
-                
+                res.cookie('userCityNameUrl', userResult.user.cityNameUrl)
                 res.json({ redirectTo: '/admin#/' })
             }else{
                 res.status(401).json({ message: 'Проверьте правильность Логина и Пароля' })
             }
         }
-    })   
+    })
+
+    app.get('/logout', async (req, res) => {
+        res.clearCookie('auth_token')
+        res.clearCookie('userCityNameUrl')
+        res.clearCookie('demo')
+        res.redirect('/#/login')
+    })
 
     const api = getApi()
     app.use('/admin/api', api)

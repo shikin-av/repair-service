@@ -48,6 +48,10 @@ export default () => {
             image,
             problems : problems || []
         })
+
+        if(req.app.get('demoUser')){
+            return res.status(201).json(category)
+        }
         return await category.save((err) => {
             if(!err) {
                 return res.status(201).json(category)
@@ -80,6 +84,9 @@ export default () => {
                 category.image            = image || category.image
                 category.problems         = problems || category.problems
 
+                if(req.app.get('demoUser')){
+                    return res.status(202).json(category)
+                }
                 return category.save((err) => {
                     if(!err) {
                         return res.status(202).json(category)
@@ -100,6 +107,9 @@ export default () => {
             if(!err){
                 if(!category){
                     return next()
+                }
+                if(req.app.get('demoUser')){
+                    return res.json({ status: 'OK' })
                 }
                 return category.remove(err => {
                     if(!err){

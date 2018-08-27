@@ -5,7 +5,7 @@ import City from '../models/City'
 export default () => {
     const api = Router()
 
-    api.get('/', async (req, res, next) => {
+    api.get('/', async (req, res, next) => {        
         return await City.find((err, cities) => {
             if(!err){
                 return res.json(cities)
@@ -44,6 +44,9 @@ export default () => {
             phone,
             officeAddress
         })
+        if(req.app.get('demoUser')){
+            return res.status(201).json(city)
+        }
         return await city.save((err) => {
             if(!err) {
                 return res.status(201).json(city)
@@ -72,6 +75,9 @@ export default () => {
                 city.phone    = phone || city.phone
                 city.officeAddress = officeAddress || city.officeAddress
 
+                if(req.app.get('demoUser')){
+                    return res.status(202).json(city)
+                }
                 return city.save((err) => {
                     if(!err) {
                         return res.status(202).json(city)
@@ -92,6 +98,10 @@ export default () => {
             if(!err){
                 if(!city){
                     return next()
+                }
+                
+                if(req.app.get('demoUser')){
+                    return res.json({ status: 'OK' })
                 }
                 return city.remove(err => {
                     if(!err){

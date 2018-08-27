@@ -7,6 +7,8 @@ import Login from 'client/site/components/pages/Login/Login.jsx'
 import Categories from 'client/site/components/pages/Categories/Categories.jsx'
 import Order from 'client/site/components/pages/Order/Order.jsx'
 
+import l from './Router.less'
+
 export default class Router extends React.Component {
     constructor(props){
         super(props)
@@ -24,7 +26,7 @@ export default class Router extends React.Component {
     render(){
         return (
             <div
-                className='wrapper'
+                className={ `wrapper ${ l.root }` }
             >
                 <Switch>
                     <Route

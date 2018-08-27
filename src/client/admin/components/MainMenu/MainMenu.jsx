@@ -13,14 +13,19 @@ import l from './MainMenu.less'
 
 const MainMenu = props => (
     <Menu
-        mode='vertical'
+        mode={ props.isMobile ? 'inline' : 'vertical' }
         className={ l.root }
     >
         {
             menu.map(item =>{
                 let text = ( <span>{ item.text }</span> )
                 if(item.icon){
-                    text = ( <span><Icon type={ item.icon } />{ item.text }</span> )
+                    text = ( 
+                        <span>
+                            <Icon type={ item.icon } />
+                            { props.collapsed ? '' : item.text }
+                        </span> 
+                    )
                 }
                 if(item.submenu){
                     return (
@@ -51,9 +56,16 @@ const MainMenu = props => (
                     <Menu.Item 
                         key={ item.url }
                     >
-                        <Link to={ item.url }>
+                    {
+                        item.url != '/logout'
+                        ? <Link to={ item.url }>
                             { text }
                         </Link>
+                        : <a href={ item.url } className={ l.logout }>
+                            { text }
+                        </a>
+                    }
+                        
                     </Menu.Item>
                 )
             })

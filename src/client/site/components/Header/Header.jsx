@@ -12,54 +12,28 @@ require('antd/lib/col/style/css')
 
 import l from './Header.less'
 
-export default class Header extends React.Component {
-    constructor(props){
-        super(props)
-        this.state ={
-            position: 'relative'
-        }
-    }
-
-    componentWillMount(){
-        const { isMobile } = this.props
-        if(!isMobile){
-            window.onscroll = () => {
-                const scrolled = window.pageYOffset || document.documentElement.scrollTop
-                if(scrolled > 0){
-                    this.setState({ position: 'fixed' })
-                } else {
-                    this.setState({ position: 'relative' })
-                }
-            }
-        }        
-    }
-
-    render(){
-        const { isMobile } = this.props
-        return(
-            <div
-                id='header'
-                className={ l.root }
-                ref={ (el) => this.element = el }
-                style={{ position: this.state.position }}
-            >
-                <Row>
-                    <div className='wrapper' style={{ paddingBottom: '0px' }}>
-                        <Col sm={24} md={8}>
-                            <Logo />
-                        </Col>
-                        <Col sm={24} md={8}>
-                            <SelectCity />
-                        </Col>
-                        <Col sm={24} md={8}>
-                            <Phone />
-                        </Col>
-                    </div>
-                </Row>
-                <Row>
-                    <MainMenu isMobile={ isMobile }  />    
-                </Row>
+const Header = props => (
+    <div
+        id='header'
+        className={ l.root }                
+    >                
+        <Row>
+            <div className='wrapper' style={{ paddingBottom: '0px' }}>
+                <Col sm={24} md={8}>
+                    <Logo />
+                </Col>
+                <Col sm={24} md={8}>
+                    <SelectCity />
+                </Col>
+                <Col sm={24} md={8}>
+                    <Phone />
+                </Col>
             </div>
-        )
-    }
-}
+        </Row>
+        <Row>
+            <MainMenu isMobile={ props.isMobile }  />    
+        </Row>
+    </div>
+)
+
+export default Header

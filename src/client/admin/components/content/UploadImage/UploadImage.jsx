@@ -2,6 +2,7 @@ import React from 'react'
 import { func } from 'prop-types'
 
 import { uploadUrl } from 'client/admin/api/gallery'
+import getCookie from 'client/admin/resources/getCookie'
 
 const Form = require('antd/lib/form')
 require('antd/lib/form/style/css')
@@ -25,10 +26,14 @@ class UploadImage extends React.Component {
     }
 
     onChangeImage(e){
+        const demoUser = getCookie('demo')
         if(e.file.status == 'done') {
-            message.success(`Файл ${ e.file.name } успешно загружен`)
-            this.props.onUploadImage(e.file.name)
-
+            if(!demoUser){
+                message.success(`Файл ${ e.file.name } успешно загружен`)
+                this.props.onUploadImage(e.file.name)
+            } else {
+                message.info('В демо-режиме файлы не будут загружаться на сервер')
+            }
         } else if (e.file.status == 'error') {
             message.error(`Файл ${ e.file.name } не загружен`)
         }

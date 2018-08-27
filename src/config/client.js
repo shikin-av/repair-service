@@ -7,7 +7,8 @@ export default {
     assets: {
         logo: {
             gorizontal: 'logo-gorizontal.png',
-            vertical:   'logo-vertical.png'
+            vertical:   'logo-vertical.png',
+            mini:       'logo-mini.png',
         }            
     },
     assetsPath:         common.assetsPath,

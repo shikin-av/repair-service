@@ -18,10 +18,15 @@ export default () => {
             return res.status(400).send('Файл не загружен')
         } else {
             const image = req.files.image
-            image.mv(`${ imageDir }/${ image.name }`, err => {
-                if(err) return res.status(500).send(err)
-                res.send(`Файл ${ image.name } успешно загружен`)
-            })
+            
+            if(req.app.get('demoUser')){            
+                return res.send('В демо-режиме файлы не будут загружаться на сервер')
+            } else {
+                image.mv(`${ imageDir }/${ image.name }`, err => {
+                    if(err) return res.status(500).send(err)
+                    res.send(`Файл ${ image.name } успешно загружен`)
+                })
+            }            
         }
     })
 
@@ -44,6 +49,10 @@ export default () => {
     })
 
     gallery.delete('/:fileName', async (req, res) => {
+        if(req.app.get('demoUser')){            
+            return res.status(200).json('OK')
+        }
+
         const fileName = req.params.fileName
         const filePath = `${ imageDir }/${ fileName }`
         if(fs.statSync(filePath).isFile()){

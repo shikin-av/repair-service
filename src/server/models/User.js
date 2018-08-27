@@ -51,6 +51,11 @@ const UserSchema = new mongoose.Schema({
     categories: {
         type: Array,
         required: false
+    },
+    demo: {
+        type: Boolean,
+        required: false,
+        default: false        
     }
 })
 

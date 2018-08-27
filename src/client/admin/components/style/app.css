@@ -48,3 +48,17 @@ button {
 .ant-fullcalendar-header .ant-radio-group {
     display: none;
 }
+
+.ant-layout-sider-trigger{
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+    color: rgba(0, 0, 0, 0.65) !important;
+    background-color: #fff !important;
+    border: 1px solid transparent !important;
+    border-color: #d9d9d9 !important;
+}
+@media (max-width: 767px) {
+    .ant-layout-sider-trigger{
+        background: #1890ff !important;
+        color: white !important;
+    }
+}

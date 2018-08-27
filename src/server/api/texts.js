@@ -42,6 +42,10 @@ export default () => {
             content,
             nameUrl,
         })
+
+        if(req.app.get('demoUser')){
+            return res.status(201).json(text)
+        }
         return await text.save(err => {
             if(!err) {
                 return res.status(201).json(text)
@@ -68,6 +72,9 @@ export default () => {
                 text.content  = content || text.content
                 text.nameUrl  = nameUrl || text.nameUrl
 
+                if(req.app.get('demoUser')){
+                    return res.status(202).json(text)
+                }
                 return text.save((err) => {
                     if(!err) {
                         return res.status(202).json(text)
@@ -88,6 +95,10 @@ export default () => {
             if(!err){
                 if(!text){
                     return next()
+                }
+
+                if(req.app.get('demoUser')){
+                    return res.json({ status: 'OK' })
                 }
                 return text.remove(err => {
                     if(!err){

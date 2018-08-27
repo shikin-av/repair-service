@@ -47,5 +47,10 @@ export default [
         url: '/texts',
         text: 'Контент сайта',
         icon: 'file-text'
+    },
+    {
+        url: '/logout',
+        text: 'Выход',
+        icon: 'logout'
     }
 ]

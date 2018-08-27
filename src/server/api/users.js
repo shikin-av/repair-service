@@ -89,6 +89,10 @@ export default () => {
             workingDays: workingDays || [],
             categories:  categories  || []
         })
+
+        if(req.app.get('demoUser')){
+            return res.status(201).json(user)
+        }
         return await user.save(err => {
             if(!err){
                 return res.status(201).json(user)
@@ -127,6 +131,9 @@ export default () => {
                 user.categories  = categories  || user.categories
                 user.cityNameUrl = cityNameUrl || user.cityNameUrl
 
+                if(req.app.get('demoUser')){
+                    return res.status(202).json(user)
+                }
                 return user.save(err => {
                     if(err) return next(err)
                     return res.status(202).json(user)
@@ -143,6 +150,10 @@ export default () => {
                 if(!user){
                     return next()
                 } else {
+
+                    if(req.app.get('demoUser')){
+                        return res.json({ status: 'OK' })
+                    }
                     return user.remove(err => {
                         if(!err){
                             return res.json({ status: 'OK' })
