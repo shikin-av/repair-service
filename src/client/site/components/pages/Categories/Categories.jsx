@@ -10,6 +10,7 @@ export default class CategoriesPage extends React.Component {
     render(){
         return (
             <div>
+                <h1>Выберите технику:</h1>
                 <Categories />
             </div>
         )

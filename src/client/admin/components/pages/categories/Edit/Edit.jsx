@@ -495,6 +495,7 @@ class Edit extends React.Component {
                     visible={ showGallery }
                     onOk={ e => this.handleModalGalleryOk() }
                     onCancel={ e => this.handleModalGalleryCancel() }
+                    width={ 700 }
                 >
                     <Gallery
                         onClickToImage={ fileName => this.handleSelectImage(fileName) }

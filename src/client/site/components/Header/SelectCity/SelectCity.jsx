@@ -16,6 +16,8 @@ const Select = require('antd/lib/select')
 require('antd/lib/select/style/css')
 const Option = Select.Option
 
+import SelectCityInput from 'client/site/components/content/OrderForm/formItems/SelectCity/SelectCity.jsx'
+
 import l from './SelectCity.less'
 
 
@@ -23,7 +25,6 @@ class SelectCity extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            currentCity: null,
             selectShow: false,
         }
     }
@@ -41,22 +42,14 @@ class SelectCity extends React.Component {
             
             this.props.getCitiesAction()
             .then(() => {
-                if(currentCityLS){
-                    this.setState({ 
-                        currentCity: currentCityLS,
-                    })
-                } else {
-                    let ymCity = null
-                    
+                if(!currentCityLS){
+                    let ymCity = null                    
                     if(ymaps.geolocation){
                         ymaps.geolocation.get({ autoGeocode: true })
                         .then( res => {
                             ymCity = res.geoObjects.get(0).properties.getAll().name
                             const currentCity = _.find(this.props.cities, { name: ymCity })
                             if(currentCity){
-                                this.setState({ 
-                                    currentCity: currentCity,
-                                })
                                 this.props.setCurrentCityAction(currentCity)
                                 localStorage.setItem('currentCity', JSON.stringify(currentCity))
                             } else {
@@ -71,12 +64,17 @@ class SelectCity extends React.Component {
         })
     }
 
+    componentWillReceiveProps(nextProps){
+        const oldCurrentCity = this.props.currentCity
+        const newCurrentCity = nextProps.currentCity
+        if(newCurrentCity != oldCurrentCity){
+            this.setState({ selectShow: false })
+        }
+    }
+
     selectHandle(val){
         const currentCity = _.find(this.props.cities, { name: val })
         if(currentCity){
-            this.setState({ 
-                currentCity: currentCity,
-            })
             this.selectShowToggle()
             this.props.setCurrentCityAction(currentCity)
             localStorage.setItem('currentCity', JSON.stringify(currentCity))
@@ -87,40 +85,6 @@ class SelectCity extends React.Component {
         this.setState({ selectShow: !this.state.selectShow })
     }
 
-    selectRender(cities=[], defaultValue=this.selectDefaultText){
-        return (
-            <Select 
-                defaultValue={ defaultValue }
-                onChange={ val => this.selectHandle(val) }
-                className={ l.select }
-            >
-                {
-                    cities.map(city => {
-                    return ( 
-                        <Option 
-                            value={ city.name }
-                            key={ city.nameUrl }
-                        >{ city.name }</Option> )
-                    })
-                }
-            </Select>
-        )
-    }
-
-    cityInfoRender(currentCity){
-        return (
-            <div className={ l.cityInfo }>
-                <a className={ l.cityName }
-                   onClick={ e => this.selectShowToggle() }
-                >
-                    { 'г.' + currentCity.name }
-                </a>
-                <br/>
-                <span>{ currentCity.officeAddress }</span>
-            </div>
-        )
-    }
-
     render(){
         const { cities } = this.props
         const { selectShow } = this.state
@@ -128,34 +92,37 @@ class SelectCity extends React.Component {
         if(cities){
             return (
                 <div className={ l.root }>
-                    { !selectShow && currentCity && currentCity.name && 
-                    <div className={ l.cityInfo }>
-                        <a className={ l.cityName }
-                        onClick={ e => this.selectShowToggle() }
-                        >
-                            { 'г.' + currentCity.name }
-                        </a>
-                        <br/>
-                        <span>{ currentCity.officeAddress }</span>
-                    </div>
+                    { 
+                        !selectShow && currentCity && currentCity.hasOwnProperty('name') && 
+                        <div className={ l.cityInfo }>
+                            <a className={ l.cityName }
+                            onClick={ e => this.selectShowToggle() }
+                            >
+                                { 'г.' + currentCity.name }
+                            </a>
+                            <br/>
+                            <span>{ currentCity.officeAddress }</span>
+                        </div>
                     }   
-                    { selectShow && 
-                    <Select 
-                        defaultValue={ this.selectDefaultText }
-                        onChange={ val => this.selectHandle(val) }
-                        className={ l.select }
-                    >
-                        {
-                            cities.map(city => {
-                            return ( 
-                                <Option 
-                                    value={ city.name }
-                                    key={ city.nameUrl }
-                                >{ city.name }</Option> )
-                            })
-                        }
-                    </Select>
+                    { 
+                        selectShow && 
+                        <Select
+                            defaultValue={ this.selectDefaultText }
+                            onChange={ val => this.selectHandle(val) }
+                            className={ l.select }
+                        >
+                            {
+                                cities.map(city => {
+                                return ( 
+                                    <Option 
+                                        value={ city.name }
+                                        key={ city.nameUrl }
+                                    >{ city.name }</Option> )
+                                })
+                            }
+                        </Select>
                     }
+
                 </div>
             )
         } else return null

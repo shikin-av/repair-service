@@ -21,6 +21,7 @@ button {
 .inline {
     display: inline-block;
     padding-right: 8px;
+    margin-bottom: 0px !important;
 }
 @font-face {
   font-family: 'Material Icons';

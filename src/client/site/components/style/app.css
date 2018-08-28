@@ -12,3 +12,24 @@ body {
     font-size: 1.58em;
     font-weight: bold;
 }
+h1, h2, h3 {
+    text-align: center;
+    font-size: 2em;
+    padding-top: 15px;    
+}
+.center {
+    text-align: center;
+}
+strong {
+    padding: 5px;
+    font-size: 1.5em;
+    color: rgba(0, 0, 0, 0.85);
+}
+.super-strong {
+    color: rgb(24, 144, 255);
+    font-size: 2.225em;
+    text-transform: uppercase;
+    margin-top: -15px;
+    display: block;
+    margin-bottom: -35px;
+}

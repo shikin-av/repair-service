@@ -11,6 +11,7 @@ import device from 'current-device'
 
 import reducers from 'client/site/reducers'
 import Header from 'client/site/components/Header/Header.jsx'
+import Footer from 'client/site/components/Footer/Footer.jsx'
 import ContentRouter from 'client/site/components/Router/Router.jsx'
 
 require('antd/lib/icon/style/css')
@@ -34,6 +35,7 @@ class App extends React.Component {
             <div>
                 <Header isMobile={ this.isMobile } />
                 <ContentRouter isMobile={ this.isMobile } />
+                <Footer/>
             </div>
         )
     }

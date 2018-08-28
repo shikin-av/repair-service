@@ -16,6 +16,8 @@ require('antd/lib/select/style/css')
 const Option = Select.Option
 const Input = require('antd/lib/input')
 require('antd/lib/input/style/css')
+const Icon = require('antd/lib/icon')
+require('antd/lib/icon/style/css')
 
 import {
     setOrdersOptions as setOrdersOptionsAction
@@ -26,6 +28,7 @@ import {
 
 import DateInput from 'client/site/components/content/OrderForm/formItems/DateInput/DateInput.jsx'
 import config from 'config/client'
+import device from 'current-device'
 
 class OrderFilter extends React.Component {
     constructor(props){
@@ -40,7 +43,15 @@ class OrderFilter extends React.Component {
         this.state = {
             currentStatus: { value: 'all',      text: 'Все заявки' },
             workers: null,
-            selectedWorker: null
+            selectedWorker: null,
+            visible: true
+        }
+    }
+
+    componentWillMount(){
+        this.isMobile = device.mobile()
+        if(this.isMobile){
+            this.setState({ visible: false })
         }
     }
 
@@ -165,6 +176,11 @@ class OrderFilter extends React.Component {
         }        
     }
 
+    visibleChange(){
+        const { visible } = this.state
+        this.setState({ visible: !visible })
+    }
+
     render(){
         const { dateString } = this.props
         const { getFieldDecorator }  = this.props.form
@@ -172,6 +188,7 @@ class OrderFilter extends React.Component {
             currentStatus,
             workers,
             selectedWorker,
+            visible,
         } = this.state
         
         const today = moment().add(0, 'day')
@@ -184,7 +201,22 @@ class OrderFilter extends React.Component {
         }
         return(            
             <div>
-                <Form onSubmit = { e => this.handleSubmit(e) }>
+                {
+                    this.isMobile &&                    
+                    <Button onClick={ () => this.visibleChange() } >
+                        {
+                            visible 
+                            ? <span><Icon type='up'/> Закрыть фильтр</span>
+                            : <span><Icon type='down'/> Открыть фильтр</span>
+                        }
+                        
+                    </Button>
+                    
+                }
+                <Form 
+                    onSubmit = { e => this.handleSubmit(e) }
+                    style={ visible ? { display: 'block'} : { display: 'none' } }
+                >
                     <FormItem className='inline'>
                         {getFieldDecorator('dateString', { rules: [] })(
                             <DateInput

@@ -173,15 +173,17 @@ class Order extends React.Component {
             cities,
             setCurrentCityAction
         } = this.props
-        const { getFieldDecorator } = this.props.form
+        const { getFieldDecorator, setFieldsValue } = this.props.form
 
-        this.props.form.setFieldsValue({ city: cityName })
+        setFieldsValue({ city: cityName })
         const currentCity = cities[_.findIndex(cities, { name: cityName })]
-        const cityNameUrl = currentCity.nameUrl
-        getFieldDecorator('cityNameUrl',   { initialValue: cityNameUrl })
+        if(currentCity){
+            const cityNameUrl = currentCity.nameUrl
+            getFieldDecorator('cityNameUrl',   { initialValue: cityNameUrl })
 
-        setCurrentCityAction(currentCity)
-        localStorage.setItem('currentCity', JSON.stringify(currentCity))
+            setCurrentCityAction(currentCity)
+            localStorage.setItem('currentCity', JSON.stringify(currentCity))
+        }        
     }
 
     render(){
@@ -249,8 +251,9 @@ class Order extends React.Component {
                             )}
                         </FormItem>
 
-                        { category.problems.length ?
-                            <FormItem label='Выберите варианты:'>
+                        { 
+                            category.problems.length
+                            ? <FormItem label='Выберите варианты:'>
                                 {getFieldDecorator('problems', { rules: [] })(
                                     <Problems
                                         problems={ category.problems }
@@ -266,32 +269,33 @@ class Order extends React.Component {
                                 <Description onDataToForm={ val => this.onDescriptionChange(val) } />
                             )}
                         </FormItem>
-                        { currentCity &&
-                          currentCity.name &&
-                          cities.length &&
-                        <FormItem label='Ваш город:'>
-                            {getFieldDecorator('city', { rules: [
-                                { required: true, message: 'Обязательное поле' }
-                            ] })(
-                                <SelectCity
-                                    onDataToForm={ val => this.onCityChange(val) }
-                                    cities={ cities }
-                                    currentCity={ currentCity }
-                                />
-                            )}
-                        </FormItem>
+                        { 
+                            cities && cities.length 
+                            ? <FormItem label='Ваш город:'>
+                                {getFieldDecorator('city', { rules: [
+                                    { required: true, message: 'Обязательное поле' }
+                                ] })(
+                                    <SelectCity
+                                        onDataToForm={ val => this.onCityChange(val) }
+                                        cities={ cities }
+                                        currentCity={ currentCity || null }
+                                    />
+                                )}
+                            </FormItem>
+                            : null
                         }
-                        { currentCity && currentCity.name &&
-                        <FormItem label='Ваш адрес:'>
-                            {getFieldDecorator('address', { rules: [
-                                { required: true, message: 'Обязательное поле' }
-                            ] })(
-                                <AddressInput
-                                    onDataToForm={ val => this.onAddressChange(val) }
-                                    city={ currentCity.name }
-                                />
-                            )}
-                        </FormItem>
+                        { 
+                            currentCity && currentCity.name &&
+                            <FormItem label='Ваш адрес:'>
+                                {getFieldDecorator('address', { rules: [
+                                    { required: true, message: 'Обязательное поле' }
+                                ] })(
+                                    <AddressInput
+                                        onDataToForm={ val => this.onAddressChange(val) }
+                                        city={ currentCity.name }
+                                    />
+                                )}
+                            </FormItem>
                         }
                         <FormItem label='Квартира:'>
                             {getFieldDecorator('apartment', { rules: [

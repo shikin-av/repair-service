@@ -13,7 +13,7 @@ class SelectCity extends React.Component {
 
     componentDidMount(){
         const { currentCity } = this.props
-        if(currentCity){
+        if(currentCity && currentCity.hasOwnProperty('name')){
             this.onChange(currentCity.name)
         }
     }
@@ -24,11 +24,12 @@ class SelectCity extends React.Component {
 
     render(){
         const { cities, currentCity } = this.props        
-        if(cities && currentCity && currentCity.name){
+        if(cities){
             return (
                 <Select 
                     onChange={ val => this.onChange(val) }
-                    value={ currentCity.name }
+                    value={ (currentCity && currentCity.hasOwnProperty('name')) ? currentCity.name : null }
+                    placeholder='Выберите Ваш город'
                 >
                     { 
                         cities.map(city => (
