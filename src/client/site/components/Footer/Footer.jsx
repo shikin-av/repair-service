@@ -22,9 +22,9 @@ const Footer = props => {
     const { currentCity } = props
 
     return (
-        <Row className={ l.root }>
+        <Row id='footer' className={ l.root }>
             <h3>Остались вопросы?</h3>
-            <BigButton href='/#/categories'>
+            <BigButton href='/#/categories' id='footer-order-btn'>
                 <strong>Оставьте заявку</strong><br/>
                 и мы вам перезвоним!                            
             </BigButton> 

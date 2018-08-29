@@ -1,0 +1,29 @@
+@import '../../style/common.less';
+
+.root {
+    ul {
+        list-style-type: none;
+        display: inline-block;
+        background-color: white;
+        border: 1px solid lightgray;
+        margin-top: 16px;
+        transition-property: border-color;
+        transition-duration: @anim-time;
+        padding: 35px;
+        margin: 1%;
+        width: 100%;
+
+        &:hover {
+            border-color: @blue;
+            box-shadow: 0 0 10px #cecece;
+        }
+
+        @media @phone {
+            width: 90%;
+            display: block;
+            margin: 2%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}

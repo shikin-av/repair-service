@@ -11,6 +11,8 @@ import {
 	getText as getTextApi
 } from 'client/site/api'
 
+import l from './TextContent.less'
+
 class TextContent extends React.Component {
 	constructor(props){
 		super(props)
@@ -52,7 +54,8 @@ class TextContent extends React.Component {
 					value={ this.state.content }
 					onChange={ obj => this.onChange }
 					renderNode={ props => renderNode(props) }
-	                renderMark={ props => renderMark(props) }
+					renderMark={ props => renderMark(props) }
+					className={ l.root }
 				/>
 			</LoadedContentView>
 		)

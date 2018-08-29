@@ -4,7 +4,15 @@ export default [
         text: 'Главная'
     },
     {
-        url: '/404',
-        text: '404'
-    }
+        url: '/shares',
+        text: 'Акции'
+    },
+    {
+        url: '/questions',
+        text: 'Вопрос Ответ'
+    },
+    {
+        url: '/testimonials',
+        text: 'Отзывы'
+    },
 ]

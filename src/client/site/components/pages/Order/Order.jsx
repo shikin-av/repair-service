@@ -12,8 +12,6 @@ require('antd/lib/row/style/css')
 const Col = require('antd/lib/col')
 require('antd/lib/col/style/css')
 
-import l from './Order.less'
-
 class OrderPage extends React.Component {
     constructor(props){
         super(props)

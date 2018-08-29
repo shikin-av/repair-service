@@ -12,6 +12,7 @@ const BigButton = props => (
         type='primary' 
         className={ l.root }
         icon={ props.icon ? props.icon : null }
+        id={ props.id }
     >
         { props.children }
     </Button>
