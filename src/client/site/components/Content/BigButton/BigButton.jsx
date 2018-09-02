@@ -10,6 +10,8 @@ const BigButton = props => (
     <Button 
         href={ props.href }
         type='primary' 
+        htmltype={ props.htmlType ? props.htmlType : 'button' }
+        disabled={ props.disabled ? props.disabled : false }
         className={ l.root }
         icon={ props.icon ? props.icon : null }
         id={ props.id }

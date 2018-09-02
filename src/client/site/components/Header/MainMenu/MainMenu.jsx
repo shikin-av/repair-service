@@ -26,7 +26,10 @@ export default class MainMenu extends React.Component {
                 key={ item.url }
                 onClick={ e => this.toggleCollapsed(e) }
             >
-                <Link to={ item.url }>
+                <Link 
+                    to={ item.url }
+                    style={ item.color ? { color: item.color } : null }
+                >
                     { item.text }
                 </Link>
             </Menu.Item>

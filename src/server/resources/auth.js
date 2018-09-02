@@ -86,7 +86,7 @@ export default () => {
     }
 
     auth.getToken = (user, secret, expiresSec) => {
-        const token = jwt.sign(user, secret, { expiresIn: expiresSec })
+        const token = jwt.sign(user, secret)
         return token
     }
 

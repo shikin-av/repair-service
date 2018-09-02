@@ -86,14 +86,17 @@ class Order extends React.Component {
         const { currentCity } = this.props
         const { status } = this.state
         const showBtn = (text='Отправить', disabled=false) => (
-            <FormItem>
-                <Button
-                    disabled={ disabled }
-                    type='primary'
-                    htmlType='submit'
-                >{ text }</Button>
-                { disabled && <Spin/> }
-            </FormItem>
+            <div style={{ width: '100%', textAlign: 'center' }}>
+                <FormItem>
+                    <Button
+                        disabled={ disabled }
+                        type='primary'
+                        htmlType='submit'
+                        className={ l.submit }
+                    >{ text }</Button>
+                    { disabled && <Spin/> }
+                </FormItem>
+            </div>
         )
         switch(status){
             case 'new':

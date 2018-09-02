@@ -3,6 +3,12 @@
 .root {
     background: @content-color;
     padding: 2%;
+    background-color: white;
+    border: 1px solid lightgray;    
+    transition-property: border-color;
+    transition-duration: @anim-time;    
+    box-shadow: 0 0 10px #cecece;
+    border-color: @blue;
 
     img {
         max-width: 100px;
@@ -29,5 +35,19 @@
     .inline {
         display: inline-block;
         padding-right: 8px;
+    }
+
+    .submit {
+        width: fit-content;
+        margin: 0 auto;
+        margin-top: 5px;
+        padding: 15px 35px;
+        height: auto;
+        font-size: 18px;
+        
+        &:hover {
+            background-color: #26bd00;
+            border-color: #26bd00;
+        }
     }
 }

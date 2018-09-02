@@ -118,7 +118,9 @@ const Router = () => (
             exact path='/texts/:nameUrl'
             component={ TextEdit }
         />
-        <Route component={ Page404 } />
+        <Route component={ () => { 
+            return ( <Page404 toHome='/admin#/' /> ) 
+        }} />
     </Switch>
 )
 

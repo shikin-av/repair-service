@@ -17,7 +17,7 @@ export default {
     indexTitle:     'Ремонт бытовой техники',
     jwt: {
         secret:     'MY_SECRET',
-        expiresSec: 60 * 60 * 12,
+        expiresSec: 60 * 60 * 12 * 30,
     },
     assetsPath:         common.assetsPath,
     assetsDir:          common.assetsDir,

@@ -18,7 +18,7 @@ const Page404 = props => (
         >Назад</Button>
         <br/>        
         <Button 
-            href='/#/' 
+            href={ props.toHome ? props.toHome : '/#/' } 
             className={ l.button }    
         >Главная страница</Button>        
     </div>

@@ -10,7 +10,7 @@ body {
 .ant-form-item-label label {
     color: #2f2f2f;
     display: block;
-    font-size: 23px;
+    font-size: 21px;
     font-weight: bold;
 }
 h1, h2, h3 {
@@ -33,4 +33,20 @@ strong {
     margin-top: -15px;
     display: block;
     margin-bottom: -35px;
+}
+
+@media (max-width:  360px) {
+    strong {
+        font-size: 16px;
+    }
+    h1, h2, h3 {
+        font-size: 18px;
+    }
+    .ant-form-item-label label {
+        font-size: 17px;
+    }
+}
+
+.ant-menu {
+    background: #fff0;
 }

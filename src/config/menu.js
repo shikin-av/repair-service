@@ -4,6 +4,11 @@ export default [
         text: 'Главная'
     },
     {
+        url: '/categories',
+        text: 'Заказать ремонт',
+        color: '#26bd00'
+    },
+    {
         url: '/shares',
         text: 'Акции'
     },
@@ -14,5 +19,9 @@ export default [
     {
         url: '/testimonials',
         text: 'Отзывы'
+    },
+    {
+        url: '/login',
+        text: 'Вход для персонала'
     },
 ]

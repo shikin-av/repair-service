@@ -1,0 +1,31 @@
+@import '../../style/common.less';
+
+.root {
+    margin-top: 16px;
+    
+    .step {
+        .stepBlock {
+            background-color: white;
+            border: 1px solid lightgray;
+            margin-top: 16px;
+            transition-property: border-color;
+            transition-duration: @anim-time;
+            padding: 10px;
+            margin: 0 auto;
+            width: 90%;
+            text-align: center;
+
+            strong {
+                font-size: 15px;
+                font-weight: normal;
+            }
+        }
+        i {
+            margin: 10px;
+        }
+
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+}

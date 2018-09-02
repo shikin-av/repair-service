@@ -44,7 +44,7 @@ export default (app) => {
         }
     })
 
-    app.get('/logout', async (req, res) => {
+    app.get('/logout', (req, res) => {
         res.clearCookie('auth_token')
         res.clearCookie('userCityNameUrl')
         res.clearCookie('demo')
@@ -56,4 +56,8 @@ export default (app) => {
 
     const publicApi = getPublicApi()
     app.use('/publicapi', publicApi)
+
+    app.get('/:something', (req, res) => {
+        res.redirect('/#/404')
+    })
 }

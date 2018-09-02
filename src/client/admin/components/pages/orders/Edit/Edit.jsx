@@ -416,6 +416,11 @@ class Edit extends React.Component {
                                 <Button
                                     type='primary'
                                     htmlType='submit'
+                                    style={{ 
+                                        height: 'auto', 
+                                        whiteSpace: 'normal',
+                                        minHeight: 32
+                                    }}
                                 >{ `Отправить смс с данными заказа работнику ${ selectedWorker.fio }` }</Button>
                             </FormItem>
                         )
