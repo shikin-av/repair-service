@@ -23,5 +23,12 @@ export default (io) => {
             const { city } = data            
             io.to(city).emit('clientOrder', data)            
         })
+
+        socket.on('disconnect', () => {
+            socket.emit('errorMsg', { 
+                message: 'Ошибка авторизации в сервисе приема заявок',
+                button: { text: 'Авторизоваться', url: '/login/' }
+            })
+        })
     })
 }

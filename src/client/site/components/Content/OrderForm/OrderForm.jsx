@@ -102,7 +102,7 @@ class Order extends React.Component {
             case 'new':
                 return showBtn('Отправить', false)
             case 'pending':
-                return showBtn('Заявка отаправляется', true)
+                return showBtn('Заявка отправляется', true)
 
             case 'complete':
                 return (
