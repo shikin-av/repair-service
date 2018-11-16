@@ -1,6 +1,8 @@
 import * as types from 'client/site/actions/actionTypes'
 import * as api from 'client/site/api'
 
+const defaultCallback = () => null
+
 export const getCategories = () => async dispatch => {
     dispatch({ type: types.GET_CATEGORIES_START })
     try {
@@ -18,7 +20,7 @@ export const getCategories = () => async dispatch => {
     }
 }
 
-export const getCurrentCategory = (nameUrl) => async dispatch => {
+export const getCurrentCategory = (nameUrl, callback=defaultCallback) => async dispatch => {
     dispatch({ type: types.GET_CURRENT_CATEGORY_START })
     try {
         const category = await api.getCurrentCategory(nameUrl)
@@ -26,11 +28,23 @@ export const getCurrentCategory = (nameUrl) => async dispatch => {
             type: types.GET_CURRENT_CATEGORY_SUCCESS,
             payload: category
         })
+        if(category.error){
+            callback({
+                type:    'empty',
+            })
+        } else {
+            callback({
+                type:    'complete',
+            })
+        }        
     } catch(err) {
         dispatch({
             type: types.GET_CURRENT_CATEGORY_FAIL,
             payload: err,
             error: true
+        })
+        callback({
+            type:    'empty',
         })
     }
 }

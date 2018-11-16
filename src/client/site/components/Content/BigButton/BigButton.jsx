@@ -1,5 +1,5 @@
 import React from 'react'
-import { string, node } from 'prop-types'
+import { string, node, bool } from 'prop-types'
 
 const Button = require('antd/lib/button')
 require('antd/lib/button/style/css')
@@ -15,6 +15,7 @@ const BigButton = props => (
         className={ l.root }
         icon={ props.icon ? props.icon : null }
         id={ props.id }
+        disabled={ props.disabled }
     >
         { props.children }
     </Button>
@@ -22,7 +23,8 @@ const BigButton = props => (
 
 BigButton.propTypes = {
     children:   node.isRequired,
-    icon:       string
+    icon:       string,
+    disabled:   bool,
 }
 
 export default BigButton

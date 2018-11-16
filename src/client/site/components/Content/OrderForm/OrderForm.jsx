@@ -67,7 +67,7 @@ class Order extends React.Component {
                     .then(res => {
                         if(res.status == 'OK'){
                             this.setState({ status: 'complete' })
-                            const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
+                            const socket = openSocket()
                             socket.on('connected', data => {
                                 socket.emit('clientOrder', res.order)
                             })

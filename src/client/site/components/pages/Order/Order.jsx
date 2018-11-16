@@ -6,6 +6,9 @@ import { getCurrentCategory as getCurrentCategoryAction } from 'client/site/acti
 import { getCurrentCategory as getCurrentCategorySelector } from 'client/site/selectors/categories'
 
 import OrderForm from 'client/site/components/content/OrderForm/OrderForm.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
+//const Spin = require('antd/lib/spin')
+//require('antd/lib/spin/style/css')
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -19,11 +22,26 @@ import l from './Order.less'
 class OrderPage extends React.Component {
     constructor(props){
         super(props)
+        this.state = {
+            loadStatus: 'load'
+        }
     }
 
-    componentWillMount(){
+    componentDidMount(){
         const { nameurl } = this.props.match.params
-        this.props.getCurrentCategoryAction(nameurl)
+        this.props.getCurrentCategoryAction(nameurl, ({type}) => {
+            this.setState({loadStatus: type})
+        }) 
+    }
+
+    componentWillReceiveProps(nextProps){
+        const nameurlOld = this.props.match.params.nameurl
+        const nameurlNew = nextProps.match.params.nameurl
+        if(nameurlNew !== nameurlOld){
+            this.props.getCurrentCategoryAction(nameurlNew, ({type}) => {
+                this.setState({loadStatus: type})
+            })
+        }
     }
 
     stepRender({ title, description, color, last }){        
@@ -51,6 +69,7 @@ class OrderPage extends React.Component {
 
     render(){
         const { category } = this.props
+        const { loadStatus } = this.state
         
         const steps = [
             { title: 'Заполните заявку', color: '#1890ff' },
@@ -60,8 +79,12 @@ class OrderPage extends React.Component {
             { title: 'Отремонтируем поломку', color: '#26bd00' },
         ]
 
-        if(category){
-            return (
+        //if(category){
+        return (
+            <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Ошибка загрузки заявки'
+                >
                 <Row className={ l.root }>
                     <Col md={24} lg={16}>
                         <OrderForm category={ category } />
@@ -79,8 +102,9 @@ class OrderPage extends React.Component {
                         </div>
                     </Col>
                 </Row>
-            )
-        } else return null
+            </LoadedContentView>
+        )
+        //} else return <Spin className={ l.spin }/>
     }
 }
 

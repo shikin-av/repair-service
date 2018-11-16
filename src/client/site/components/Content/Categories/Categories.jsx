@@ -3,6 +3,7 @@ import React from 'react'
 import { getCategories as getCategoriesApi } from 'client/site/api'
 
 import CategoryItem from 'client/site/components/content/CategoryItem/CategoryItem.jsx'
+import LoadedContentView from 'client/admin/components/content/LoadedContentView/LoadedContentView.jsx'
 
 const Row = require('antd/lib/row')
 require('antd/lib/row/style/css')
@@ -17,7 +18,8 @@ class Categories extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            categories: []
+            categories: [],
+            loadStatus: 'load',
         }
     }
 
@@ -26,33 +28,41 @@ class Categories extends React.Component {
             getCategoriesApi()
             .then(categories => {
                 if(!categories.error){
-                    this.setState({ categories: categories })
+                    this.setState({ 
+                        categories, 
+                        loadStatus: 'complete'
+                    })
                 }                
             })
 
         } catch(err) {
-            message.error('Ошибка загрузки категорий')
+            this.setState({loadStatus: 'empty'})
         }
     }
 
     render(){
-        const { categories } = this.state
+        const { categories, loadStatus } = this.state
         if(categories){
             return (
-                <Row gutter={16}>
-                    {
-                        categories.map(category => (
-                            <Col
-                                xs={24}
-                                sm={12}
-                                md={6}
-                                key={ category.nameUrl }
-                            >
-                                <CategoryItem category={ category } />
-                            </Col>
-                        ))
-                    }
-                </Row>
+                <LoadedContentView
+                    loadStatus={ loadStatus }
+                    message='Ошибка загрузки категорий'
+                >
+                    <Row gutter={16}>                    
+                        {
+                            categories.map(category => (
+                                <Col
+                                    xs={24}
+                                    sm={12}
+                                    md={6}
+                                    key={ category.nameUrl }
+                                >
+                                    <CategoryItem category={ category } />
+                                </Col>
+                            ))
+                        }                    
+                    </Row>
+                </LoadedContentView>
             )
         } else return ( <Spin/> )
     }

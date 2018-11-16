@@ -8,6 +8,7 @@
     margin: 0 auto;
     margin-top: 5px;
     padding: 15px 35px;
+    box-shadow: 2px 3px 10px #cecece;
 
     strong {
         text-transform: uppercase;
@@ -20,6 +21,11 @@
     &:hover {
         background-color: @green;
         border-color: @green;
+    }
+
+    &[disabled] {
+        background-color: @blue;
+        color: white;
     }
 
     @media @phone {

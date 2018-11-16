@@ -1,7 +1,5 @@
 export default {
-    protocol:   'http',
-    host:       'localhost',
-    port:       80,
+    port:       process.env.PORT || 80,
     assetsPath: '/assets',
     assetsDir: __dirname + '/../../assets',
     userRoles: ['администратор', 'работник'],

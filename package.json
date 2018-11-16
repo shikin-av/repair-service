@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch",
     "build": "webpack -p",
-    "server": "babel-node ./src/server/index.js"
+    "start": "babel-node ./src/server/index.js"
   },
   "author": "shikin.a.v@mail.ru",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.5",
@@ -34,9 +34,7 @@
     "style-loader": "^0.20.2",
     "url-loader": "^0.6.2",
     "webpack": "^3.12.0",
-    "webpack-dev-server": "^2.10.1"
-  },
-  "dependencies": {
+    "webpack-dev-server": "^2.10.1",
     "antd": "^3.8.4",
     "autoprefixer-loader": "^3.2.0",
     "axios": "^0.18.0",

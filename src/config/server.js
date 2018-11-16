@@ -1,5 +1,5 @@
-import db from './db'
-import common from './common'
+import db from './db.js'
+import common from './common.js'
 
 export default {
     port: common.port,

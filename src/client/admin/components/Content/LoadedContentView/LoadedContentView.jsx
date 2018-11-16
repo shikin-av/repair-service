@@ -9,14 +9,14 @@ require('antd/lib/alert/style/css')
 import l from './LoadedContentView.less'
 
 const LoadedContentView = props => (
-	<div>
+	<div className={ l.root }>		
 		{ 
 			props.loadStatus == 'complete' && 
 			props.children 
 		}
 		{ 
 			props.loadStatus == 'load' &&  
-			<Spin/> 
+			<Spin className={ l.spin }/>
 		}
 		{ 
 			props.loadStatus == 'empty' && props.message &&

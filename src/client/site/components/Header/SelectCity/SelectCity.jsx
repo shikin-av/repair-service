@@ -95,10 +95,11 @@ class SelectCity extends React.Component {
                     { 
                         !selectShow && currentCity && currentCity.hasOwnProperty('name') && 
                         <div className={ l.cityInfo }>
+                            <span className={l.question}>Ваш город</span>
                             <a className={ l.cityName }
                             onClick={ e => this.selectShowToggle() }
                             >
-                                { 'г.' + currentCity.name }
+                                { currentCity.name }
                             </a>
                             <br/>
                             <span>{ currentCity.officeAddress }</span>

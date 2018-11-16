@@ -9,6 +9,18 @@ import smsConfig from '../../config/smsc.ru'
 export default () => {
     const api = Router()
 
+    const getBeginEndOfDay = dateString => {
+        // :date    'yyyy-mm-dd' || 'yyyy-m-d'
+        const date = new Date(dateString)
+        if(date == 'Invalid Date'){
+            return null
+        } else {
+            const begin = moment(date).startOf('day')
+            const end   = moment(begin).endOf('day')
+            return {begin, end}
+        }
+    }
+
     api.get('/city/:cityNameUrl', async (req, res, next) => {
         return await Order.find({
             cityNameUrl: req.params.cityNameUrl
@@ -25,19 +37,17 @@ export default () => {
 
     api.get('/city/:cityNameUrl/date/:dateString', async (req, res, next) => {
         const { cityNameUrl, dateString } = req.params
-        // :date    'yyyy-mm-dd' || 'yyyy-m-d'
-        const date = new Date(dateString)
-        if(date == 'Invalid Date'){
+        
+        const day = getBeginEndOfDay(dateString)
+        if(!day){
             return res.json({ error: 'Invalid Date' })
         } else {
-            const beginDay    = moment(date).startOf('day')
-            const endDay      = moment(beginDay).endOf('day')
 
             return await Order.find({
                 cityNameUrl: cityNameUrl,
                 date: {
-                    $gte: beginDay.toDate(),
-                    $lt:  endDay.toDate()
+                    $gte: day.begin.toDate(),
+                    $lt:  day.end.toDate()
                 }
             })
             .sort({ date: -1 })
@@ -53,18 +63,17 @@ export default () => {
 
     api.get('/city/:cityNameUrl/date/:dateString/status/:status', async (req, res, next) => {
         const { cityNameUrl, dateString, status } = req.params
-        const date = new Date(dateString)
-        if(date == 'Invalid Date'){
+        
+        const day = getBeginEndOfDay(dateString)
+        if(!day){
             return res.json({ error: 'Invalid Date' })
         } else {
-            const beginDay    = moment(date).startOf('day')
-            const endDay      = moment(beginDay).endOf('day')
 
             return await Order.find({
                 cityNameUrl: cityNameUrl,
                 date: {
-                    $gte: beginDay.toDate(),
-                    $lt:  endDay.toDate()
+                    $gte: day.begin.toDate(),
+                    $lt:  day.end.toDate()
                 },
                 status: status == 'all' ? { $in: ['new', 'working', 'complete', 'trash'] } : status
             })
@@ -81,12 +90,11 @@ export default () => {
 
     api.get('/city/:cityNameUrl/date/:dateString/status/:status/worker/:workerLogin', async (req, res, next) => {
         const { cityNameUrl, dateString, status, workerLogin } = req.params
-        const date = new Date(dateString)
-        if(date == 'Invalid Date'){
+        
+        const day = getBeginEndOfDay(dateString)
+        if(!day){
             return res.json({ error: 'Invalid Date' })
         } else {
-            const beginDay    = moment(date).startOf('day')
-            const endDay      = moment(beginDay).endOf('day')
 
             return await User.findOne({
                 login: workerLogin
@@ -97,8 +105,8 @@ export default () => {
                         return Order.find({
                             cityNameUrl: cityNameUrl,
                             date: {
-                                $gte: beginDay.toDate(),
-                                $lt:  endDay.toDate()
+                                $gte: day.begin.toDate(),
+                                $lt:  day.end.toDate()
                             },
                             status:   status == 'all' ? { $in: ['new', 'working', 'complete', 'trash'] } : status,
                             workerId: user._id
@@ -139,18 +147,17 @@ export default () => {
     // one order
     api.get('/city/:cityNameUrl/date/:dateString/id/:id', async (req, res, next) => {
         const { cityNameUrl, dateString, id } = req.params
-        const orderDate = new Date(dateString)
-        if(orderDate == 'Invalid Date'){
+        
+        const day = getBeginEndOfDay(dateString)
+        if(!day){
             return res.json({ error: 'Invalid Date' })
         } else {
-            const beginDay    = moment(orderDate).startOf('day')
-            const endDay      = moment(beginDay).endOf('day')
 
             return await Order.findOne({
                 cityNameUrl: cityNameUrl,
                 date: {
-                    $gte: beginDay.toDate(),
-                    $lt:  endDay.toDate()
+                    $gte: day.begin.toDate(),
+                    $lt:  day.end.toDate()
                 },
                 id: id
             },(err, order) => {
@@ -169,19 +176,17 @@ export default () => {
 
     api.get('/city/:cityNameUrl/date/:dateString/per-month', async (req, res, next) => {
         const { cityNameUrl, dateString } = req.params
-        // :date    'yyyy-mm-dd' || 'yyyy-m-d'
-        const date = new Date(dateString)
-        if(date == 'Invalid Date'){
+        
+        const day = getBeginEndOfDay(dateString)
+        if(!day){
             return res.json({ error: 'Invalid Date' })
         } else {
-            const beginDay    = moment(date).startOf('month')
-            const endDay      = moment(beginDay).endOf('month')
 
             return await Order.find({
                 cityNameUrl: cityNameUrl,
                 date: {
-                    $gte: beginDay.toDate(),
-                    $lt:  endDay.toDate()
+                    $gte: day.begin.toDate(),
+                    $lt:  day.end.toDate()
                 }
             })
             .sort({ date: -1 })
@@ -211,18 +216,17 @@ export default () => {
             worker,
             status,
         } = req.body
-        const orderDate = new Date(dateString)
-        if(orderDate == 'Invalid Date'){
+        
+        const day = getBeginEndOfDay(dateString)
+        if(!day){
             return res.json({ error: 'Invalid Date' })
         } else {
-            const beginDay    = moment(orderDate).startOf('day')
-            const endDay      = moment(beginDay).endOf('day')
 
             return await Order.findOne({
                 cityNameUrl: cityNameUrl,
                 date: {
-                    $gte: beginDay.toDate(),
-                    $lt:  endDay.toDate()
+                    $gte: day.begin.toDate(),
+                    $lt:  day.end.toDate()
                 },
                 id: id
             },(err, order) => {

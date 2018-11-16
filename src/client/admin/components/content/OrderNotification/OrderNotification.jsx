@@ -26,7 +26,7 @@ class OrderNotification extends React.Component {
     componentDidMount(){
         const authToken = getCookie('auth_token')
         if(authToken){
-            const socket = openSocket(`${ config.protocol }://${ config.host }:${ config.port }`)
+            const socket = openSocket()
             socket.on('connected', data => {
                 socket.emit('adminAuthToken', authToken)
 

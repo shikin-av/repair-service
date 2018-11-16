@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { object } from 'prop-types'
+import device from 'current-device'
 
 import {
     getCurrentCity as getCurrentCitySelector
@@ -25,11 +26,13 @@ const Phone = props => {
 
     const { currentCity } = props
     if(currentCity && currentCity.hasOwnProperty('phone')){
+        const isMobile = device.mobile()
         return (
             <div className={ l.root }>
                 <BigButton 
                     href={ `tel:${ phoneTextToLink(currentCity.phone) }` }
                     icon='phone'
+                    disabled={ isMobile ? false : true }
                 >
                     { currentCity.phone }
                 </BigButton>

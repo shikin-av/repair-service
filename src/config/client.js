@@ -1,8 +1,6 @@
 import common from './common'
 
 export default {
-    protocol: common.protocol,
-    host:     common.host,
     port:     common.port,
     assets: {
         logo: {
