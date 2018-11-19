@@ -7,6 +7,7 @@ import { ConnectedRouter as Router, routerMiddleware } from 'react-router-redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from 'redux-thunk'
 import 'babel-polyfill'
+import 'whatwg-fetch'
 import moment from 'moment'
 import device from 'current-device'
 
